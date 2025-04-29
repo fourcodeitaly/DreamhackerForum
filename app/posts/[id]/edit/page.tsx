@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react"
 import { MultilingualPostForm } from "@/components/multilingual-post-form"
 import { useTranslation } from "@/hooks/use-translation"
-import { getMockPostById } from "@/lib/mock-data"
 import { useParams } from "next/navigation"
 import { Skeleton } from "@/components/ui/skeleton"
+import { AdminCheck } from "@/components/admin-check"
+import { getPostById } from "@/lib/data-utils"
 
 export default function EditPostPage() {
   const { t } = useTranslation()
@@ -14,39 +15,20 @@ export default function EditPostPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (params.id) {
-      // In a real app, you would fetch the post from your API
-      const fetchedPost = getMockPostById(params.id as string)
-
-      // Transform the post data to match our multilingual structure
-      if (fetchedPost) {
-        const transformedPost = {
-          ...fetchedPost,
-          title: {
-            en: fetchedPost.title,
-            zh: fetchedPost.title ? `[中文] ${fetchedPost.title}` : "",
-            vi: fetchedPost.title ? `[Tiếng Việt] ${fetchedPost.title}` : "",
-          },
-          content: {
-            en: fetchedPost.content,
-            zh: fetchedPost.content
-              ? fetchedPost.content
-                  .split("\n")
-                  .map((p: string) => `[中文] ${p}`)
-                  .join("\n")
-              : "",
-            vi: fetchedPost.content
-              ? fetchedPost.content
-                  .split("\n")
-                  .map((p: string) => `[Tiếng Việt] ${p}`)
-                  .join("\n")
-              : "",
-          },
+    const fetchPost = async () => {
+      if (params.id) {
+        try {
+          const fetchedPost = await getPostById(params.id as string)
+          setPost(fetchedPost)
+        } catch (error) {
+          console.error("Error fetching post:", error)
+        } finally {
+          setLoading(false)
         }
-        setPost(transformedPost)
       }
-      setLoading(false)
     }
+
+    fetchPost()
   }, [params.id])
 
   if (loading) {
@@ -68,9 +50,11 @@ export default function EditPostPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">{t("editPost")}</h1>
-      <MultilingualPostForm initialData={post} isEditing={true} />
-    </div>
+    <AdminCheck>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">{t("editPost")}</h1>
+        <MultilingualPostForm initialData={post} isEditing={true} />
+      </div>
+    </AdminCheck>
   )
 }

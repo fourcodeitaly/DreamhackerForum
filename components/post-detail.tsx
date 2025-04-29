@@ -21,7 +21,7 @@ interface PostDetailProps {
 export function PostDetail({ post: rawPost }: PostDetailProps) {
   const { t } = useTranslation()
   const { language } = useLanguage()
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
 
   // Normalize post data to ensure consistent structure
   const post = normalizePostData(rawPost)
@@ -115,15 +115,17 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
             </div>
           </div>
 
-          {post.isPinned && <Badge variant="outline">{t("pinned")}</Badge>}
-          {user && user.id === post.author.id && (
-            <Link href={`/posts/${post.id}/edit`}>
-              <Button variant="outline" size="sm" className="ml-2">
-                <Edit className="h-4 w-4 mr-2" />
-                {t("edit")}
-              </Button>
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            {post.isPinned && <Badge variant="outline">{t("pinned")}</Badge>}
+            {isAdmin && (
+              <Link href={`/posts/${post.id}/edit`}>
+                <Button variant="outline" size="sm" className="ml-2">
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t("edit")}
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
 
         <PostLanguageSwitcher

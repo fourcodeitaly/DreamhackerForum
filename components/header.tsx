@@ -7,14 +7,12 @@ import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { SearchBar } from "@/components/search-bar"
-import { UserNav } from "@/components/user-nav"
-import { useAuth } from "@/hooks/use-auth"
+import { AuthStatus } from "@/components/auth-status"
 import { useTranslation } from "@/hooks/use-translation"
 import { Menu, X, GraduationCap } from "lucide-react"
 
 export default function Header() {
   const { t } = useTranslation()
-  const { user } = useAuth()
   const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -64,18 +62,7 @@ export default function Header() {
             <SearchBar className="w-64" />
             <LanguageToggle />
             <ModeToggle />
-            {user ? (
-              <UserNav user={user} />
-            ) : (
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/login">{t("login")}</Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/register">{t("register")}</Link>
-                </Button>
-              </div>
-            )}
+            <AuthStatus />
           </div>
 
           <div className="flex md:hidden">
@@ -115,22 +102,7 @@ export default function Header() {
                 <LanguageToggle />
                 <ModeToggle />
               </div>
-              {user ? (
-                <UserNav user={user} />
-              ) : (
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                      {t("login")}
-                    </Link>
-                  </Button>
-                  <Button size="sm" asChild>
-                    <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                      {t("register")}
-                    </Link>
-                  </Button>
-                </div>
-              )}
+              <AuthStatus />
             </div>
           </div>
         </div>

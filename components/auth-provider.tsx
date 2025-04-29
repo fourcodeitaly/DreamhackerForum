@@ -2,11 +2,12 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { createSafeClientSupabaseClient } from "@/lib/supabase"
-import { getMockCurrentUser } from "@/lib/mock-data"
 import type { User } from "@/lib/db/users"
 
 interface AuthContextType {
   user: User | null
+  isAdmin: boolean
+  isAuthenticated: boolean
   login: (credentials: { email: string; password: string }) => Promise<void>
   register: (userData: { email: string; password: string; name: string; username: string }) => Promise<void>
   logout: () => Promise<void>
@@ -20,15 +21,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Derived state
+  const isAuthenticated = !!user
+  const isAdmin = user?.role === "admin"
+
   useEffect(() => {
     const initAuth = async () => {
       try {
         const supabase = createSafeClientSupabaseClient()
 
         if (!supabase) {
-          // If Supabase client couldn't be created, use mock user
-          console.log("Using mock user data")
-          setUser(getMockCurrentUser() as User)
+          // No Supabase client, no authentication
+          setUser(null)
           setIsLoading(false)
           return
         }
@@ -45,12 +49,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (userData) {
               setUser(userData as User)
+            } else {
+              setUser(null)
             }
           } catch (error) {
             console.error("Error getting user data:", error)
-            // Fall back to mock user
-            setUser(getMockCurrentUser() as User)
+            setUser(null)
           }
+        } else {
+          setUser(null)
         }
 
         // Set up auth state listener
@@ -64,11 +71,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
               if (userData) {
                 setUser(userData as User)
+              } else {
+                setUser(null)
               }
             } catch (error) {
               console.error("Error getting user data:", error)
-              // Fall back to mock user
-              setUser(getMockCurrentUser() as User)
+              setUser(null)
             }
           } else {
             setUser(null)
@@ -82,8 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.error("Error initializing auth:", error)
-        // Fall back to mock user
-        setUser(getMockCurrentUser() as User)
+        setUser(null)
         setIsLoading(false)
       }
     }
@@ -95,9 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = createSafeClientSupabaseClient()
 
     if (!supabase) {
-      // Mock login
-      setUser(getMockCurrentUser() as User)
-      return
+      throw new Error("Supabase client not available")
     }
 
     const { error, data } = await supabase.auth.signInWithPassword({
@@ -114,9 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = createSafeClientSupabaseClient()
 
     if (!supabase) {
-      // Mock register
-      setUser(getMockCurrentUser() as User)
-      return
+      throw new Error("Supabase client not available")
     }
 
     // Register with Supabase Auth
@@ -143,6 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: userData.email,
           name: userData.name,
           username: userData.username,
+          role: "user", // Default role for new users
         },
       ])
 
@@ -156,8 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = createSafeClientSupabaseClient()
 
     if (!supabase) {
-      // Mock resend
-      return
+      throw new Error("Supabase client not available")
     }
 
     const { error } = await supabase.auth.resend({
@@ -174,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = createSafeClientSupabaseClient()
 
     if (!supabase) {
-      // Mock logout
+      // No Supabase client, just clear local state
       setUser(null)
       return
     }
@@ -192,6 +195,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        isAdmin,
+        isAuthenticated,
         login,
         register,
         logout,

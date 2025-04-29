@@ -55,6 +55,13 @@ export const translations = {
     confirmationEmailResent: "Confirmation email has been resent to your inbox.",
     errorResendingEmail: "Error resending confirmation email. Please try again.",
 
+    // Auth status
+    admin: "Admin",
+    accessDenied: "Access Denied",
+    adminOnlyAccess: "This page is only accessible to administrators. ",
+    goToHomepage: "Go to homepage",
+    mustBeLoggedIn: "You must be logged in to perform this action",
+
     // Posts
     createPost: "Create Post",
     publishPost: "Publish Post",
@@ -168,6 +175,8 @@ export const translations = {
     cancelReply: "Cancel Reply",
     loginToComment: "You need to be logged in to comment",
     noComments: "No comments yet. Be the first to comment!",
+    commenting: "Commenting...",
+    replying: "Replying...",
 
     // Profile
     editProfile: "Edit Profile",
@@ -208,6 +217,9 @@ export const translations = {
     cookiePolicy: "Cookie Policy",
     contactUs: "Contact Us",
     allRightsReserved: "All rights reserved.",
+
+    // Featured
+    featured: "Featured",
   },
 
   // Chinese (Simplified) translations
@@ -255,6 +267,13 @@ export const translations = {
     accountCreated: "您的账户已创建",
     errorCreatingAccount: "创建账户时出错",
     username: "用户名",
+
+    // Auth status
+    admin: "管理员",
+    accessDenied: "访问被拒绝",
+    adminOnlyAccess: "此页面仅管理员可访问。",
+    goToHomepage: "返回首页",
+    mustBeLoggedIn: "您必须登录才能执行此操作",
 
     // Posts
     createPost: "创建帖子",
@@ -369,6 +388,8 @@ export const translations = {
     cancelReply: "取消回复",
     loginToComment: "您需要登录才能评论",
     noComments: "暂无评论。成为第一个评论的人！",
+    commenting: "评论中...",
+    replying: "回复中...",
 
     // Profile
     editProfile: "编辑资料",
@@ -408,6 +429,9 @@ export const translations = {
     cookiePolicy: "Cookie 政策",
     contactUs: "联系我们",
     allRightsReserved: "保留所有权利。",
+
+    // Featured
+    featured: "精选",
   },
 
   // Vietnamese translations
@@ -455,6 +479,13 @@ export const translations = {
     accountCreated: "Tài khoản của bạn đã được tạo",
     errorCreatingAccount: "Lỗi khi tạo tài khoản",
     username: "Tên người dùng",
+
+    // Auth status
+    admin: "Quản trị viên",
+    accessDenied: "Truy cập bị từ chối",
+    adminOnlyAccess: "Trang này chỉ dành cho quản trị viên. ",
+    goToHomepage: "Đi đến trang chủ",
+    mustBeLoggedIn: "Bạn phải đăng nhập để thực hiện hành động này",
 
     // Posts
     createPost: "Tạo bài viết",
@@ -569,6 +600,8 @@ export const translations = {
     cancelReply: "Hủy phản hồi",
     loginToComment: "Bạn cần đăng nhập để bình luận",
     noComments: "Chưa có bình luận. Hãy là người đầu tiên bình luận!",
+    commenting: "Đang bình luận...",
+    replying: "Đang trả lời...",
 
     // Profile
     editProfile: "Chỉnh sửa hồ sơ",
@@ -609,5 +642,8 @@ export const translations = {
     cookiePolicy: "Chính sách cookie",
     contactUs: "Liên hệ",
     allRightsReserved: "Đã đăng ký Bản quyền.",
+
+    // Featured
+    featured: "Nổi bật",
   },
 }

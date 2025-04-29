@@ -7,25 +7,52 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useTranslation } from "@/hooks/use-translation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { getMockFeaturedPosts } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
+import { getPosts } from "@/lib/data-utils"
 
 export function FeaturedPosts() {
   const { t } = useTranslation()
   const [featuredPosts, setFeaturedPosts] = useState<any[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setFeaturedPosts(getMockFeaturedPosts())
+    const fetchFeaturedPosts = async () => {
+      try {
+        // Get posts and filter for featured ones (pinned or with images)
+        const posts = await getPosts(1, 10)
+        const featured = posts.filter((post) => post.is_pinned || post.image_url).slice(0, 3)
+
+        setFeaturedPosts(featured)
+      } catch (error) {
+        console.error("Error fetching featured posts:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchFeaturedPosts()
   }, [])
 
   useEffect(() => {
+    if (featuredPosts.length === 0) return
+
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % featuredPosts.length)
     }, 5000)
 
     return () => clearInterval(interval)
   }, [featuredPosts.length])
+
+  if (isLoading) {
+    return (
+      <div className="relative overflow-hidden rounded-xl bg-muted h-80 animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="h-8 w-8 border-4 border-t-primary rounded-full animate-spin" />
+        </div>
+      </div>
+    )
+  }
 
   if (featuredPosts.length === 0) return null
 
@@ -39,12 +66,18 @@ export function FeaturedPosts() {
           <div key={post.id} className="min-w-full">
             <Card className="border-0 overflow-hidden">
               <div className="relative h-80 w-full">
-                <img src={post.image || "/placeholder.svg"} alt={post.title} className="h-full w-full object-cover" />
+                <img
+                  src={post.image_url || "/placeholder.svg?height=600&width=1200"}
+                  alt={post.title?.en || ""}
+                  className="h-full w-full object-cover"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 text-white">
-                  <Badge className="mb-2 bg-blue-600 hover:bg-blue-700">{post.category}</Badge>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2">{post.title}</h2>
-                  <p className="text-sm md:text-base mb-4 line-clamp-2">{post.excerpt}</p>
+                  <Badge className="mb-2 bg-blue-600 hover:bg-blue-700">{post.category_id || t("featured")}</Badge>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-2">{post.title?.en || ""}</h2>
+                  <p className="text-sm md:text-base mb-4 line-clamp-2">
+                    {post.content?.en?.substring(0, 150).replace(/<[^>]*>/g, "") || ""}
+                  </p>
                   <Button asChild variant="default" size="sm">
                     <Link href={`/posts/${post.id}`}>{t("readMore")}</Link>
                   </Button>

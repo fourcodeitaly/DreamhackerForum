@@ -1,5 +1,7 @@
 import { createServerSupabaseClient } from "../supabase"
 
+export type UserRole = "user" | "admin"
+
 export type User = {
   id: string
   username: string
@@ -8,6 +10,7 @@ export type User = {
   image_url?: string
   bio?: string
   location?: string
+  role?: UserRole
   joined_at: string
   updated_at: string
 }
@@ -67,4 +70,9 @@ export async function updateUser(id: string, userData: Partial<User>): Promise<U
   }
 
   return data as User
+}
+
+export async function isUserAdmin(userId: string): Promise<boolean> {
+  const user = await getUserById(userId)
+  return user?.role === "admin"
 }

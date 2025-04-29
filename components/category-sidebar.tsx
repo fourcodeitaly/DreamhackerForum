@@ -5,12 +5,14 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useTranslation } from "@/hooks/use-translation"
+import { useAuth } from "@/hooks/use-auth"
 import { cn } from "@/lib/utils"
 import { PlusCircle } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export function CategorySidebar() {
   const { t } = useTranslation()
+  const { isAdmin } = useAuth()
   const pathname = usePathname()
 
   // Define category groups
@@ -76,12 +78,15 @@ export function CategorySidebar() {
         <CardTitle>{t("categories")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-1 p-3">
-        <Button asChild variant="default" className="w-full justify-start mb-4">
-          <Link href="/create-post">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            {t("createPost")}
-          </Link>
-        </Button>
+        {/* Only show Create Post button for admin users */}
+        {isAdmin && (
+          <Button asChild variant="default" className="w-full justify-start mb-4">
+            <Link href="/create-post">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              {t("createPost")}
+            </Link>
+          </Button>
+        )}
 
         <Link href="/" className="block">
           <div
