@@ -1,22 +1,20 @@
-import { PostList } from "@/components/post-list";
-import { SortFilter } from "@/components/sort-filter";
-import { CategorySidebar } from "@/components/category-sidebar";
-import { SearchBar } from "@/components/search-bar";
-import { FeaturedPosts } from "@/components/featured-posts";
-import { Suspense } from "react";
-import { PostListSkeleton } from "@/components/skeletons";
-import { ServerEnvChecker } from "@/components/server-env-checker";
-import { getPosts } from "@/lib/data-utils";
-import { Post } from "@/lib/db/posts";
+import { PostList } from "@/components/post-list"
+import { SortFilter } from "@/components/sort-filter"
+import { CategorySidebar } from "@/components/category-sidebar"
+import { SearchBar } from "@/components/search-bar"
+import { FeaturedPosts } from "@/components/featured-posts"
+import { Suspense } from "react"
+import { PostListSkeleton } from "@/components/skeletons"
+import { ServerEnvChecker } from "@/components/server-env-checker"
+import { getPosts } from "@/lib/data-utils"
 
 export default async function Home() {
   // Fetch posts on the server
-  let initialPosts: Post[] = [];
-
+  let initialPosts = []
   try {
-    initialPosts = await getPosts(1, 10);
+    initialPosts = await getPosts(1, 10)
   } catch (error) {
-    console.error("Error fetching posts in Home page:", error);
+    console.error("Error fetching posts in Home page:", error)
     // Continue with empty posts array
   }
 
@@ -46,5 +44,5 @@ export default async function Home() {
         </div>
       </div>
     </div>
-  );
+  )
 }

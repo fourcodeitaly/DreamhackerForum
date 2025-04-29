@@ -1,3 +1,4 @@
+import NextTopLoader from "nextjs-toploader"
 import type React from "react"
 import type { Metadata } from "next/dist/lib/metadata/types/metadata-interface"
 import { Inter } from "next/font/google"
@@ -26,6 +27,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        {/* Add the NextTopLoader component */}
+        <NextTopLoader
+          color="#3b82f6"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+        />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <LanguageProvider>
             <AuthProvider>
