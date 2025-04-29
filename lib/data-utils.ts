@@ -1,89 +1,96 @@
-import type { Post } from "./db/posts"
-import type { Comment } from "./db/comments"
-import { createUniversalSupabaseClient } from "./supabase"
+import { Post } from "./db/posts";
+import { createUniversalSupabaseClient } from "./supabase";
 
 // Helper function to get posts with no fallback to mock data
-export async function getPosts(page = 1, limit = 10, categoryId?: string): Promise<Post[]> {
+export async function getPosts(
+  page = 1,
+  limit = 10,
+  categoryId?: string
+): Promise<Post[]> {
   try {
     // Create a Supabase client
-    const supabase = createUniversalSupabaseClient()
+    const supabase = createUniversalSupabaseClient();
     if (!supabase) {
-      console.error("Failed to create Supabase client in getPosts")
-      return []
+      console.error("Failed to create Supabase client in getPosts");
+      return [];
     }
 
     // Calculate offset based on page and limit
-    const offset = (page - 1) * limit
+    const offset = (page - 1) * limit;
 
     // Build query
     let query = supabase
       .from("posts")
-      .select(`
+      .select(
+        `
         *,
         user:user_id (id, name, username, image_url),
         category:category_id (id, name)
-      `)
+      `
+      )
       .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1)
+      .range(offset, offset + limit - 1);
 
     // Add category filter if provided
     if (categoryId) {
-      query = query.eq("category_id", categoryId)
+      query = query.eq("category_id", categoryId);
     }
 
     // Execute query
-    const { data, error } = await query
+    const { data, error } = await query;
 
     if (error) {
-      console.error("Supabase error in getPosts:", error)
-      return []
+      console.error("Supabase error in getPosts:", error);
+      return [];
     }
 
-    return data as Post[]
+    return data as unknown as Post[];
   } catch (error) {
-    console.error("Error fetching posts:", error)
-    return []
+    console.error("Error fetching posts:", error);
+    return [];
   }
 }
 
 // Helper function to get post by ID with no fallback to mock data
 export async function getPostById(id: string): Promise<Post | null> {
   try {
-    const supabase = createUniversalSupabaseClient()
+    const supabase = createUniversalSupabaseClient();
     if (!supabase) {
-      console.error("Failed to create Supabase client in getPostById")
-      return null
+      console.error("Failed to create Supabase client in getPostById");
+      return null;
     }
 
     const { data, error } = await supabase
       .from("posts")
-      .select(`
+      .select(
+        `
         *,
         user:user_id (id, name, username, image_url),
         category:category_id (id, name)
-      `)
+      `
+      )
       .eq("id", id)
-      .single()
+      .single();
 
     if (error) {
-      console.error("Supabase error in getPostById:", error)
-      return null
+      console.error("Supabase error in getPostById:", error);
+      return null;
     }
 
-    return data as Post
+    return data as unknown as Post;
   } catch (error) {
-    console.error("Error fetching post:", error)
-    return null
+    console.error("Error fetching post:", error);
+    return null;
   }
 }
 
 // Helper function to get posts by category with no fallback to mock data
 export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
   try {
-    return getPosts(1, 100, categoryId)
+    return getPosts(1, 100, categoryId);
   } catch (error) {
-    console.error("Error fetching category posts:", error)
-    return []
+    console.error("Error fetching category posts:", error);
+    return [];
   }
 }
 
@@ -91,38 +98,44 @@ export async function getPostsByCategory(categoryId: string): Promise<Post[]> {
 export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
   try {
     // Use server client on server, client client on client
-    const supabase = createUniversalSupabaseClient()
+    const supabase = createUniversalSupabaseClient();
     if (!supabase) {
-      console.error("Failed to create Supabase client in getCommentsByPostId")
-      return []
+      console.error("Failed to create Supabase client in getCommentsByPostId");
+      return [];
     }
 
     const { data, error } = await supabase
       .from("comments")
-      .select(`
+      .select(
+        `
         *,
         user:user_id(id, name, username, image_url)
-      `)
+      `
+      )
       .eq("post_id", postId)
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching comments:", error)
-      return []
+      console.error("Error fetching comments:", error);
+      return [];
     }
 
-    return data || []
+    return data as unknown as Comment[];
   } catch (error) {
-    console.error("Error fetching comments:", error)
-    return []
+    console.error("Error fetching comments:", error);
+    return [];
   }
 }
 
 // Helper function to normalize post data structure
 export function normalizePostData(post: any): any {
   // If it's already in the expected format, return as is
-  if (post && typeof post.title === "object" && typeof post.content === "object") {
-    return post
+  if (
+    post &&
+    typeof post.title === "object" &&
+    typeof post.content === "object"
+  ) {
+    return post;
   }
 
   // Convert to the expected format
@@ -146,10 +159,10 @@ export function normalizePostData(post: any): any {
             vi: post.excerpt_vi || "",
           }
         : undefined,
-    }
+    };
   }
 
-  return post
+  return post;
 }
 
 // Helper function to check if user is authenticated with Supabase
@@ -157,82 +170,91 @@ export async function isUserAuthenticated(): Promise<boolean> {
   try {
     // This should only be called on the client side
     if (typeof window === "undefined") {
-      console.warn("isUserAuthenticated was called on the server side")
-      return false
+      console.warn("isUserAuthenticated was called on the server side");
+      return false;
     }
 
-    const { createSafeClientSupabaseClient } = await import("./supabase")
-    const supabase = createSafeClientSupabaseClient()
+    const { createSafeClientSupabaseClient } = await import("./supabase");
+    const supabase = createSafeClientSupabaseClient();
 
-    if (!supabase) return false
+    if (!supabase) return false;
 
-    const { data } = await supabase.auth.getSession()
-    return !!data.session
+    const { data } = await supabase.auth.getSession();
+    return !!data.session;
   } catch (error) {
-    console.error("Error checking authentication:", error)
-    return false
+    console.error("Error checking authentication:", error);
+    return false;
   }
 }
 
-export async function getRelatedPosts(currentPostId: string, categoryId?: string | null): Promise<Post[]> {
+export async function getRelatedPosts(
+  currentPostId: string,
+  categoryId?: string | null
+): Promise<Post[]> {
   try {
     // Validate inputs to prevent database errors
     if (!currentPostId) {
-      console.error("getRelatedPosts called with undefined currentPostId")
-      return []
+      console.error("getRelatedPosts called with undefined currentPostId");
+      return [];
     }
 
-    const supabase = createUniversalSupabaseClient()
+    const supabase = createUniversalSupabaseClient();
     if (!supabase) {
-      console.error("Failed to create Supabase client in getRelatedPosts")
-      return []
+      console.error("Failed to create Supabase client in getRelatedPosts");
+      return [];
     }
 
     // Start with a base query that doesn't include the current post
-    let query = supabase.from("posts").select("*").limit(3)
+    let query = supabase.from("posts").select("*").limit(3);
 
     // Only add the not-equal filter if currentPostId is valid
     if (currentPostId && currentPostId !== "undefined") {
-      query = query.neq("id", currentPostId)
+      query = query.neq("id", currentPostId);
     }
 
     // Only add category filter if categoryId is provided and valid
     if (categoryId && categoryId !== "undefined") {
-      query = query.eq("category_id", categoryId)
+      query = query.eq("category_id", categoryId);
     }
 
-    const { data, error } = await query
+    const { data, error } = await query;
 
     if (error) {
-      console.error("Error fetching related posts:", error)
-      return []
+      console.error("Error fetching related posts:", error);
+      return [];
     }
 
-    return data as Post[]
+    return data as Post[];
   } catch (error) {
-    console.error("Error fetching related posts:", error)
-    return []
+    console.error("Error fetching related posts:", error);
+    return [];
   }
 }
 
-export async function getCategory(categoryId: string): Promise<{ name: { en: string } } | null> {
+export async function getCategory(
+  categoryId: string
+): Promise<{ name: { en: string } } | null> {
   try {
-    const supabase = createUniversalSupabaseClient()
+    const supabase = createUniversalSupabaseClient();
     if (!supabase) {
-      console.error("Failed to create Supabase client in getCategory")
-      return null
+      console.error("Failed to create Supabase client in getCategory");
+      return null;
     }
 
-    const { data, error } = await supabase.from("categories").select("name").eq("id", categoryId).single()
+    const { data, error } = await supabase
+      .from("categories")
+      .select("name")
+      .eq("id", categoryId)
+      .single();
 
     if (error) {
-      console.error("Error fetching category:", error)
-      return null
+      console.error("Error fetching category:", error);
+      return null;
     }
 
-    return data as { name: { en: string } } | null
+    return data as { name: { en: string } } | null;
   } catch (error) {
-    console.error("Error fetching category:", error)
-    return null
+    console.error("Error fetching category:", error);
+    return null;
   }
 }
