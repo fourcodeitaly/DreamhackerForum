@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react"
+import { Bookmark, Heart, MessageCircle, Share2, Edit } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
 import { useLanguage } from "@/hooks/use-language"
@@ -27,10 +27,14 @@ export function PostDetail({ post }: PostDetailProps) {
   const [saved, setSaved] = useState(post.saved || false)
   const [currentLanguage, setCurrentLanguage] = useState(language)
 
-  // Simulate multilingual content
+  // Handle multilingual content
   const getLocalizedContent = () => {
-    // In a real app, you would fetch translated content from your API
-    // This is just a simulation for demonstration purposes
+    // Check if post has multilingual content structure
+    if (post.content && typeof post.content === "object") {
+      return post.content[currentLanguage] || post.content.en || ""
+    }
+
+    // Legacy format or fallback
     if (currentLanguage === "zh") {
       return post.content
         .split("\n")
@@ -46,6 +50,12 @@ export function PostDetail({ post }: PostDetailProps) {
   }
 
   const getLocalizedTitle = () => {
+    // Check if post has multilingual title structure
+    if (post.title && typeof post.title === "object") {
+      return post.title[currentLanguage] || post.title.en || ""
+    }
+
+    // Legacy format or fallback
     if (currentLanguage === "zh") {
       return `[中文] ${post.title}`
     } else if (currentLanguage === "vi") {
@@ -104,6 +114,14 @@ export function PostDetail({ post }: PostDetailProps) {
           </div>
 
           {post.isPinned && <Badge variant="outline">{t("pinned")}</Badge>}
+          {user && user.id === post.author.id && (
+            <Link href={`/posts/${post.id}/edit`}>
+              <Button variant="outline" size="sm" className="ml-2">
+                <Edit className="h-4 w-4 mr-2" />
+                {t("edit")}
+              </Button>
+            </Link>
+          )}
         </div>
 
         <PostLanguageSwitcher onLanguageChange={(lang) => setCurrentLanguage(lang as "en" | "zh" | "vi")} />

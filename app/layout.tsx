@@ -8,6 +8,7 @@ import Footer from "@/components/footer"
 import { LanguageProvider } from "@/components/language-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { NotificationProvider } from "@/components/notification-provider"
+import { ToastContainer } from "@/components/ui/use-toast"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -33,6 +34,7 @@ export default function RootLayout({
                   <Header />
                   <main className="flex-1">{children}</main>
                   <Footer />
+                  <ToastContainer />
                 </div>
               </NotificationProvider>
             </AuthProvider>
