@@ -9,8 +9,10 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
+import { useLanguage } from "@/hooks/use-language"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
+import { PostLanguageSwitcher } from "@/components/post-language-switcher"
 
 interface PostDetailProps {
   post: any
@@ -18,10 +20,39 @@ interface PostDetailProps {
 
 export function PostDetail({ post }: PostDetailProps) {
   const { t } = useTranslation()
+  const { language } = useLanguage()
   const { user } = useAuth()
   const [liked, setLiked] = useState(post.liked || false)
   const [likesCount, setLikesCount] = useState(post.likesCount || 0)
   const [saved, setSaved] = useState(post.saved || false)
+  const [currentLanguage, setCurrentLanguage] = useState(language)
+
+  // Simulate multilingual content
+  const getLocalizedContent = () => {
+    // In a real app, you would fetch translated content from your API
+    // This is just a simulation for demonstration purposes
+    if (currentLanguage === "zh") {
+      return post.content
+        .split("\n")
+        .map((paragraph: string) => `[中文] ${paragraph}`)
+        .join("\n")
+    } else if (currentLanguage === "vi") {
+      return post.content
+        .split("\n")
+        .map((paragraph: string) => `[Tiếng Việt] ${paragraph}`)
+        .join("\n")
+    }
+    return post.content
+  }
+
+  const getLocalizedTitle = () => {
+    if (currentLanguage === "zh") {
+      return `[中文] ${post.title}`
+    } else if (currentLanguage === "vi") {
+      return `[Tiếng Việt] ${post.title}`
+    }
+    return post.title
+  }
 
   const handleLike = () => {
     if (!user) return
@@ -75,7 +106,9 @@ export function PostDetail({ post }: PostDetailProps) {
           {post.isPinned && <Badge variant="outline">{t("pinned")}</Badge>}
         </div>
 
-        <h1 className="text-3xl font-bold mb-3">{post.title}</h1>
+        <PostLanguageSwitcher onLanguageChange={(lang) => setCurrentLanguage(lang as "en" | "zh" | "vi")} />
+
+        <h1 className="text-3xl font-bold mb-3">{getLocalizedTitle()}</h1>
 
         <div className="flex flex-wrap gap-2 mt-4">
           {post.tags.map((tag: string) => (
@@ -100,9 +133,11 @@ export function PostDetail({ post }: PostDetailProps) {
         )}
 
         <div className="prose dark:prose-invert max-w-none">
-          {post.content.split("\n").map((paragraph: string, i: number) => (
-            <p key={i}>{paragraph}</p>
-          ))}
+          {getLocalizedContent()
+            .split("\n")
+            .map((paragraph: string, i: number) => (
+              <p key={i}>{paragraph}</p>
+            ))}
         </div>
       </CardContent>
 

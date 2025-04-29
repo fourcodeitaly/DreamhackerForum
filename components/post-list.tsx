@@ -6,13 +6,23 @@ import { Button } from "@/components/ui/button"
 import { getMockPosts } from "@/lib/mock-data"
 import { useTranslation } from "@/hooks/use-translation"
 
-export function PostList() {
+interface PostListProps {
+  initialPosts?: any[]
+}
+
+export function PostList({ initialPosts }: PostListProps) {
   const { t } = useTranslation()
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<any[]>(initialPosts || [])
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
 
   useEffect(() => {
+    if (initialPosts && initialPosts.length > 0) {
+      setPosts(initialPosts)
+      setHasMore(initialPosts.length >= 10)
+      return
+    }
+
     // Simulate fetching posts with pagination
     const fetchPosts = () => {
       const newPosts = getMockPosts(page, 10)
@@ -21,7 +31,7 @@ export function PostList() {
     }
 
     fetchPosts()
-  }, [page])
+  }, [page, initialPosts])
 
   return (
     <div className="space-y-6">

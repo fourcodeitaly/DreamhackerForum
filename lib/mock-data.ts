@@ -258,6 +258,119 @@ export function getMockPosts(page = 1, limit = 10) {
       liked: false,
       saved: false,
     },
+    {
+      id: "post-11",
+      title: "Harvard Business School: A Comprehensive Overview",
+      excerpt:
+        "Everything you need to know about Harvard Business School's MBA program, culture, and application process.",
+      content:
+        "Harvard Business School (HBS) is consistently ranked as one of the top business schools in the world. Here's what makes it unique:\n\n1. Case Method: HBS is famous for its case-based teaching approach, where students analyze real business situations and discuss solutions in class\n2. Section Experience: First-year students are divided into sections of about 90 students who take all classes together\n3. FIELD Program: Complements the case method with field-based learning experiences\n4. Global Opportunities: Extensive international programs and a diverse student body\n5. Network: One of the most powerful alumni networks in the business world\n\nThe MBA program is a two-year, full-time program with a required summer internship between the first and second years. The first year consists of the required curriculum, while the second year is entirely elective-based.\n\nAdmission is highly competitive, with an acceptance rate of around 11%. The school looks for candidates with strong academic backgrounds, professional achievements, leadership potential, and personal qualities that will contribute to the learning environment.\n\nApplication tips:\n- Be authentic in your essays and interviews\n- Demonstrate leadership and impact in your professional and personal experiences\n- Show how you've overcome challenges and learned from failures\n- Articulate a clear vision for how an HBS MBA fits into your career goals\n\nThe total cost of attendance (including tuition, fees, and living expenses) is approximately $110,000 per year, but HBS offers various financial aid options, including scholarships, fellowships, and loans.",
+      author: {
+        id: "user-12",
+        name: "David Chen",
+        username: "davidchen",
+        image: "/placeholder.svg?height=40&width=40",
+      },
+      createdAt: "2023-04-15T08:45:00.000Z",
+      likesCount: 76,
+      commentsCount: 18,
+      tags: ["MBA", "Harvard", "Business School", "School Information"],
+      image: "/images/post-university-interview.png",
+      isPinned: false,
+      liked: false,
+      saved: false,
+      category: "school-information",
+    },
+    {
+      id: "post-12",
+      title: "How to Write a Compelling MBA Essay",
+      excerpt: "Strategies and tips for crafting standout MBA application essays that showcase your unique story.",
+      content:
+        "The MBA essay is your opportunity to go beyond your resume and show admissions committees who you really are. Here are my strategies for writing compelling essays:\n\n1. Understand the prompt: Different schools ask different questions for a reason. Take time to understand what each school is looking for\n2. Tell your unique story: Admissions committees read thousands of essays - what makes your experience and perspective different?\n3. Show, don't tell: Use specific examples and anecdotes rather than general statements about your qualities\n4. Be authentic: Don't try to write what you think admissions wants to hear - be genuine about your experiences and goals\n5. Connect your past to your future: Explain how your experiences have shaped your goals and how an MBA is the logical next step\n6. Be concise: Respect word limits and make every word count\n7. Revise, revise, revise: Good writing is rewriting - plan for multiple drafts\n\nFor my Stanford GSB 'What matters most to you and why?' essay, I went through 7 drafts over two months. I started with a broad outline of key experiences, then refined it to focus on my core value of creating educational opportunities for others, supported by specific examples from my work with underserved communities.\n\nI had several people review my essays: a current student at the school, a professional editor, and someone who knew me well but wasn't familiar with business school applications. This gave me a range of perspectives.\n\nRemember that the essay is just one part of your application. It should complement your resume, recommendations, and other materials to present a cohesive picture of who you are and what you'll bring to the program.",
+      author: {
+        id: "user-13",
+        name: "Sophia Wang",
+        username: "sophiaw",
+        image: "/placeholder.svg?height=40&width=40",
+      },
+      createdAt: "2023-04-10T11:20:00.000Z",
+      likesCount: 92,
+      commentsCount: 24,
+      tags: ["MBA", "Essay Writing", "Application Tips"],
+      image: null,
+      isPinned: false,
+      liked: true,
+      saved: false,
+      category: "essay-writing",
+    },
+    {
+      id: "post-13",
+      title: "PhD Interview Experience at Stanford GSB",
+      excerpt: "My journey through the Stanford Graduate School of Business PhD interview process and key takeaways.",
+      content:
+        "I recently completed the interview process for Stanford GSB's PhD program in Finance, and I wanted to share my experience to help future applicants.\n\nThe interview process consisted of:\n\n1. Initial 30-minute Zoom call with a faculty member in my area of interest\n2. A full day of on-campus interviews with 5-6 different faculty members\n3. Presentation of my research paper to faculty and current PhD students\n4. Informal lunch and dinner with current students\n\nFor the research presentation, I had 30 minutes to present followed by 15 minutes of Q&A. The questions were challenging but fair, focusing on my methodology, assumptions, and how my research contributes to the existing literature.\n\nThe one-on-one faculty interviews varied widely. Some professors asked technical questions related to my research interests, while others focused more on my motivations for pursuing a PhD and why I was interested in Stanford specifically. One professor gave me a mini case study to work through on the spot.\n\nMy advice for PhD interviews:\n- Know your research proposal inside and out - be prepared to defend every aspect\n- Be familiar with the faculty's research and be ready to discuss how your interests align\n- Have thoughtful questions prepared for each interviewer\n- Be honest about what you don't know - it's better to acknowledge limitations than to try to bluff\n- Show enthusiasm for teaching as well as research\n\nThe most surprising aspect was how much the 'fit' with the department culture mattered. The informal interactions with current students seemed to be an important part of the evaluation process.\n\nOverall, the interview day was exhausting but intellectually stimulating. I received an offer two weeks later and will be starting the program this fall.",
+      author: {
+        id: "user-14",
+        name: "Michael Zhang",
+        username: "michaelz",
+        image: "/placeholder.svg?height=40&width=40",
+      },
+      createdAt: "2023-04-05T15:10:00.000Z",
+      likesCount: 68,
+      commentsCount: 16,
+      tags: ["PhD", "Stanford", "Interview", "Business School"],
+      image: "/images/post-scholarship.png",
+      isPinned: false,
+      liked: false,
+      saved: true,
+      category: "phd-interview",
+    },
+    {
+      id: "post-14",
+      title: "Crafting an Effective MBA Resume",
+      excerpt:
+        "How to tailor your professional resume specifically for MBA applications to highlight your achievements and potential.",
+      content:
+        'Your MBA resume differs from a standard professional resume in several key ways. Here\'s how I approached mine for successful applications to M7 schools:\n\n1. Focus on impact, not just responsibilities: For each role, I highlighted quantifiable achievements and the impact of my work, not just what I was responsible for\n2. Demonstrate leadership: I included examples of both formal and informal leadership, showing how I influenced others and drove initiatives\n3. Show progression: I made sure my resume clearly showed career progression and increasing responsibility\n4. Include relevant extracurriculars: I highlighted community involvement, volunteer work, and other activities that demonstrated my values and interests\n5. Keep it concise: Despite having 8 years of work experience, I kept my resume to one page by focusing on the most relevant and impressive experiences\n\nFormat-wise, I used a clean, professional layout with consistent formatting. I organized information chronologically within sections for Education, Professional Experience, and Additional Information.\n\nFor my bullet points, I used the STAR method (Situation, Task, Action, Result) to concisely describe my achievements. For example, instead of "Responsible for sales team management," I wrote "Led 5-person sales team to exceed annual targets by 20% through implementation of new CRM system and weekly coaching sessions."\n\nI also tailored my resume slightly for different schools, emphasizing different aspects of my experience based on each program\'s values and strengths.\n\nBefore submitting, I had my resume reviewed by current students and alumni from my target schools, which provided valuable insights into how admissions committees might perceive my application.\n\nRemember that your resume is often the first thing admissions officers look at, so it needs to make a strong first impression and complement the story you tell in your essays and interviews.',
+      author: {
+        id: "user-15",
+        name: "Jennifer Park",
+        username: "jenniferp",
+        image: "/placeholder.svg?height=40&width=40",
+      },
+      createdAt: "2023-03-28T09:45:00.000Z",
+      likesCount: 84,
+      commentsCount: 19,
+      tags: ["MBA", "Resume", "Application Tips"],
+      image: null,
+      isPinned: false,
+      liked: false,
+      saved: false,
+      category: "resume",
+    },
+    {
+      id: "post-15",
+      title: "INSEAD vs. London Business School: A Comparative Analysis",
+      excerpt:
+        "An in-depth comparison of two top European business schools to help you decide which might be the better fit.",
+      content:
+        "After being accepted to both INSEAD and London Business School (LBS), I spent considerable time researching both programs before making my decision. Here's my comparative analysis:\n\n**Program Length:**\n- INSEAD: 10-12 months (accelerated)\n- LBS: 15-21 months (flexible)\n\n**Class Profile:**\n- INSEAD: More international (90+ nationalities), average age 29, 5-6 years work experience\n- LBS: Very international but slightly less so than INSEAD, average age 29, 5-6 years work experience\n\n**Location:**\n- INSEAD: Campuses in Fontainebleau (France), Singapore, and Abu Dhabi\n- LBS: London, with exchange opportunities\n\n**Curriculum:**\n- INSEAD: More structured due to shorter timeframe, strong in strategy and entrepreneurship\n- LBS: More flexible with more elective options, strong in finance\n\n**Career Outcomes:**\n- INSEAD: Strong in consulting (40% of graduates), multinational corporations\n- LBS: Strong in finance (30% of graduates), consulting, and London-based opportunities\n\n**Culture:**\n- INSEAD: Intense, fast-paced, highly international\n- LBS: Collaborative, diverse, more time for clubs and activities\n\n**Cost:**\n- INSEAD: €89,000 (tuition only)\n- LBS: £92,735 (tuition only)\n\nMy decision factors included:\n1. Career goals: I wanted to transition to consulting, which both schools excel at\n2. Time commitment: I preferred a shorter program to minimize opportunity cost\n3. Global exposure: I valued INSEAD's multi-campus approach and extremely diverse student body\n4. Post-MBA location: I wanted to work in Asia after graduation\n\nBased on these factors, I chose INSEAD and started in the January intake. The experience has been transformative, though incredibly intense due to the accelerated format.\n\nBoth schools are excellent, and the right choice depends on your personal and professional goals. I'd recommend visiting both campuses if possible and speaking with current students and alumni to get a feel for the culture and fit.",
+      author: {
+        id: "user-16",
+        name: "Thomas Schmidt",
+        username: "thomass",
+        image: "/placeholder.svg?height=40&width=40",
+      },
+      createdAt: "2023-03-20T14:30:00.000Z",
+      likesCount: 95,
+      commentsCount: 27,
+      tags: ["MBA", "INSEAD", "LBS", "Business School", "Rankings"],
+      image: "/images/post-university-interview.png",
+      isPinned: false,
+      liked: true,
+      saved: true,
+      category: "mba-rankings",
+    },
   ]
 
   // Calculate start and end indices for pagination
@@ -265,6 +378,12 @@ export function getMockPosts(page = 1, limit = 10) {
   const endIndex = startIndex + limit
 
   return posts.slice(startIndex, endIndex)
+}
+
+// Mock posts by category
+export function getMockPostsByCategory(categoryId: string) {
+  const allPosts = getMockPosts(1, 100)
+  return allPosts.filter((post) => post.category === categoryId)
 }
 
 // Mock post by ID

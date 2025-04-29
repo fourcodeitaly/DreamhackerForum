@@ -64,6 +64,35 @@ export const translations = {
     // Categories
     categories: "Categories",
     allPosts: "All Posts",
+
+    // MBA Categories
+    mbaPrograms: "MBA Programs",
+    schoolInformation: "School Information",
+    mbaRankings: "MBA Rankings",
+    applicationFAQ: "Application FAQ",
+    applicationStrategy: "Application Strategy",
+    resume: "Resume",
+    recommendationLetter: "Recommendation Letter",
+    essayWriting: "Essay Writing",
+    mbaInterviews: "MBA Interviews",
+    applicationSummary: "Application Summary",
+
+    // Business School Categories
+    businessSchool: "Business School",
+    schoolIntroduction: "School Introduction",
+    majorAndRanking: "Major and Ranking",
+    psResume: "PS/Resume",
+    businessInterview: "Business Interview",
+
+    // PhD Categories
+    phdPrograms: "PhD Programs",
+    businessSchoolIntro: "Business School Intro",
+    ranking: "Ranking",
+    phdStudyExperience: "PhD Study Experience",
+    phdInterview: "PhD Interview",
+
+    // Study Abroad Categories
+    studyAbroad: "Study Abroad",
     visaInterview: "Visa Interview",
     universityInterview: "University Interview",
     scholarshipInterview: "Scholarship Interview",
@@ -203,6 +232,35 @@ export const translations = {
     // Categories
     categories: "类别",
     allPosts: "所有帖子",
+
+    // MBA Categories
+    mbaPrograms: "MBA项目",
+    schoolInformation: "学校信息",
+    mbaRankings: "MBA排名",
+    applicationFAQ: "申请常见问题",
+    applicationStrategy: "申请策略",
+    resume: "简历",
+    recommendationLetter: "推荐信",
+    essayWriting: "文书写作",
+    mbaInterviews: "MBA面试",
+    applicationSummary: "申请总结",
+
+    // Business School Categories
+    businessSchool: "商学院",
+    schoolIntroduction: "学校介绍",
+    majorAndRanking: "专业与排名",
+    psResume: "个人陈述/简历",
+    businessInterview: "商科面试",
+
+    // PhD Categories
+    phdPrograms: "博士项目",
+    businessSchoolIntro: "商学院介绍",
+    ranking: "排名",
+    phdStudyExperience: "博士学习经验",
+    phdInterview: "博士面试",
+
+    // Study Abroad Categories
+    studyAbroad: "留学",
     visaInterview: "签证面试",
     universityInterview: "大学面试",
     scholarshipInterview: "奖学金面试",
@@ -341,6 +399,35 @@ export const translations = {
     // Categories
     categories: "Danh mục",
     allPosts: "Tất cả bài viết",
+
+    // MBA Categories
+    mbaPrograms: "Chương trình MBA",
+    schoolInformation: "Thông tin trường học",
+    mbaRankings: "Xếp hạng MBA",
+    applicationFAQ: "Câu hỏi thường gặp về đơn",
+    applicationStrategy: "Chiến lược ứng tuyển",
+    resume: "Sơ yếu lý lịch",
+    recommendationLetter: "Thư giới thiệu",
+    essayWriting: "Viết bài luận",
+    mbaInterviews: "Phỏng vấn MBA",
+    applicationSummary: "Tổng kết đơn",
+
+    // Business School Categories
+    businessSchool: "Trường kinh doanh",
+    schoolIntroduction: "Giới thiệu trường",
+    majorAndRanking: "Chuyên ngành và xếp hạng",
+    psResume: "PS/Sơ yếu lý lịch",
+    businessInterview: "Phỏng vấn kinh doanh",
+
+    // PhD Categories
+    phdPrograms: "Chương trình Tiến sĩ",
+    businessSchoolIntro: "Giới thiệu trường kinh doanh",
+    ranking: "Xếp hạng",
+    phdStudyExperience: "Kinh nghiệm học Tiến sĩ",
+    phdInterview: "Phỏng vấn Tiến sĩ",
+
+    // Study Abroad Categories
+    studyAbroad: "Du học",
     visaInterview: "Phỏng vấn visa",
     universityInterview: "Phỏng vấn đại học",
     scholarshipInterview: "Phỏng vấn học bổng",

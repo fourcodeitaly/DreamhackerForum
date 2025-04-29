@@ -8,7 +8,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useTranslation } from "@/hooks/use-translation"
 import { useRouter } from "next/navigation"
 import { Loader2, Upload, X } from "lucide-react"
@@ -76,6 +84,59 @@ export function PostForm() {
     }
   }
 
+  // Category groups for the select dropdown
+  const categoryGroups = [
+    {
+      label: t("mbaPrograms"),
+      options: [
+        { value: "school-information", label: t("schoolInformation") },
+        { value: "mba-rankings", label: t("mbaRankings") },
+        { value: "application-faq", label: t("applicationFAQ") },
+        { value: "application-strategy", label: t("applicationStrategy") },
+        { value: "resume", label: t("resume") },
+        { value: "recommendation-letter", label: t("recommendationLetter") },
+        { value: "essay-writing", label: t("essayWriting") },
+        { value: "mba-interviews", label: t("mbaInterviews") },
+        { value: "application-summary", label: t("applicationSummary") },
+      ],
+    },
+    {
+      label: t("businessSchool"),
+      options: [
+        { value: "school-introduction", label: t("schoolIntroduction") },
+        { value: "major-and-ranking", label: t("majorAndRanking") },
+        { value: "business-application-faq", label: t("applicationFAQ") },
+        { value: "business-recommendation-letter", label: t("recommendationLetter") },
+        { value: "ps-resume", label: t("psResume") },
+        { value: "business-interview", label: t("businessInterview") },
+        { value: "business-application-summary", label: t("applicationSummary") },
+      ],
+    },
+    {
+      label: t("phdPrograms"),
+      options: [
+        { value: "business-school-intro", label: t("businessSchoolIntro") },
+        { value: "phd-ranking", label: t("ranking") },
+        { value: "phd-application-faq", label: t("applicationFAQ") },
+        { value: "phd-recommendation-letter", label: t("recommendationLetter") },
+        { value: "phd-application-summary", label: t("applicationSummary") },
+        { value: "phd-study-experience", label: t("phdStudyExperience") },
+        { value: "phd-interview", label: t("phdInterview") },
+      ],
+    },
+    {
+      label: t("studyAbroad"),
+      options: [
+        { value: "visa-interview", label: t("visaInterview") },
+        { value: "university-interview", label: t("universityInterview") },
+        { value: "scholarship-interview", label: t("scholarshipInterview") },
+        { value: "language-test", label: t("languageTest") },
+        { value: "application-tips", label: t("applicationTips") },
+        { value: "cultural-adjustment", label: t("culturalAdjustment") },
+      ],
+    },
+  ]
+
   return (
     <Card>
       <CardContent className="pt-6">
@@ -98,12 +159,16 @@ export function PostForm() {
                 <SelectValue placeholder={t("selectCategory")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="visa-interview">{t("visaInterview")}</SelectItem>
-                <SelectItem value="university-interview">{t("universityInterview")}</SelectItem>
-                <SelectItem value="scholarship-interview">{t("scholarshipInterview")}</SelectItem>
-                <SelectItem value="language-test">{t("languageTest")}</SelectItem>
-                <SelectItem value="application-tips">{t("applicationTips")}</SelectItem>
-                <SelectItem value="cultural-adjustment">{t("culturalAdjustment")}</SelectItem>
+                {categoryGroups.map((group) => (
+                  <SelectGroup key={group.label}>
+                    <SelectLabel>{group.label}</SelectLabel>
+                    {group.options.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))}
               </SelectContent>
             </Select>
           </div>
