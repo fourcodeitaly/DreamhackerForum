@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (credentials: { email: string; password: string }) => Promise<void>
   register: (userData: { email: string; password: string; name: string; username: string }) => Promise<void>
   logout: () => Promise<void>
+  resendConfirmationEmail: (email: string) => Promise<void>
   isLoading: boolean
 }
 
@@ -99,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email: credentials.email,
       password: credentials.password,
     })
@@ -122,6 +123,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
+      options: {
+        data: {
+          name: userData.name,
+          username: userData.username,
+        },
+      },
     })
 
     if (error) {
@@ -142,6 +149,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profileError) {
         throw profileError
       }
+    }
+  }
+
+  const resendConfirmationEmail = async (email: string) => {
+    const supabase = createSafeClientSupabaseClient()
+
+    if (!supabase) {
+      // Mock resend
+      return
+    }
+
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email,
+    })
+
+    if (error) {
+      throw error
     }
   }
 
@@ -170,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        resendConfirmationEmail,
         isLoading,
       }}
     >

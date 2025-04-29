@@ -46,6 +46,14 @@ export const translations = {
     accountCreated: "Your account has been created",
     errorCreatingAccount: "Error creating account",
     username: "Username",
+    // Add these new translation keys to the English section
+    emailNotConfirmed: "Email not confirmed",
+    pleaseConfirmEmail: "Please check your inbox and confirm your email address before logging in.",
+    resendConfirmationEmail: "Resend confirmation email",
+    resendingEmail: "Resending...",
+    emailSent: "Email sent",
+    confirmationEmailResent: "Confirmation email has been resent to your inbox.",
+    errorResendingEmail: "Error resending confirmation email. Please try again.",
 
     // Posts
     createPost: "Create Post",
