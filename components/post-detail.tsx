@@ -10,8 +10,7 @@ import { Bookmark, Heart, MessageCircle, Share2, Edit } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
 import { useLanguage } from "@/hooks/use-language"
-import { formatDistanceToNow } from "date-fns"
-import { cn } from "@/lib/utils"
+import { cn, formatRelativeTime } from "@/lib/utils"
 import { PostLanguageSwitcher } from "@/components/post-language-switcher"
 import { normalizePostData } from "@/lib/data-utils"
 
@@ -112,9 +111,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
               <Link href={`/profile/${post.author.username}`} className="text-base font-medium hover:underline">
                 {post.author.name}
               </Link>
-              <p className="text-sm text-muted-foreground">
-                {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-              </p>
+              <p className="text-sm text-muted-foreground">{formatRelativeTime(post.createdAt)}</p>
             </div>
           </div>
 

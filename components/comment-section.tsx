@@ -9,9 +9,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
-import { formatDistanceToNow } from "date-fns"
 import { Heart, Reply } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, formatRelativeTime } from "@/lib/utils"
 import { getMockComments } from "@/lib/mock-data"
 import Link from "next/link"
 
@@ -136,9 +135,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
                         <Link href={`/profile/${comment.author.username}`} className="font-medium hover:underline">
                           {comment.author.name}
                         </Link>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
-                        </span>
+                        <span className="text-xs text-muted-foreground">{formatRelativeTime(comment.createdAt)}</span>
                       </div>
                       <p className="mt-1">{comment.content}</p>
                       <div className="flex items-center space-x-4 mt-2">
@@ -189,7 +186,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
                                 {reply.author.name}
                               </Link>
                               <span className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
+                                {formatRelativeTime(reply.createdAt)}
                               </span>
                             </div>
                             <p className="mt-1">{reply.content}</p>

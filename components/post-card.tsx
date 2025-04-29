@@ -10,8 +10,7 @@ import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
 import { useLanguage } from "@/hooks/use-language"
-import { formatDistanceToNow } from "date-fns"
-import { cn } from "@/lib/utils"
+import { cn, formatRelativeTime } from "@/lib/utils"
 import { likePostAction, savePostAction } from "@/app/actions"
 import { normalizePostData } from "@/lib/data-utils"
 import type { Post } from "@/lib/db/posts"
@@ -114,9 +113,7 @@ export function PostCard({ post: rawPost }: PostCardProps) {
               <Link href={`/profile/${post.author?.username}`} className="text-sm font-medium hover:underline">
                 {post.author?.name}
               </Link>
-              <p className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-              </p>
+              <p className="text-xs text-muted-foreground">{formatRelativeTime(post.created_at)}</p>
             </div>
           </div>
 

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getMockRelatedPosts } from "@/lib/mock-data"
 import { useTranslation } from "@/hooks/use-translation"
-import { formatDistanceToNow } from "date-fns"
+import { formatRelativeTime } from "@/lib/utils"
 
 interface RelatedPostsProps {
   currentPostId: string
@@ -51,9 +51,7 @@ export function RelatedPosts({ currentPostId }: RelatedPostsProps) {
                         <AvatarImage src={post.author.image || "/placeholder.svg"} alt={post.author.name} />
                         <AvatarFallback>{post.author.name[0]}</AvatarFallback>
                       </Avatar>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{formatRelativeTime(post.createdAt)}</span>
                     </div>
                   </div>
                 </div>
