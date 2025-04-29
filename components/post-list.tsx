@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/use-translation";
 import { getPosts } from "@/lib/data-utils";
 import type { Post } from "@/lib/db/posts";
-import Link from "next/link";
 
 interface PostListProps {
   initialPosts: Post[];
@@ -46,7 +45,7 @@ export function PostList({ initialPosts, categoryId }: PostListProps) {
   };
 
   return (
-    <Link href={`/posts/${categoryId}`} className="space-y-6" prefetch={true}>
+    <div className="space-y-6">
       <div className="grid gap-6">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
@@ -76,6 +75,6 @@ export function PostList({ initialPosts, categoryId }: PostListProps) {
           <p className="text-muted-foreground">{t("noPosts")}</p>
         </div>
       )}
-    </Link>
+    </div>
   );
 }
