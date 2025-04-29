@@ -28,10 +28,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        // Always use the client Supabase client on the client side
         const supabase = createSafeClientSupabaseClient()
 
         if (!supabase) {
-          // No Supabase client, no authentication
+          console.error("Failed to create Supabase client")
           setUser(null)
           setIsLoading(false)
           return

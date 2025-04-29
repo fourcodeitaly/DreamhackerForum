@@ -1,17 +1,27 @@
-import { PostList } from "@/components/post-list";
-import { SortFilter } from "@/components/sort-filter";
-import { CategorySidebar } from "@/components/category-sidebar";
-import { SearchBar } from "@/components/search-bar";
-import { FeaturedPosts } from "@/components/featured-posts";
-import { Suspense } from "react";
-import { PostListSkeleton } from "@/components/skeletons";
-import { ServerEnvChecker } from "@/components/server-env-checker";
+import { PostList } from "@/components/post-list"
+import { SortFilter } from "@/components/sort-filter"
+import { CategorySidebar } from "@/components/category-sidebar"
+import { SearchBar } from "@/components/search-bar"
+import { FeaturedPosts } from "@/components/featured-posts"
+import { Suspense } from "react"
+import { PostListSkeleton } from "@/components/skeletons"
+import { ServerEnvChecker } from "@/components/server-env-checker"
+import { getPosts } from "@/lib/data-utils"
 
-export default function Home() {
+export default async function Home() {
+  // Fetch posts on the server
+  let initialPosts = []
+  try {
+    initialPosts = await getPosts(1, 10)
+  } catch (error) {
+    console.error("Error fetching posts in Home page:", error)
+    // Continue with empty posts array
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Only show in development */}
-      {1 && <ServerEnvChecker />}
+      {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
 
       <div className="mb-8">
         <FeaturedPosts />
@@ -29,10 +39,10 @@ export default function Home() {
             <SortFilter />
           </div>
           <Suspense fallback={<PostListSkeleton />}>
-            <PostList />
+            <PostList initialPosts={initialPosts} />
           </Suspense>
         </div>
       </div>
     </div>
-  );
+  )
 }

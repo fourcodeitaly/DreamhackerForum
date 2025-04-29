@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -23,13 +23,36 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const { language } = useLanguage()
   const { user, isAdmin } = useAuth()
 
-  // Normalize post data to ensure consistent structure
-  const post = normalizePostData(rawPost)
+  const [post, setPost] = useState<any>(null)
+  const [liked, setLiked] = useState(false)
+  const [likesCount, setLikesCount] = useState(0)
+  const [saved, setSaved] = useState(false)
+  const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">("en")
 
-  const [liked, setLiked] = useState(post.liked || false)
-  const [likesCount, setLikesCount] = useState(post.likes_count || 0)
-  const [saved, setSaved] = useState(post.saved || false)
-  const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">(language)
+  useEffect(() => {
+    if (rawPost) {
+      const normalizedPost = normalizePostData(rawPost)
+      setPost(normalizedPost)
+      setLiked(normalizedPost.liked || false)
+      setLikesCount(normalizedPost.likes_count || 0)
+      setSaved(normalizedPost.saved || false)
+      setCurrentLanguage(language)
+    }
+  }, [rawPost, language])
+
+  // Handle case where post might be null or undefined
+  if (!post) {
+    return (
+      <Card className="overflow-hidden">
+        <CardHeader className="p-6">
+          <div className="text-center p-8">
+            <h2 className="text-xl font-semibold text-gray-700">Post not found</h2>
+            <p className="text-gray-500 mt-2">The post you're looking for doesn't exist or has been removed.</p>
+          </div>
+        </CardHeader>
+      </Card>
+    )
+  }
 
   // Handle multilingual content
   const getLocalizedContent = () => {
@@ -41,16 +64,20 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
     // Legacy format or fallback
     if (currentLanguage === "zh") {
       return post.content
-        .split("\n")
-        .map((paragraph: string) => `[中文] ${paragraph}`)
-        .join("\n")
+        ? post.content
+            .split("\n")
+            .map((paragraph: string) => `[中文] ${paragraph}`)
+            .join("\n")
+        : ""
     } else if (currentLanguage === "vi") {
       return post.content
-        .split("\n")
-        .map((paragraph: string) => `[Tiếng Việt] ${paragraph}`)
-        .join("\n")
+        ? post.content
+            .split("\n")
+            .map((paragraph: string) => `[Tiếng Việt] ${paragraph}`)
+            .join("\n")
+        : ""
     }
-    return post.content
+    return post.content || ""
   }
 
   const getLocalizedTitle = () => {
@@ -61,11 +88,11 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
     // Legacy format or fallback
     if (currentLanguage === "zh") {
-      return `[中文] ${post.title}`
+      return post.title ? `[中文] ${post.title}` : ""
     } else if (currentLanguage === "vi") {
-      return `[Tiếng Việt] ${post.title}`
+      return post.title ? `[Tiếng Việt] ${post.title}` : ""
     }
-    return post.title
+    return post.title || ""
   }
 
   const handleLike = () => {
@@ -87,8 +114,8 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: post.title,
-        text: post.excerpt,
+        title: getLocalizedTitle(),
+        text: post.excerpt ? post.excerpt[currentLanguage] || post.excerpt.en : "",
         url: `/posts/${post.id}`,
       })
     } else {
@@ -98,20 +125,23 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
     }
   }
 
+  // Ensure author exists with fallbacks
+  const author = post.author || { name: "Unknown Author", username: "unknown", image: null }
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={post.author.image || "/placeholder.svg"} alt={post.author.name} />
-              <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+              <AvatarImage src={author.image || "/placeholder.svg?height=40&width=40&query=user"} alt={author.name} />
+              <AvatarFallback>{author.name ? author.name[0] : "U"}</AvatarFallback>
             </Avatar>
             <div>
-              <Link href={`/profile/${post.author.username}`} className="text-base font-medium hover:underline">
-                {post.author.name}
+              <Link href={`/profile/${author.username || "unknown"}`} className="text-base font-medium hover:underline">
+                {author.name || "Unknown Author"}
               </Link>
-              <p className="text-sm text-muted-foreground">{formatRelativeTime(post.createdAt)}</p>
+              <p className="text-sm text-muted-foreground">{formatRelativeTime(post.createdAt || post.created_at)}</p>
             </div>
           </div>
 
@@ -136,7 +166,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         <h1 className="text-3xl font-bold mb-3">{getLocalizedTitle()}</h1>
 
         <div className="flex flex-wrap gap-2 mt-4">
-          {post.tags.map((tag: string) => (
+          {(post.tags || []).map((tag: string) => (
             <Link href={`/tags/${tag}`} key={tag}>
               <Badge variant="secondary" className="hover:bg-secondary/80">
                 {tag}
@@ -150,8 +180,8 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         {post.image && (
           <div className="mb-6">
             <img
-              src={post.image || "/placeholder.svg"}
-              alt={post.title}
+              src={post.image || "/placeholder.svg?height=400&width=800&query=post"}
+              alt={getLocalizedTitle()}
               className="rounded-md w-full max-h-96 object-cover"
             />
           </div>
@@ -179,7 +209,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
             <Button variant="ghost" size="sm" className="flex items-center space-x-2">
               <MessageCircle className="h-5 w-5 text-muted-foreground" />
               <span className="text-muted-foreground">
-                {post.commentsCount} {t("comments")}
+                {post.commentsCount || 0} {t("comments")}
               </span>
             </Button>
           </Link>

@@ -8,39 +8,41 @@ import { getPosts } from "@/lib/data-utils"
 import type { Post } from "@/lib/db/posts"
 
 interface PostListProps {
-  initialPosts?: Post[]
+  initialPosts: Post[]
   categoryId?: string
 }
 
 export function PostList({ initialPosts, categoryId }: PostListProps) {
   const { t } = useTranslation()
-  const [posts, setPosts] = useState<Post[]>(initialPosts || [])
+  const [posts, setPosts] = useState<Post[]>(initialPosts)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Set initial state based on server-fetched posts
   useEffect(() => {
     if (initialPosts && initialPosts.length > 0) {
       setPosts(initialPosts)
       setHasMore(initialPosts.length >= 10)
-      return
     }
+  }, [initialPosts])
 
-    const fetchPosts = async () => {
-      setIsLoading(true)
-      try {
-        const fetchedPosts = await getPosts(page, 10, categoryId)
-        setPosts((prev) => (page === 1 ? fetchedPosts : [...prev, ...fetchedPosts]))
-        setHasMore(fetchedPosts.length === 10)
-      } catch (error) {
-        console.error("Error fetching posts:", error)
-      } finally {
-        setIsLoading(false)
-      }
+  // Handle loading more posts
+  const loadMorePosts = async () => {
+    const nextPage = page + 1
+    setIsLoading(true)
+
+    try {
+      const newPosts = await getPosts(nextPage, 10, categoryId)
+      setPosts((prev) => [...prev, ...newPosts])
+      setHasMore(newPosts.length === 10)
+      setPage(nextPage)
+    } catch (error) {
+      console.error("Error fetching more posts:", error)
+    } finally {
+      setIsLoading(false)
     }
-
-    fetchPosts()
-  }, [page, initialPosts, categoryId])
+  }
 
   return (
     <div className="space-y-6">
@@ -52,7 +54,7 @@ export function PostList({ initialPosts, categoryId }: PostListProps) {
 
       {hasMore && (
         <div className="flex justify-center mt-8">
-          <Button variant="outline" onClick={() => setPage((prev) => prev + 1)} disabled={isLoading}>
+          <Button variant="outline" onClick={loadMorePosts} disabled={isLoading}>
             {isLoading ? t("loading") : t("loadMore")}
           </Button>
         </div>
