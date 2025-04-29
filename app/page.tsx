@@ -1,17 +1,17 @@
-import { PostList } from "@/components/post-list"
-import { SortFilter } from "@/components/sort-filter"
-import { CategorySidebar } from "@/components/category-sidebar"
-import { SearchBar } from "@/components/search-bar"
-import { FeaturedPosts } from "@/components/featured-posts"
-import { Suspense } from "react"
-import { PostListSkeleton } from "@/components/skeletons"
-import { ServerEnvChecker } from "@/components/server-env-checker"
+import { PostList } from "@/components/post-list";
+import { SortFilter } from "@/components/sort-filter";
+import { CategorySidebar } from "@/components/category-sidebar";
+import { SearchBar } from "@/components/search-bar";
+import { FeaturedPosts } from "@/components/featured-posts";
+import { Suspense } from "react";
+import { PostListSkeleton } from "@/components/skeletons";
+import { ServerEnvChecker } from "@/components/server-env-checker";
 
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Only show in development */}
-      {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
+      {1 && <ServerEnvChecker />}
 
       <div className="mb-8">
         <FeaturedPosts />
@@ -34,5 +34,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }
