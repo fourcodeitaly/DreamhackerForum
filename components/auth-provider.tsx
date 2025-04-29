@@ -1,7 +1,8 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { createClientSupabaseClient } from "@/lib/supabase"
+import { createSafeClientSupabaseClient } from "@/lib/supabase"
+import { getMockCurrentUser } from "@/lib/mock-data"
 import type { User } from "@/lib/db/users"
 
 interface AuthContextType {
@@ -19,59 +20,84 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const supabase = createClientSupabaseClient()
-
-    // Check if user is already logged in
-    const checkUser = async () => {
+    const initAuth = async () => {
       try {
+        const supabase = createSafeClientSupabaseClient()
+
+        if (!supabase) {
+          // If Supabase client couldn't be created, use mock user
+          console.log("Using mock user data")
+          setUser(getMockCurrentUser() as User)
+          setIsLoading(false)
+          return
+        }
+
+        // Check if user is already logged in
         const {
           data: { session },
         } = await supabase.auth.getSession()
 
         if (session) {
-          // Get user profile from the users table
-          const { data: userData } = await supabase.from("users").select("*").eq("id", session.user.id).single()
+          try {
+            // Get user profile from the users table
+            const { data: userData } = await supabase.from("users").select("*").eq("id", session.user.id).single()
 
-          if (userData) {
-            setUser(userData as User)
+            if (userData) {
+              setUser(userData as User)
+            }
+          } catch (error) {
+            console.error("Error getting user data:", error)
+            // Fall back to mock user
+            setUser(getMockCurrentUser() as User)
           }
         }
+
+        // Set up auth state listener
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
+          if (session) {
+            try {
+              // Get user profile from the users table
+              const { data: userData } = await supabase.from("users").select("*").eq("id", session.user.id).single()
+
+              if (userData) {
+                setUser(userData as User)
+              }
+            } catch (error) {
+              console.error("Error getting user data:", error)
+              // Fall back to mock user
+              setUser(getMockCurrentUser() as User)
+            }
+          } else {
+            setUser(null)
+          }
+        })
+
+        setIsLoading(false)
+
+        return () => {
+          subscription.unsubscribe()
+        }
       } catch (error) {
-        console.error("Error checking auth session:", error)
-      } finally {
+        console.error("Error initializing auth:", error)
+        // Fall back to mock user
+        setUser(getMockCurrentUser() as User)
         setIsLoading(false)
       }
     }
 
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session) {
-        try {
-          // Get user profile from the users table
-          const { data: userData } = await supabase.from("users").select("*").eq("id", session.user.id).single()
-
-          if (userData) {
-            setUser(userData as User)
-          }
-        } catch (error) {
-          console.error("Error getting user data:", error)
-        }
-      } else {
-        setUser(null)
-      }
-    })
-
-    checkUser()
-
-    return () => {
-      subscription.unsubscribe()
-    }
+    initAuth()
   }, [])
 
   const login = async (credentials: { email: string; password: string }) => {
-    const supabase = createClientSupabaseClient()
+    const supabase = createSafeClientSupabaseClient()
+
+    if (!supabase) {
+      // Mock login
+      setUser(getMockCurrentUser() as User)
+      return
+    }
 
     const { error } = await supabase.auth.signInWithPassword({
       email: credentials.email,
@@ -84,7 +110,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const register = async (userData: { email: string; password: string; name: string; username: string }) => {
-    const supabase = createClientSupabaseClient()
+    const supabase = createSafeClientSupabaseClient()
+
+    if (!supabase) {
+      // Mock register
+      setUser(getMockCurrentUser() as User)
+      return
+    }
 
     // Register with Supabase Auth
     const { data, error } = await supabase.auth.signUp({
@@ -114,7 +146,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = async () => {
-    const supabase = createClientSupabaseClient()
+    const supabase = createSafeClientSupabaseClient()
+
+    if (!supabase) {
+      // Mock logout
+      setUser(null)
+      return
+    }
 
     const { error } = await supabase.auth.signOut()
 

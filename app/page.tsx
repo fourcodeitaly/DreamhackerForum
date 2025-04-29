@@ -5,10 +5,14 @@ import { SearchBar } from "@/components/search-bar"
 import { FeaturedPosts } from "@/components/featured-posts"
 import { Suspense } from "react"
 import { PostListSkeleton } from "@/components/skeletons"
+import { EnvChecker } from "@/components/env-checker"
 
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Only show in development */}
+      {process.env.NODE_ENV === "development" && <EnvChecker />}
+
       <div className="mb-8">
         <FeaturedPosts />
       </div>

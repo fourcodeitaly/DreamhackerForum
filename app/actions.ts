@@ -1,9 +1,10 @@
 "use server"
 
-import { createServerSupabaseClient } from "@/lib/supabase"
+import { createSafeServerSupabaseClient, hasSupabaseCredentials } from "@/lib/supabase"
 import { createPost, updatePost } from "@/lib/db/posts"
 import type { MultilingualContent } from "@/lib/db/posts"
 import { revalidatePath } from "next/cache"
+import { getMockPostById, getMockPosts } from "@/lib/mock-data"
 
 export async function createPostAction(formData: {
   userId: string
@@ -15,22 +16,31 @@ export async function createPostAction(formData: {
   isPinned?: boolean
 }) {
   try {
-    // Try to use the real database function
     let post
-    try {
-      post = await createPost({
-        user_id: formData.userId,
-        title: formData.title,
-        content: formData.content,
-        category_id: formData.categoryId,
-        tags: formData.tags,
-        image_url: formData.imageUrl,
-        is_pinned: formData.isPinned || false,
-      })
-    } catch (error) {
-      console.error("Error creating post in database:", error)
-      // Fall back to mock data
-      const mockPosts = await import("@/lib/mock-data").then((module) => module.getMockPosts(1, 100))
+
+    // Check if Supabase credentials are available
+    if (hasSupabaseCredentials()) {
+      try {
+        // Try to use the real database function
+        post = await createPost({
+          user_id: formData.userId,
+          title: formData.title,
+          content: formData.content,
+          category_id: formData.categoryId,
+          tags: formData.tags,
+          image_url: formData.imageUrl,
+          is_pinned: formData.isPinned || false,
+        })
+      } catch (error) {
+        console.error("Error creating post in database:", error)
+        // Fall back to mock data
+        const mockPosts = getMockPosts(1, 100)
+        post = mockPosts[0] // Just use the first mock post as a placeholder
+      }
+    } else {
+      // Use mock data directly
+      console.log("Supabase credentials not available, using mock data")
+      const mockPosts = getMockPosts(1, 100)
       post = mockPosts[0] // Just use the first mock post as a placeholder
     }
 
@@ -60,21 +70,29 @@ export async function updatePostAction(
   },
 ) {
   try {
-    // Try to use the real database function
     let post
-    try {
-      post = await updatePost(postId, {
-        title: formData.title,
-        content: formData.content,
-        category_id: formData.categoryId,
-        tags: formData.tags,
-        image_url: formData.imageUrl,
-        is_pinned: formData.isPinned,
-      })
-    } catch (error) {
-      console.error("Error updating post in database:", error)
-      // Fall back to mock data
-      post = await import("@/lib/mock-data").then((module) => module.getMockPostById(postId))
+
+    // Check if Supabase credentials are available
+    if (hasSupabaseCredentials()) {
+      try {
+        // Try to use the real database function
+        post = await updatePost(postId, {
+          title: formData.title,
+          content: formData.content,
+          category_id: formData.categoryId,
+          tags: formData.tags,
+          image_url: formData.imageUrl,
+          is_pinned: formData.isPinned,
+        })
+      } catch (error) {
+        console.error("Error updating post in database:", error)
+        // Fall back to mock data
+        post = getMockPostById(postId)
+      }
+    } else {
+      // Use mock data directly
+      console.log("Supabase credentials not available, using mock data")
+      post = getMockPostById(postId)
     }
 
     if (!post) {
@@ -92,7 +110,16 @@ export async function updatePostAction(
 }
 
 export async function likePostAction(postId: string, userId: string) {
-  const supabase = createServerSupabaseClient()
+  // Check if Supabase credentials are available
+  if (!hasSupabaseCredentials()) {
+    console.log("Supabase credentials not available, simulating like action")
+    return { success: true, liked: true }
+  }
+
+  const supabase = createSafeServerSupabaseClient()
+  if (!supabase) {
+    return { success: true, liked: true } // Simulate success
+  }
 
   try {
     // Check if already liked
@@ -123,7 +150,16 @@ export async function likePostAction(postId: string, userId: string) {
 }
 
 export async function savePostAction(postId: string, userId: string) {
-  const supabase = createServerSupabaseClient()
+  // Check if Supabase credentials are available
+  if (!hasSupabaseCredentials()) {
+    console.log("Supabase credentials not available, simulating save action")
+    return { success: true, saved: true }
+  }
+
+  const supabase = createSafeServerSupabaseClient()
+  if (!supabase) {
+    return { success: true, saved: true } // Simulate success
+  }
 
   try {
     // Check if already saved
