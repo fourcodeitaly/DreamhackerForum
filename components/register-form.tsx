@@ -13,45 +13,59 @@ import { useTranslation } from "@/hooks/use-translation"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/components/ui/use-toast"
 
 export function RegisterForm() {
   const { t } = useTranslation()
   const { register } = useAuth()
   const router = useRouter()
+  const { toast } = useToast()
 
   const [name, setName] = useState("")
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
 
     if (password !== confirmPassword) {
-      setError(t("passwordsDoNotMatch"))
+      toast({
+        title: t("validationError"),
+        description: t("passwordsDoNotMatch"),
+        variant: "destructive",
+      })
       return
     }
 
     if (!agreeTerms) {
-      setError(t("mustAgreeTerms"))
+      toast({
+        title: t("validationError"),
+        description: t("mustAgreeTerms"),
+        variant: "destructive",
+      })
       return
     }
 
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      await register({ name, email })
+      await register({ name, username, email, password })
       router.push("/")
-    } catch (err) {
-      setError(t("registrationError"))
+      toast({
+        title: t("registrationSuccess"),
+        description: t("accountCreated"),
+      })
+    } catch (err: any) {
+      toast({
+        title: t("registrationError"),
+        description: err.message || t("errorCreatingAccount"),
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -64,6 +78,11 @@ export function RegisterForm() {
           <div className="space-y-2">
             <Label htmlFor="name">{t("fullName")}</Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="username">{t("username")}</Label>
+            <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
@@ -129,8 +148,6 @@ export function RegisterForm() {
               </Link>
             </Label>
           </div>
-
-          {error && <div className="text-sm text-red-500">{error}</div>}
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (

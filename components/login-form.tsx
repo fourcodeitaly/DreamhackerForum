@@ -11,35 +11,36 @@ import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 
 export function LoginForm() {
   const { t } = useTranslation()
   const { login } = useAuth()
   const router = useRouter()
+  const { toast } = useToast()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      if (email === "user@example.com" && password === "password") {
-        await login({ email })
-        router.push("/")
-      } else {
-        setError(t("invalidCredentials"))
-      }
-    } catch (err) {
-      setError(t("loginError"))
+      await login({ email, password })
+      router.push("/")
+      toast({
+        title: t("loginSuccess"),
+        description: t("welcomeBack"),
+      })
+    } catch (err: any) {
+      toast({
+        title: t("loginError"),
+        description: err.message || t("invalidCredentials"),
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -94,8 +95,6 @@ export function LoginForm() {
               </Button>
             </div>
           </div>
-
-          {error && <div className="text-sm text-red-500">{error}</div>}
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (

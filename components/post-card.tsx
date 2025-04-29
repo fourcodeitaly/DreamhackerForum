@@ -9,41 +9,84 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
+import { useLanguage } from "@/hooks/use-language"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
+import { likePostAction, savePostAction } from "@/app/actions"
+import type { Post } from "@/lib/db/posts"
 
 interface PostCardProps {
-  post: any
+  post: Post
 }
 
 export function PostCard({ post }: PostCardProps) {
   const { t } = useTranslation()
+  const { language } = useLanguage()
   const { user } = useAuth()
   const [liked, setLiked] = useState(post.liked || false)
-  const [likesCount, setLikesCount] = useState(post.likesCount || 0)
+  const [likesCount, setLikesCount] = useState(post.likes_count || 0)
   const [saved, setSaved] = useState(post.saved || false)
 
-  const handleLike = () => {
-    if (!user) return
-
-    if (liked) {
-      setLikesCount((prev) => prev - 1)
-    } else {
-      setLikesCount((prev) => prev + 1)
+  // Get localized content based on current language
+  const getLocalizedTitle = () => {
+    if (typeof post.title === "object") {
+      return post.title[language] || post.title.en || ""
     }
-    setLiked(!liked)
+    return post.title
   }
 
-  const handleSave = () => {
+  const getLocalizedExcerpt = () => {
+    if (post.excerpt && typeof post.excerpt === "object") {
+      return post.excerpt[language] || post.excerpt.en || ""
+    }
+
+    // If no excerpt, generate from content
+    if (typeof post.content === "object") {
+      const content = post.content[language] || post.content.en || ""
+      return content.substring(0, 150) + (content.length > 150 ? "..." : "")
+    }
+
+    return ""
+  }
+
+  const handleLike = async () => {
     if (!user) return
-    setSaved(!saved)
+
+    try {
+      const result = await likePostAction(post.id, user.id)
+
+      if (result.success) {
+        if (result.liked) {
+          setLikesCount((prev) => prev + 1)
+        } else {
+          setLikesCount((prev) => prev - 1)
+        }
+        setLiked(result.liked)
+      }
+    } catch (error) {
+      console.error("Error liking post:", error)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!user) return
+
+    try {
+      const result = await savePostAction(post.id, user.id)
+
+      if (result.success) {
+        setSaved(result.saved)
+      }
+    } catch (error) {
+      console.error("Error saving post:", error)
+    }
   }
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: post.title,
-        text: post.excerpt,
+        title: getLocalizedTitle(),
+        text: getLocalizedExcerpt(),
         url: `/posts/${post.id}`,
       })
     } else {
@@ -59,20 +102,20 @@ export function PostCard({ post }: PostCardProps) {
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={post.author.image || "/placeholder.svg"} alt={post.author.name} />
-              <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+              <AvatarImage src={post.author?.image_url || "/placeholder.svg"} alt={post.author?.name} />
+              <AvatarFallback>{post.author?.name?.[0] || "?"}</AvatarFallback>
             </Avatar>
             <div>
-              <Link href={`/profile/${post.author.username}`} className="text-sm font-medium hover:underline">
-                {post.author.name}
+              <Link href={`/profile/${post.author?.username}`} className="text-sm font-medium hover:underline">
+                {post.author?.name}
               </Link>
               <p className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
               </p>
             </div>
           </div>
 
-          {post.isPinned && (
+          {post.is_pinned && (
             <Badge variant="outline" className="text-xs">
               {t("pinned")}
             </Badge>
@@ -83,13 +126,13 @@ export function PostCard({ post }: PostCardProps) {
       <CardContent className="p-4">
         <Link href={`/posts/${post.id}`} className="block group">
           <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            {post.title}
+            {getLocalizedTitle()}
           </h3>
-          <p className="text-muted-foreground line-clamp-2 mb-3">{post.excerpt}</p>
+          <p className="text-muted-foreground line-clamp-2 mb-3">{getLocalizedExcerpt()}</p>
         </Link>
 
         <div className="flex flex-wrap gap-2 mt-2">
-          {post.tags.map((tag: string) => (
+          {post.tags?.map((tag) => (
             <Link href={`/tags/${tag}`} key={tag}>
               <Badge variant="secondary" className="hover:bg-secondary/80">
                 {tag}
@@ -98,11 +141,11 @@ export function PostCard({ post }: PostCardProps) {
           ))}
         </div>
 
-        {post.image && (
+        {post.image_url && (
           <Link href={`/posts/${post.id}`} className="block mt-4">
             <img
-              src={post.image || "/placeholder.svg"}
-              alt={post.title}
+              src={post.image_url || "/placeholder.svg"}
+              alt={getLocalizedTitle()}
               className="rounded-md w-full h-48 object-cover"
             />
           </Link>
@@ -119,7 +162,7 @@ export function PostCard({ post }: PostCardProps) {
           <Link href={`/posts/${post.id}#comments`}>
             <Button variant="ghost" size="sm" className="flex items-center space-x-1 h-8 px-2">
               <MessageCircle className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{post.commentsCount}</span>
+              <span className="text-muted-foreground">{post.comments_count}</span>
             </Button>
           </Link>
         </div>

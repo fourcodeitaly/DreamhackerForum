@@ -40,6 +40,12 @@ export const translations = {
     privacyPolicy: "Privacy Policy",
     showPassword: "Show password",
     hidePassword: "Hide password",
+    loginSuccess: "Login successful",
+    welcomeBack: "Welcome back!",
+    registrationSuccess: "Registration successful",
+    accountCreated: "Your account has been created",
+    errorCreatingAccount: "Error creating account",
+    username: "Username",
 
     // Posts
     createPost: "Create Post",
@@ -235,6 +241,12 @@ export const translations = {
     privacyPolicy: "隐私政策",
     showPassword: "显示密码",
     hidePassword: "隐藏密码",
+    loginSuccess: "登录成功",
+    welcomeBack: "欢迎回来！",
+    registrationSuccess: "注册成功",
+    accountCreated: "您的账户已创建",
+    errorCreatingAccount: "创建账户时出错",
+    username: "用户名",
 
     // Posts
     createPost: "创建帖子",
@@ -429,6 +441,12 @@ export const translations = {
     privacyPolicy: "Chính sách bảo mật",
     showPassword: "Hiện mật khẩu",
     hidePassword: "Ẩn mật khẩu",
+    loginSuccess: "Đăng nhập thành công",
+    welcomeBack: "Chào mừng trở lại!",
+    registrationSuccess: "Đăng ký thành công",
+    accountCreated: "Tài khoản của bạn đã được tạo",
+    errorCreatingAccount: "Lỗi khi tạo tài khoản",
+    username: "Tên người dùng",
 
     // Posts
     createPost: "Tạo bài viết",

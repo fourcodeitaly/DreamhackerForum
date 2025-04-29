@@ -24,9 +24,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RichTextEditor } from "@/components/rich-text-editor"
 import { translateText } from "@/lib/translation-service"
 import { useToast } from "@/components/ui/use-toast"
+import { useAuth } from "@/hooks/use-auth"
+import { createPostAction, updatePostAction } from "@/app/actions"
+import type { Post } from "@/lib/db/posts"
 
 interface MultilingualPostFormProps {
-  initialData?: any
+  initialData?: Post
   isEditing?: boolean
 }
 
@@ -34,6 +37,7 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
   const { t } = useTranslation()
   const router = useRouter()
   const { toast } = useToast()
+  const { user } = useAuth()
 
   // Initialize with empty content or existing content if editing
   const [title, setTitle] = useState({
@@ -48,11 +52,11 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
     vi: initialData?.content?.vi || "",
   })
 
-  const [category, setCategory] = useState(initialData?.category || "")
+  const [category, setCategory] = useState(initialData?.category_id || "")
   const [tags, setTags] = useState<string[]>(initialData?.tags || [])
   const [currentTag, setCurrentTag] = useState("")
   const [image, setImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image || null)
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image_url || null)
   const [isLoading, setIsLoading] = useState(false)
   const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">("en")
   const [isTranslating, setIsTranslating] = useState(false)
@@ -138,6 +142,16 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!user) {
+      toast({
+        title: t("error"),
+        description: t("mustBeLoggedIn"),
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
 
     // Validate that at least English content is provided
@@ -152,25 +166,63 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
     }
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // In a real app, you would send the data to your API
-      const postData = {
-        title,
-        content,
-        category,
-        tags,
-        image: imagePreview,
-        // Other fields like author, createdAt, etc. would be handled by the backend
+      // Generate excerpt from content
+      const excerpt = {
+        en: content.en.substring(0, 150).replace(/<[^>]*>/g, ""),
+        zh: content.zh ? content.zh.substring(0, 150).replace(/<[^>]*>/g, "") : undefined,
+        vi: content.vi ? content.vi.substring(0, 150).replace(/<[^>]*>/g, "") : undefined,
       }
 
-      console.log("Submitting post data:", postData)
+      if (isEditing && initialData) {
+        // Update existing post
+        const result = await updatePostAction(initialData.id, {
+          title,
+          content,
+          categoryId: category,
+          tags,
+          imageUrl: imagePreview,
+        })
 
-      // Redirect to home page after successful post creation/edit
-      router.push("/")
+        if (result.success) {
+          toast({
+            title: t("success"),
+            description: t("postUpdated"),
+          })
+          router.push(`/posts/${result.post.id}`)
+        } else {
+          toast({
+            title: t("error"),
+            description: result.message || t("errorUpdatingPost"),
+            variant: "destructive",
+          })
+        }
+      } else {
+        // Create new post
+        const result = await createPostAction({
+          userId: user.id,
+          title,
+          content,
+          categoryId: category,
+          tags,
+          imageUrl: imagePreview,
+        })
+
+        if (result.success) {
+          toast({
+            title: t("success"),
+            description: t("postCreated"),
+          })
+          router.push(`/posts/${result.post.id}`)
+        } else {
+          toast({
+            title: t("error"),
+            description: result.message || t("errorCreatingPost"),
+            variant: "destructive",
+          })
+        }
+      }
     } catch (error) {
-      console.error("Error creating/editing post:", error)
+      console.error("Error submitting post:", error)
       toast({
         title: t("error"),
         description: isEditing ? t("errorEditingPost") : t("errorCreatingPost"),
@@ -317,7 +369,7 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
                     )}
                   </Button>
                 )}
-                {activeLanguage !== "vi" && activeLanguage !== "en" && (
+                {activeLanguage !== "vi" && (
                   <Button
                     type="button"
                     variant="outline"
