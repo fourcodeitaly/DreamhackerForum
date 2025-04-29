@@ -1,33 +1,31 @@
-import { createServerSupabaseClient } from "./supabase";
+import { createServerSupabaseClient } from "./supabase"
 
 export async function seedAdminUser() {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerSupabaseClient()
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return null;
+    console.error("Supabase client not available")
+    return null
   }
 
   try {
     // Check if admin user already exists
-    const { data: existingUser } = await supabase.auth.admin.getUserByEmail(
-      "admin@example.com"
-    );
+    const { data: existingUser } = await supabase.auth.admin.getUserByEmail("admin@example.com")
 
     if (existingUser?.user) {
-      console.log("Admin user already exists");
+      console.log("Admin user already exists")
 
       // Ensure the user has admin role
       const { error: updateError } = await supabase
         .from("users")
         .update({ role: "admin" })
-        .eq("id", existingUser.user.id);
+        .eq("id", existingUser.user.id)
 
       if (updateError) {
-        console.error("Error updating admin role:", updateError);
+        console.error("Error updating admin role:", updateError)
       }
 
-      return existingUser.user;
+      return existingUser.user
     }
 
     // Create admin user in auth
@@ -39,29 +37,26 @@ export async function seedAdminUser() {
         name: "Admin User",
         username: "admin",
       },
-    });
+    })
 
     if (error) {
-      console.error("Error creating admin user:", error);
-      return null;
+      console.error("Error creating admin user:", error)
+      return null
     }
 
     // Update user role to admin
     if (data.user) {
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ role: "admin" })
-        .eq("id", data.user.id);
+      const { error: updateError } = await supabase.from("users").update({ role: "admin" }).eq("id", data.user.id)
 
       if (updateError) {
-        console.error("Error updating admin role:", updateError);
+        console.error("Error updating admin role:", updateError)
       }
     }
 
-    console.log("Admin user created successfully");
-    return data.user;
+    console.log("Admin user created successfully")
+    return data.user
   } catch (error) {
-    console.error("Error seeding admin user:", error);
-    return null;
+    console.error("Error seeding admin user:", error)
+    return null
   }
 }

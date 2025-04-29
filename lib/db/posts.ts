@@ -1,47 +1,43 @@
-import { createServerSupabaseClient } from "../supabase";
-import type { User } from "./users";
+import { createServerSupabaseClient } from "../supabase"
+import type { User } from "./users"
 
 export type MultilingualContent = {
-  en: string;
-  zh?: string;
-  vi?: string;
-};
+  en: string
+  zh?: string
+  vi?: string
+}
 
 export type Post = {
-  id: string;
-  user_id: string;
-  category_id?: string;
-  title: MultilingualContent;
-  content: MultilingualContent;
-  excerpt: MultilingualContent | null;
-  image_url: string | null;
-  is_pinned: boolean;
-  created_at: string;
-  updated_at: string;
+  id: string
+  user_id: string
+  category_id?: string
+  title: MultilingualContent
+  content: MultilingualContent
+  excerpt: MultilingualContent | null
+  image_url: string | null
+  is_pinned: boolean
+  created_at: string
+  updated_at: string
   // Joined fields
-  author: User | null;
-  tags: string[] | null;
-  likes_count: number | null;
-  comments_count: number | null;
-};
+  author: User | null
+  tags: string[] | null
+  likes_count: number | null
+  comments_count: number | null
+}
 
 export async function getPostById(id: string): Promise<Post | null> {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerSupabaseClient()
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return null;
+    console.error("Supabase client not available")
+    return null
   }
 
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data, error } = await supabase.from("posts").select("*").eq("id", id).single()
 
   if (error) {
-    console.error("Error fetching post:", error);
-    return null;
+    console.error("Error fetching post:", error)
+    return null
   }
 
   // Get post author
@@ -49,25 +45,22 @@ export async function getPostById(id: string): Promise<Post | null> {
     .from("users")
     .select("*")
     .eq("id", data.user_id as string)
-    .single();
+    .single()
 
   // Get post tags
-  const { data: tagsData } = await supabase
-    .from("post_tags")
-    .select("tags(name)")
-    .eq("post_id", id);
+  const { data: tagsData } = await supabase.from("post_tags").select("tags(name)").eq("post_id", id)
 
   // Get likes count
   const { count: likesCount } = await supabase
     .from("post_likes")
     .select("*", { count: "exact", head: true })
-    .eq("post_id", id);
+    .eq("post_id", id)
 
   // Get comments count
   const { count: commentsCount } = await supabase
     .from("comments")
     .select("*", { count: "exact", head: true })
-    .eq("post_id", id);
+    .eq("post_id", id)
 
   return {
     ...data,
@@ -75,21 +68,17 @@ export async function getPostById(id: string): Promise<Post | null> {
     tags: tagsData?.map((tag) => tag.tags.name) || [],
     likes_count: likesCount || 0,
     comments_count: commentsCount || 0,
-  } as Post;
+  } as Post
 }
 
-export async function getPosts(
-  page = 1,
-  limit = 10,
-  category_id?: string
-): Promise<Post[]> {
-  const supabase = createServerSupabaseClient();
+export async function getPosts(page = 1, limit = 10, category_id?: string): Promise<Post[]> {
+  const supabase = createServerSupabaseClient()
 
-  const offset = (page - 1) * limit;
+  const offset = (page - 1) * limit
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return [];
+    console.error("Supabase client not available")
+    return []
   }
 
   let query = supabase
@@ -97,17 +86,17 @@ export async function getPosts(
     .select("*")
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
+    .range(offset, offset + limit - 1)
 
   if (category_id) {
-    query = query.eq("category_id", category_id);
+    query = query.eq("category_id", category_id)
   }
 
-  const { data, error } = await query;
+  const { data, error } = await query
 
   if (error) {
-    console.error("Error fetching posts:", error);
-    return [];
+    console.error("Error fetching posts:", error)
+    return []
   }
 
   // Get additional data for each post
@@ -118,25 +107,25 @@ export async function getPosts(
         .from("users")
         .select("*")
         .eq("id", post.user_id as string)
-        .single();
+        .single()
 
       // Get post tags
       const { data: tagsData } = await supabase
         .from("post_tags")
         .select("tags(name)")
-        .eq("post_id", post.id as string);
+        .eq("post_id", post.id as string)
 
       // Get likes count
       const { count: likesCount } = await supabase
         .from("post_likes")
         .select("*", { count: "exact", head: true })
-        .eq("post_id", post.id as string);
+        .eq("post_id", post.id as string)
 
       // Get comments count
       const { count: commentsCount } = await supabase
         .from("comments")
         .select("*", { count: "exact", head: true })
-        .eq("post_id", post.id as string);
+        .eq("post_id", post.id as string)
 
       return {
         ...post,
@@ -144,21 +133,19 @@ export async function getPosts(
         tags: tagsData?.map((tag) => tag.tags.name) || [],
         likes_count: likesCount || 0,
         comments_count: commentsCount || 0,
-      };
-    })
-  );
+      }
+    }),
+  )
 
-  return postsWithDetails as Post[];
+  return postsWithDetails as Post[]
 }
 
-export async function createPost(
-  postData: Omit<Post, "id" | "created_at" | "updated_at">
-): Promise<Post | null> {
-  const supabase = createServerSupabaseClient();
+export async function createPost(postData: Omit<Post, "id" | "created_at" | "updated_at">): Promise<Post | null> {
+  const supabase = createServerSupabaseClient()
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return null;
+    console.error("Supabase client not available")
+    return null
   }
 
   // Insert post
@@ -176,58 +163,49 @@ export async function createPost(
       },
     ])
     .select()
-    .single();
+    .single()
 
   if (error) {
-    console.error("Error creating post:", error);
-    return null;
+    console.error("Error creating post:", error)
+    return null
   }
 
   // Insert tags if provided
   if (postData.tags && postData.tags.length > 0) {
     for (const tagName of postData.tags) {
       // First check if tag exists
-      let tagId: number;
+      let tagId: number
 
-      const { data: existingTag } = await supabase
-        .from("tags")
-        .select("id")
-        .eq("name", tagName)
-        .single();
+      const { data: existingTag } = await supabase.from("tags").select("id").eq("name", tagName).single()
 
       if (existingTag) {
-        tagId = existingTag.id as number;
+        tagId = existingTag.id as number
       } else {
         // Create new tag
         const { data: newTag } = await supabase
           .from("tags")
           .insert([{ name: tagName }])
           .select()
-          .single();
+          .single()
 
-        if (!newTag) continue;
-        tagId = newTag.id as number;
+        if (!newTag) continue
+        tagId = newTag.id as number
       }
 
       // Link tag to post
-      await supabase
-        .from("post_tags")
-        .insert([{ post_id: data.id, tag_id: tagId }]);
+      await supabase.from("post_tags").insert([{ post_id: data.id, tag_id: tagId }])
     }
   }
 
-  return getPostById(data.id as string);
+  return getPostById(data.id as string)
 }
 
-export async function updatePost(
-  id: string,
-  postData: Partial<Post>
-): Promise<Post | null> {
-  const supabase = createServerSupabaseClient();
+export async function updatePost(id: string, postData: Partial<Post>): Promise<Post | null> {
+  const supabase = createServerSupabaseClient()
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return null;
+    console.error("Supabase client not available")
+    return null
   }
 
   // Update post
@@ -239,47 +217,43 @@ export async function updatePost(
     })
     .eq("id", id)
     .select()
-    .single();
+    .single()
 
   if (error) {
-    console.error("Error updating post:", error);
-    return null;
+    console.error("Error updating post:", error)
+    return null
   }
 
   // Update tags if provided
   if (postData.tags) {
     // First remove existing tags
-    await supabase.from("post_tags").delete().eq("post_id", id);
+    await supabase.from("post_tags").delete().eq("post_id", id)
 
     // Then add new tags
     for (const tagName of postData.tags) {
       // Check if tag exists
-      let tagId: number;
+      let tagId: number
 
-      const { data: existingTag } = await supabase
-        .from("tags")
-        .select("id")
-        .eq("name", tagName)
-        .single();
+      const { data: existingTag } = await supabase.from("tags").select("id").eq("name", tagName).single()
 
       if (existingTag) {
-        tagId = existingTag.id as number;
+        tagId = existingTag.id as number
       } else {
         // Create new tag
         const { data: newTag } = await supabase
           .from("tags")
           .insert([{ name: tagName }])
           .select()
-          .single();
+          .single()
 
-        if (!newTag) continue;
-        tagId = newTag.id as number;
+        if (!newTag) continue
+        tagId = newTag.id as number
       }
 
       // Link tag to post
-      await supabase.from("post_tags").insert([{ post_id: id, tag_id: tagId }]);
+      await supabase.from("post_tags").insert([{ post_id: id, tag_id: tagId }])
     }
   }
 
-  return getPostById(id);
+  return getPostById(id)
 }

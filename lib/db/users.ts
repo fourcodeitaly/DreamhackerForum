@@ -1,75 +1,62 @@
-import { createServerSupabaseClient } from "../supabase";
+import { createServerSupabaseClient } from "../supabase"
 
-export type UserRole = "user" | "admin";
+export type UserRole = "user" | "admin"
 
 export type User = {
-  id: string;
-  username: string;
-  email: string;
-  name: string;
-  image_url?: string;
-  bio?: string;
-  location?: string;
-  role?: UserRole;
-  joined_at: string;
-  updated_at: string;
-};
+  id: string
+  username: string
+  email: string
+  name: string
+  image_url?: string
+  bio?: string
+  location?: string
+  role?: UserRole
+  joined_at: string
+  updated_at: string
+}
 
 export async function getUserById(id: string): Promise<User | null> {
-  const supabase = createServerSupabaseClient();
+  const supabase = createServerSupabaseClient()
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return null;
+    console.error("Supabase client not available")
+    return null
   }
 
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data, error } = await supabase.from("users").select("*").eq("id", id).single()
 
   if (error) {
-    console.error("Error fetching user:", error);
-    return null;
+    console.error("Error fetching user:", error)
+    return null
   }
 
-  return data as User;
+  return data as User
 }
 
-export async function getUserByUsername(
-  username: string
-): Promise<User | null> {
-  const supabase = createServerSupabaseClient();
+export async function getUserByUsername(username: string): Promise<User | null> {
+  const supabase = createServerSupabaseClient()
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return null;
+    console.error("Supabase client not available")
+    return null
   }
 
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("username", username)
-    .single();
+  const { data, error } = await supabase.from("users").select("*").eq("username", username).single()
 
   if (error) {
-    console.error("Error fetching user by username:", error);
-    return null;
+    console.error("Error fetching user by username:", error)
+    return null
   }
 
-  return data as User;
+  return data as User
 }
 
-export async function updateUser(
-  id: string,
-  userData: Partial<User>
-): Promise<User | null> {
-  const supabase = createServerSupabaseClient();
+export async function updateUser(id: string, userData: Partial<User>): Promise<User | null> {
+  const supabase = createServerSupabaseClient()
 
   if (!supabase) {
-    console.error("Supabase client not available");
-    return null;
+    console.error("Supabase client not available")
+    return null
   }
 
   const { data, error } = await supabase
@@ -77,17 +64,17 @@ export async function updateUser(
     .update({ ...userData, updated_at: new Date().toISOString() })
     .eq("id", id)
     .select()
-    .single();
+    .single()
 
   if (error) {
-    console.error("Error updating user:", error);
-    return null;
+    console.error("Error updating user:", error)
+    return null
   }
 
-  return data as User;
+  return data as User
 }
 
 export async function isUserAdmin(userId: string): Promise<boolean> {
-  const user = await getUserById(userId);
-  return user?.role === "admin";
+  const user = await getUserById(userId)
+  return user?.role === "admin"
 }
