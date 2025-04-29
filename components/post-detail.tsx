@@ -25,7 +25,7 @@ export function PostDetail({ post }: PostDetailProps) {
   const [liked, setLiked] = useState(post.liked || false)
   const [likesCount, setLikesCount] = useState(post.likesCount || 0)
   const [saved, setSaved] = useState(post.saved || false)
-  const [currentLanguage, setCurrentLanguage] = useState(language)
+  const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">(language)
 
   // Handle multilingual content
   const getLocalizedContent = () => {
@@ -124,7 +124,10 @@ export function PostDetail({ post }: PostDetailProps) {
           )}
         </div>
 
-        <PostLanguageSwitcher onLanguageChange={(lang) => setCurrentLanguage(lang as "en" | "zh" | "vi")} />
+        <PostLanguageSwitcher
+          onLanguageChange={(lang) => setCurrentLanguage(lang as "en" | "zh" | "vi")}
+          currentLanguage={currentLanguage}
+        />
 
         <h1 className="text-3xl font-bold mb-3">{getLocalizedTitle()}</h1>
 

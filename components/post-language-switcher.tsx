@@ -10,14 +10,14 @@ interface PostLanguageSwitcherProps {
 }
 
 export function PostLanguageSwitcher({ onLanguageChange, currentLanguage }: PostLanguageSwitcherProps) {
-  const { language, setLanguage } = useLanguage()
+  const { language } = useLanguage()
   const { t } = useTranslation()
 
   // Use provided currentLanguage or fall back to the global language setting
   const activeLang = currentLanguage || language
 
   const handleLanguageChange = (newLanguage: "en" | "zh" | "vi") => {
-    setLanguage(newLanguage)
+    // Only call the onLanguageChange prop without changing the global language
     if (onLanguageChange) {
       onLanguageChange(newLanguage)
     }

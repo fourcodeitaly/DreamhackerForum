@@ -377,21 +377,93 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
             </div>
 
             <Tabs value={activeLanguage} onValueChange={(value) => setActiveLanguage(value as "en" | "zh" | "vi")}>
-              <TabsContent value="en" className="mt-0">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="en">English</TabsTrigger>
+                <TabsTrigger value="zh">中文</TabsTrigger>
+                <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
+              </TabsList>
+
+              <div className="mt-2 flex justify-end space-x-2">
+                {activeLanguage !== "en" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleTranslate("en", activeLanguage)}
+                    disabled={isTranslating}
+                  >
+                    {isTranslating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("translating")}
+                      </>
+                    ) : (
+                      <>
+                        <Languages className="mr-2 h-4 w-4" />
+                        {t("translateFromEnglish")}
+                      </>
+                    )}
+                  </Button>
+                )}
+                {activeLanguage !== "zh" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleTranslate("zh", activeLanguage)}
+                    disabled={isTranslating}
+                  >
+                    {isTranslating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("translating")}
+                      </>
+                    ) : (
+                      <>
+                        <Languages className="mr-2 h-4 w-4" />
+                        {t("translateFromChinese")}
+                      </>
+                    )}
+                  </Button>
+                )}
+                {activeLanguage !== "vi" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleTranslate("vi", activeLanguage)}
+                    disabled={isTranslating}
+                  >
+                    {isTranslating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("translating")}
+                      </>
+                    ) : (
+                      <>
+                        <Languages className="mr-2 h-4 w-4" />
+                        {t("translateFromVietnamese")}
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+
+              <TabsContent value="en" className="mt-2">
                 <RichTextEditor
                   value={content.en}
                   onChange={(value) => handleContentChange("en", value)}
                   placeholder={t("postContentPlaceholderEn")}
                 />
               </TabsContent>
-              <TabsContent value="zh" className="mt-0">
+              <TabsContent value="zh" className="mt-2">
                 <RichTextEditor
                   value={content.zh}
                   onChange={(value) => handleContentChange("zh", value)}
                   placeholder={t("postContentPlaceholderZh")}
                 />
               </TabsContent>
-              <TabsContent value="vi" className="mt-0">
+              <TabsContent value="vi" className="mt-2">
                 <RichTextEditor
                   value={content.vi}
                   onChange={(value) => handleContentChange("vi", value)}

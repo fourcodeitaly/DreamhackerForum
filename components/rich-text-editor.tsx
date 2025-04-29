@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Bold, Italic, List, ListOrdered, LinkIcon, ImageIcon, AlignLeft, AlignCenter, AlignRight } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -16,9 +16,12 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ value, onChange, placeholder = "", className }: RichTextEditorProps) {
   const [editorContent, setEditorContent] = useState(value)
+  const editorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setEditorContent(value)
+    if (editorRef.current && value !== editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = value
+    }
   }, [value])
 
   const handleContentChange = (e: React.FormEvent<HTMLDivElement>) => {
@@ -29,9 +32,8 @@ export function RichTextEditor({ value, onChange, placeholder = "", className }:
 
   const execCommand = (command: string, value: string | null = null) => {
     document.execCommand(command, false, value)
-    const editor = document.getElementById("rich-text-editor")
-    if (editor) {
-      const content = editor.innerHTML
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML
       setEditorContent(content)
       onChange(content)
     }
@@ -133,10 +135,9 @@ export function RichTextEditor({ value, onChange, placeholder = "", className }:
         </Button>
       </div>
       <div
-        id="rich-text-editor"
+        ref={editorRef}
         className="min-h-[200px] p-3 outline-none overflow-auto"
         contentEditable
-        dangerouslySetInnerHTML={{ __html: editorContent }}
         onInput={handleContentChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
