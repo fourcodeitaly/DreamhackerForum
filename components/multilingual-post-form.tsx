@@ -181,6 +181,9 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
           categoryId: category,
           tags,
           imageUrl: imagePreview,
+        }).catch((error) => {
+          console.error("Error updating post:", error)
+          return { success: false, message: "Error updating post" }
         })
 
         if (result.success) {
@@ -205,6 +208,9 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
           categoryId: category,
           tags,
           imageUrl: imagePreview,
+        }).catch((error) => {
+          console.error("Error creating post:", error)
+          return { success: false, message: "Error creating post" }
         })
 
         if (result.success) {

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { PostCard } from "@/components/post-card"
 import { Button } from "@/components/ui/button"
 import { useTranslation } from "@/hooks/use-translation"
-import { getPosts } from "@/lib/db/posts"
+import { getPosts } from "@/lib/data-utils"
 import type { Post } from "@/lib/db/posts"
 
 interface PostListProps {

@@ -2,11 +2,11 @@ import { PostDetail } from "@/components/post-detail"
 import { CommentSection } from "@/components/comment-section"
 import { RelatedPosts } from "@/components/related-posts"
 import { BackButton } from "@/components/back-button"
-import { getMockPostById } from "@/lib/mock-data"
+import { getPostById } from "@/lib/data-utils"
 import { notFound } from "next/navigation"
 
-export default function PostPage({ params }: { params: { id: string } }) {
-  const post = getMockPostById(params.id)
+export default async function PostPage({ params }: { params: { id: string } }) {
+  const post = await getPostById(params.id)
 
   if (!post) {
     notFound()

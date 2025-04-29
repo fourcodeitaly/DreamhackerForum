@@ -13,16 +13,21 @@ import { useLanguage } from "@/hooks/use-language"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { likePostAction, savePostAction } from "@/app/actions"
+import { normalizePostData } from "@/lib/data-utils"
 import type { Post } from "@/lib/db/posts"
 
 interface PostCardProps {
   post: Post
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post: rawPost }: PostCardProps) {
   const { t } = useTranslation()
   const { language } = useLanguage()
   const { user } = useAuth()
+
+  // Normalize post data to ensure consistent structure
+  const post = normalizePostData(rawPost)
+
   const [liked, setLiked] = useState(post.liked || false)
   const [likesCount, setLikesCount] = useState(post.likes_count || 0)
   const [saved, setSaved] = useState(post.saved || false)

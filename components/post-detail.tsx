@@ -13,17 +13,22 @@ import { useLanguage } from "@/hooks/use-language"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { PostLanguageSwitcher } from "@/components/post-language-switcher"
+import { normalizePostData } from "@/lib/data-utils"
 
 interface PostDetailProps {
   post: any
 }
 
-export function PostDetail({ post }: PostDetailProps) {
+export function PostDetail({ post: rawPost }: PostDetailProps) {
   const { t } = useTranslation()
   const { language } = useLanguage()
   const { user } = useAuth()
+
+  // Normalize post data to ensure consistent structure
+  const post = normalizePostData(rawPost)
+
   const [liked, setLiked] = useState(post.liked || false)
-  const [likesCount, setLikesCount] = useState(post.likesCount || 0)
+  const [likesCount, setLikesCount] = useState(post.likes_count || 0)
   const [saved, setSaved] = useState(post.saved || false)
   const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">(language)
 

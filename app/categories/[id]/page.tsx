@@ -4,11 +4,11 @@ import { CategorySidebar } from "@/components/category-sidebar"
 import { SearchBar } from "@/components/search-bar"
 import { Suspense } from "react"
 import { PostListSkeleton } from "@/components/skeletons"
-import { getMockPostsByCategory } from "@/lib/mock-data"
+import { getPostsByCategory } from "@/lib/data-utils"
 
-export default function CategoryPage({ params }: { params: { id: string } }) {
+export default async function CategoryPage({ params }: { params: { id: string } }) {
   const categoryId = params.id
-  const posts = getMockPostsByCategory(categoryId)
+  const posts = await getPostsByCategory(categoryId)
 
   return (
     <div className="container mx-auto px-4 py-8">
