@@ -6,7 +6,7 @@ import { RelatedPosts } from "@/components/related-posts";
 import { BackButton } from "@/components/back-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPostById } from "@/lib/data-utils";
-import { createUniversalSupabaseClient } from "@/lib/supabase";
+import { createServerSupabaseClient } from "@/lib/supabase";
 
 interface PostPageProps {
   params: {
@@ -26,7 +26,7 @@ export default async function PostPage({ params }: PostPageProps) {
     }
 
     // Create Supabase client
-    const supabase = createUniversalSupabaseClient();
+    const supabase = createServerSupabaseClient();
 
     // Initialize with empty arrays in case Supabase client is null
     let comments = [];
@@ -46,7 +46,7 @@ export default async function PostPage({ params }: PostPageProps) {
         .eq("post_id", id)
         .order("created_at", { ascending: false });
 
-      comments = commentsData;
+      comments = commentsData || [];
 
       // Fetch related posts if we have a category ID
       if (post.category_id) {
@@ -57,7 +57,7 @@ export default async function PostPage({ params }: PostPageProps) {
           .neq("id", post.id)
           .limit(3);
 
-        relatedPosts = relatedPostsData;
+        relatedPosts = relatedPostsData || [];
       }
 
       // Add likes count to comments
