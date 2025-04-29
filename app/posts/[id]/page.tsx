@@ -5,7 +5,8 @@ import { CommentSection } from "@/components/comment-section"
 import { RelatedPosts } from "@/components/related-posts"
 import { BackButton } from "@/components/back-button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { createServerSupabaseClient } from "@/lib/supabase"
+import { getPostById, getCommentsByPostId, getRelatedPosts } from "@/lib/data-utils"
+import { hasSupabaseCredentials } from "@/lib/supabase"
 
 interface PostPageProps {
   params: {
@@ -15,76 +16,26 @@ interface PostPageProps {
 
 export default async function PostPage({ params }: PostPageProps) {
   try {
-    // Create server-specific Supabase client
-    const supabase = createServerSupabaseClient()
+    // Check if we have Supabase credentials
+    const hasCredentials = hasSupabaseCredentials()
 
-    if (!supabase) {
-      throw new Error("Failed to create Supabase client")
+    if (!hasCredentials) {
+      console.warn("Supabase credentials not available, using mock data fallback")
     }
 
-    // Fetch post data on the server
-    const { data: post, error: postError } = await supabase
-      .from("posts")
-      .select(`
-        *,
-        user:user_id (id, name, username, image_url),
-        category:category_id (id, name)
-      `)
-      .eq("id", params.id)
-      .single()
+    // Get the post using the data-utils function which has its own error handling
+    const post = await getPostById(params.id)
 
-    if (postError || !post) {
-      console.error("Error fetching post:", postError)
+    if (!post) {
+      console.error("Post not found:", params.id)
       notFound()
     }
 
-    // Fetch comments
-    const { data: comments = [] } = await supabase
-      .from("comments")
-      .select(`
-        *,
-        user:user_id(id, name, username, image_url)
-      `)
-      .eq("post_id", params.id)
-      .order("created_at", { ascending: false })
+    // Get comments for this post
+    const comments = await getCommentsByPostId(params.id)
 
-    // Add likes count to comments
-    const commentsWithLikes = await Promise.all(
-      comments.map(async (comment) => {
-        try {
-          const { count } = await supabase
-            .from("comment_likes")
-            .select("*", { count: "exact", head: true })
-            .eq("comment_id", comment.id)
-
-          return {
-            ...comment,
-            likesCount: count || 0,
-            liked: false, // Default to false, will be updated on client if user is logged in
-          }
-        } catch (error) {
-          console.error("Error fetching comment likes:", error)
-          return {
-            ...comment,
-            likesCount: 0,
-            liked: false,
-          }
-        }
-      }),
-    )
-
-    // Fetch related posts
-    let relatedPosts = []
-    if (post.category_id) {
-      const { data: relatedPostsData = [] } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("category_id", post.category_id)
-        .neq("id", post.id)
-        .limit(3)
-
-      relatedPosts = relatedPostsData
-    }
+    // Get related posts
+    const relatedPosts = await getRelatedPosts(params.id, post.category_id)
 
     return (
       <div className="container max-w-4xl py-8">
@@ -95,7 +46,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <PostDetail post={post} />
 
         <div className="mt-8">
-          <CommentSection postId={params.id} initialComments={commentsWithLikes} />
+          <CommentSection postId={params.id} initialComments={comments} />
         </div>
 
         <div className="mt-12">
