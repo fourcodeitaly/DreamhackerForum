@@ -49,7 +49,8 @@ export async function getPosts(page = 1, limit = 10, categoryId?: string): Promi
 // Helper function to get post by ID with no fallback to mock data
 export async function getPostById(id: string): Promise<Post | null> {
   try {
-    const supabase = createUniversalSupabaseClient()
+    const { createServerSupabaseClient } = await import("./supabase")
+    const supabase = createServerSupabaseClient()
     if (!supabase) {
       console.error("Failed to create Supabase client in getPostById")
       return null
