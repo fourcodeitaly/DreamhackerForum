@@ -54,6 +54,7 @@ export function RegisterForm() {
     setIsLoading(true)
 
     try {
+      // The register function now relies on the database trigger to create the user profile
       await register({ name, username, email, password })
       router.push("/")
       toast({
@@ -61,6 +62,7 @@ export function RegisterForm() {
         description: t("accountCreated"),
       })
     } catch (err: any) {
+      console.error("Registration error:", err)
       toast({
         title: t("registrationError"),
         description: err.message || t("errorCreatingAccount"),

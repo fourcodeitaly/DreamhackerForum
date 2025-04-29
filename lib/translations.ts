@@ -54,6 +54,7 @@ export const translations = {
     emailSent: "Email sent",
     confirmationEmailResent: "Confirmation email has been resent to your inbox.",
     errorResendingEmail: "Error resending confirmation email. Please try again.",
+    loading: "Loading...",
 
     // Auth status
     admin: "Admin",
@@ -321,6 +322,7 @@ export const translations = {
     errorEditingPost: "编辑帖子时出错",
     postNotFound: "未找到帖子",
     postNotFoundDescription: "您要查找的帖子不存在或已被删除。",
+    loading: "加载中...",
 
     // Categories
     categories: "类别",
@@ -533,6 +535,7 @@ export const translations = {
     errorEditingPost: "Lỗi khi chỉnh sửa bài viết",
     postNotFound: "Không tìm thấy bài viết",
     postNotFoundDescription: "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    loading: "Đang tải...",
 
     // Categories
     categories: "Danh mục",

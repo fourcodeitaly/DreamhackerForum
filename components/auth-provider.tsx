@@ -28,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        setIsLoading(true)
         // Always use the client Supabase client on the client side
         const supabase = createSafeClientSupabaseClient()
 
@@ -45,12 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (session) {
           try {
-            // Get user profile from the users table
+            // Get user profile from the users table - this will now use the synced UUID
             const { data: userData } = await supabase.from("users").select("*").eq("id", session.user.id).single()
 
             if (userData) {
               setUser(userData as User)
             } else {
+              console.warn("User authenticated but no profile found in users table")
               setUser(null)
             }
           } catch (error) {
@@ -65,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log("Auth state changed:", event, session?.user?.id)
           if (session) {
             try {
               // Get user profile from the users table
@@ -73,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               if (userData) {
                 setUser(userData as User)
               } else {
+                console.warn("Auth state changed but no profile found in users table")
                 setUser(null)
               }
             } catch (error) {
@@ -114,6 +118,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       throw error
     }
+
+    // Explicitly fetch and set the user after successful login
+    if (data.user) {
+      try {
+        const { data: userData } = await supabase.from("users").select("*").eq("id", data.user.id).single()
+
+        if (userData) {
+          setUser(userData as User)
+        } else {
+          console.warn("Login successful but no profile found in users table")
+        }
+      } catch (fetchError) {
+        console.error("Error fetching user data after login:", fetchError)
+      }
+    }
+
+    return data
   }
 
   const register = async (userData: { email: string; password: string; name: string; username: string }) => {
@@ -123,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("Supabase client not available")
     }
 
-    // Register with Supabase Auth
+    // Register with Supabase Auth - the trigger will automatically create the user in the users table
     const { data, error } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
@@ -139,22 +160,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw error
     }
 
-    if (data.user) {
-      // Create user profile in the users table
-      const { error: profileError } = await supabase.from("users").insert([
-        {
-          id: data.user.id,
-          email: userData.email,
-          name: userData.name,
-          username: userData.username,
-          role: "user", // Default role for new users
-        },
-      ])
-
-      if (profileError) {
-        throw profileError
-      }
-    }
+    // No need to manually insert into users table anymore - the trigger handles it
+    // Just return the data
+    return data
   }
 
   const resendConfirmationEmail = async (email: string) => {
@@ -205,7 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
       }}
     >
-      {!isLoading && children}
+      {children}
     </AuthContext.Provider>
   )
 }

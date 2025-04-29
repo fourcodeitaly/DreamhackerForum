@@ -41,19 +41,6 @@ export async function getUserByUsername(username: string): Promise<User | null> 
   return data as User
 }
 
-export async function createUser(userData: Omit<User, "id" | "joined_at" | "updated_at">): Promise<User | null> {
-  const supabase = createServerSupabaseClient()
-
-  const { data, error } = await supabase.from("users").insert([userData]).select().single()
-
-  if (error) {
-    console.error("Error creating user:", error)
-    return null
-  }
-
-  return data as User
-}
-
 export async function updateUser(id: string, userData: Partial<User>): Promise<User | null> {
   const supabase = createServerSupabaseClient()
 

@@ -21,24 +21,33 @@ export function UserNav({ user }: { user: any }) {
   const { logout } = useAuth()
   const { t } = useTranslation()
 
-  const initials = user.name
-    .split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .toUpperCase()
+  // Safely get initials from user name
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+    : "?"
+
+  // Safely get notification count
+  const notificationCount = user?.notifications || 0
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name} />
+            <AvatarImage
+              src={user?.image_url || "/placeholder.svg?height=40&width=40&query=user"}
+              alt={user?.name || "User"}
+            />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          {user.notifications > 0 && (
+          {notificationCount > 0 && (
             <span className="absolute -top-1 -right-1">
               <Badge variant="destructive" className="h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                {user.notifications}
+                {notificationCount}
               </Badge>
             </span>
           )}
@@ -47,14 +56,14 @@ export function UserNav({ user }: { user: any }) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            <p className="text-sm font-medium leading-none">{user?.name || "User"}</p>
+            <p className="text-xs leading-none text-muted-foreground">{user?.email || ""}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={`/profile/${user.username}`} className="cursor-pointer">
+            <Link href={`/profile/${user?.username || ""}`} className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
               <span>{t("profile")}</span>
             </Link>
@@ -63,9 +72,9 @@ export function UserNav({ user }: { user: any }) {
             <Link href="/notifications" className="cursor-pointer">
               <Bell className="mr-2 h-4 w-4" />
               <span>{t("notifications")}</span>
-              {user.notifications > 0 && (
+              {notificationCount > 0 && (
                 <Badge variant="destructive" className="ml-auto">
-                  {user.notifications}
+                  {notificationCount}
                 </Badge>
               )}
             </Link>
