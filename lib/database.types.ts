@@ -227,6 +227,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_pinned: boolean | null
+          original_link: string | null
           title: Json
           updated_at: string | null
           user_id: string
@@ -239,6 +240,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_pinned?: boolean | null
+          original_link?: string | null
           title: Json
           updated_at?: string | null
           user_id: string
@@ -251,6 +253,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_pinned?: boolean | null
+          original_link?: string | null
           title?: Json
           updated_at?: string | null
           user_id?: string
