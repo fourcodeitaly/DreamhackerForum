@@ -1,18 +1,33 @@
-export async function getUserFromSession(supabase) {
-  try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
+import { createServerSupabaseClient } from "./supabase/server";
 
-    if (!session?.user) {
-      return null
+export async function getUserFromSession() {
+  try {
+    const supabase = await createServerSupabaseClient();
+
+    if (!supabase) {
+      return null;
     }
 
-    const { data: user } = await supabase.from("users").select("*").eq("id", session.user.id).single()
+    // const test = await supabase.auth.getUserIdentities();
+    // console.log("test", test);
 
-    return user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return null;
+    }
+
+    const { data: userData } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    return userData;
   } catch (error) {
-    console.error("Error getting user from session:", error)
-    return null
+    console.error("Error getting user from session:", error);
+    return null;
   }
 }

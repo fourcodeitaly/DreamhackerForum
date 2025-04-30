@@ -1,66 +1,78 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { createServerSupabaseClient } from "./supabase"
-import { getUserById } from "./db/users"
+import { type NextRequest, NextResponse } from "next/server";
+import { createServerSupabaseClient } from "./supabase/server";
+import { getUserById } from "./db/users";
 
 export async function getAuthenticatedUser(req: NextRequest) {
-  const supabase = createServerSupabaseClient()
+  const supabase = await createServerSupabaseClient();
 
   if (!supabase) {
-    return { user: null, error: "Database connection failed" }
+    return { user: null, error: "Database connection failed" };
   }
 
   try {
     // Get session from cookie
     const {
       data: { session },
-    } = await supabase.auth.getSession()
+    } = await supabase.auth.getSession();
 
     if (!session?.user) {
-      return { user: null, error: "Not authenticated" }
+      return { user: null, error: "Not authenticated" };
     }
 
     // Get user data from database
-    const user = await getUserById(session.user.id)
+    const user = await getUserById(session.user.id);
 
     if (!user) {
-      return { user: null, error: "User not found" }
+      return { user: null, error: "User not found" };
     }
 
-    return { user, error: null }
+    return { user, error: null };
   } catch (error) {
-    console.error("Authentication error:", error)
-    return { user: null, error: "Authentication error" }
+    console.error("Authentication error:", error);
+    return { user: null, error: "Authentication error" };
   }
 }
 
 export function unauthorizedResponse(message = "Authentication required") {
-  return NextResponse.json({ error: message }, { status: 401 })
+  return NextResponse.json({ error: message }, { status: 401 });
 }
 
 export function forbiddenResponse(message = "Access denied") {
-  return NextResponse.json({ error: message }, { status: 403 })
+  return NextResponse.json({ error: message }, { status: 403 });
 }
 
 export async function requireAuth(req: NextRequest) {
-  const { user, error } = await getAuthenticatedUser(req)
+  const { user, error } = await getAuthenticatedUser(req);
 
   if (!user) {
-    return { authorized: false, user: null, response: unauthorizedResponse(error) }
+    return {
+      authorized: false,
+      user: null,
+      response: unauthorizedResponse(error),
+    };
   }
 
-  return { authorized: true, user, response: null }
+  return { authorized: true, user, response: null };
 }
 
 export async function requireAdmin(req: NextRequest) {
-  const { user, error } = await getAuthenticatedUser(req)
+  const { user, error } = await getAuthenticatedUser(req);
 
   if (!user) {
-    return { authorized: false, user: null, response: unauthorizedResponse(error) }
+    return {
+      authorized: false,
+      user: null,
+      response: unauthorizedResponse(error),
+    };
   }
 
   if (user.role !== "admin") {
-    return { authorized: false, user, response: forbiddenResponse("Admin access required") }
+    return {
+      authorized: false,
+      user,
+      response: forbiddenResponse("Admin access required"),
+    };
   }
 
-  return { authorized: true, user, response: null }
+  return { authorized: true, user, response: null };
 }

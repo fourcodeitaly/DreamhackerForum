@@ -1,24 +1,24 @@
-import { Suspense } from "react"
-import { PostList } from "@/components/post-list"
-import { SortFilter } from "@/components/sort-filter"
-import { CategorySidebar } from "@/components/category-sidebar"
-import { SearchBar } from "@/components/search-bar"
-import { PostListSkeleton } from "@/components/skeletons"
-import { getCategory } from "@/lib/data-utils"
-import { getPosts } from "@/lib/data-utils"
+import { Suspense } from "react";
+import { PostList } from "@/components/post-list";
+import { SortFilter } from "@/components/sort-filter";
+import { CategorySidebar } from "@/components/category-sidebar";
+import { SearchBar } from "@/components/search-bar";
+import { PostListSkeleton } from "@/components/skeletons";
+import { getCategory } from "@/lib/data-utils-supabase";
+import { getPosts } from "@/lib/data-utils-supabase";
 
 interface CategoryPageProps {
   params: {
-    id: string
-  }
+    id: string;
+  };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  const categoryId = params.id
-  const category = await getCategory(categoryId)
-  const initialPosts = await getPosts(1, 10, categoryId)
+  const categoryId = params.id;
+  const category = await getCategory(categoryId);
+  const initialPosts = await getPosts(1, 10, categoryId);
 
-  const categoryName = category?.name?.en || categoryId
+  const categoryName = category?.name?.en || categoryId;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -40,5 +40,5 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

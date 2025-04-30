@@ -1,18 +1,18 @@
-"use server"
+"use server";
 
-import { createSafeServerSupabaseClient } from "@/lib/supabase"
-import { createPost, updatePost } from "@/lib/db/posts"
-import type { MultilingualContent } from "@/lib/db/posts"
-import { revalidatePath } from "next/cache"
+import { createPost, updatePost } from "@/lib/db/posts";
+import type { MultilingualContent } from "@/lib/db/posts";
+import { revalidatePath } from "next/cache";
+import { createClientSupabaseClient } from "@/lib/supabase/client";
 
 export async function createPostAction(formData: {
-  userId: string
-  title: MultilingualContent
-  content: MultilingualContent
-  categoryId?: string
-  tags?: string[]
-  imageUrl?: string
-  isPinned?: boolean
+  userId: string;
+  title: MultilingualContent;
+  content: MultilingualContent;
+  categoryId?: string;
+  tags?: string[];
+  imageUrl?: string;
+  isPinned?: boolean;
 }) {
   try {
     // Create post in the database
@@ -24,32 +24,35 @@ export async function createPostAction(formData: {
       tags: formData.tags,
       image_url: formData.imageUrl,
       is_pinned: formData.isPinned || false,
-    })
+    });
 
     if (!post) {
-      return { success: false, message: "Failed to create post" }
+      return { success: false, message: "Failed to create post" };
     }
 
-    revalidatePath("/")
-    revalidatePath(`/posts/${post.id}`)
+    revalidatePath("/");
+    revalidatePath(`/posts/${post.id}`);
 
-    return { success: true, post }
+    return { success: true, post };
   } catch (error) {
-    console.error("Error creating post:", error)
-    return { success: false, message: "An error occurred while creating the post" }
+    console.error("Error creating post:", error);
+    return {
+      success: false,
+      message: "An error occurred while creating the post",
+    };
   }
 }
 
 export async function updatePostAction(
   postId: string,
   formData: {
-    title?: MultilingualContent
-    content?: MultilingualContent
-    categoryId?: string
-    tags?: string[]
-    imageUrl?: string
-    isPinned?: boolean
-  },
+    title?: MultilingualContent;
+    content?: MultilingualContent;
+    categoryId?: string;
+    tags?: string[];
+    imageUrl?: string;
+    isPinned?: boolean;
+  }
 ) {
   try {
     // Update post in the database
@@ -60,26 +63,29 @@ export async function updatePostAction(
       tags: formData.tags,
       image_url: formData.imageUrl,
       is_pinned: formData.isPinned,
-    })
+    });
 
     if (!post) {
-      return { success: false, message: "Failed to update post" }
+      return { success: false, message: "Failed to update post" };
     }
 
-    revalidatePath("/")
-    revalidatePath(`/posts/${post.id}`)
+    revalidatePath("/");
+    revalidatePath(`/posts/${post.id}`);
 
-    return { success: true, post }
+    return { success: true, post };
   } catch (error) {
-    console.error("Error updating post:", error)
-    return { success: false, message: "An error occurred while updating the post" }
+    console.error("Error updating post:", error);
+    return {
+      success: false,
+      message: "An error occurred while updating the post",
+    };
   }
 }
 
 export async function likePostAction(postId: string, userId: string) {
-  const supabase = createSafeServerSupabaseClient()
+  const supabase = createClientSupabaseClient();
   if (!supabase) {
-    return { success: false, message: "Database connection error" }
+    return { success: false, message: "Database connection error" };
   }
 
   try {
@@ -89,31 +95,37 @@ export async function likePostAction(postId: string, userId: string) {
       .select("*")
       .eq("post_id", postId)
       .eq("user_id", userId)
-      .single()
+      .single();
 
     if (existingLike) {
       // Unlike
-      await supabase.from("post_likes").delete().eq("post_id", postId).eq("user_id", userId)
+      await supabase
+        .from("post_likes")
+        .delete()
+        .eq("post_id", postId)
+        .eq("user_id", userId);
 
-      revalidatePath(`/posts/${postId}`)
-      return { success: true, liked: false }
+      revalidatePath(`/posts/${postId}`);
+      return { success: true, liked: false };
     } else {
       // Like
-      await supabase.from("post_likes").insert([{ post_id: postId, user_id: userId }])
+      await supabase
+        .from("post_likes")
+        .insert([{ post_id: postId, user_id: userId }]);
 
-      revalidatePath(`/posts/${postId}`)
-      return { success: true, liked: true }
+      revalidatePath(`/posts/${postId}`);
+      return { success: true, liked: true };
     }
   } catch (error) {
-    console.error("Error toggling post like:", error)
-    return { success: false, message: "An error occurred" }
+    console.error("Error toggling post like:", error);
+    return { success: false, message: "An error occurred" };
   }
 }
 
 export async function savePostAction(postId: string, userId: string) {
-  const supabase = createSafeServerSupabaseClient()
+  const supabase = createClientSupabaseClient();
   if (!supabase) {
-    return { success: false, message: "Database connection error" }
+    return { success: false, message: "Database connection error" };
   }
 
   try {
@@ -123,21 +135,27 @@ export async function savePostAction(postId: string, userId: string) {
       .select("*")
       .eq("post_id", postId)
       .eq("user_id", userId)
-      .single()
+      .single();
 
     if (existingSave) {
       // Unsave
-      await supabase.from("saved_posts").delete().eq("post_id", postId).eq("user_id", userId)
+      await supabase
+        .from("saved_posts")
+        .delete()
+        .eq("post_id", postId)
+        .eq("user_id", userId);
 
-      return { success: true, saved: false }
+      return { success: true, saved: false };
     } else {
       // Save
-      await supabase.from("saved_posts").insert([{ post_id: postId, user_id: userId }])
+      await supabase
+        .from("saved_posts")
+        .insert([{ post_id: postId, user_id: userId }]);
 
-      return { success: true, saved: true }
+      return { success: true, saved: true };
     }
   } catch (error) {
-    console.error("Error toggling saved post:", error)
-    return { success: false, message: "An error occurred" }
+    console.error("Error toggling saved post:", error);
+    return { success: false, message: "An error occurred" };
   }
 }

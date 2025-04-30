@@ -1,20 +1,22 @@
-import { createServerSupabaseClient } from "./supabase"
+import { createServerSupabaseClient } from "./supabase/server";
 
 export async function seedTestUser() {
-  const supabase = createServerSupabaseClient()
+  const supabase = await createServerSupabaseClient();
 
   if (!supabase) {
-    console.error("Supabase client not available")
-    return null
+    console.error("Supabase client not available");
+    return null;
   }
 
   try {
     // Check if test user already exists
-    const { data: existingUser } = await supabase.auth.admin.getUserByEmail("test@example.com")
+    const { data: existingUser } = await supabase.auth.admin.getUserByEmail(
+      "test@example.com"
+    );
 
     if (existingUser?.user) {
-      console.log("Test user already exists")
-      return existingUser.user
+      console.log("Test user already exists");
+      return existingUser.user;
     }
 
     // Create test user in auth
@@ -26,11 +28,11 @@ export async function seedTestUser() {
         name: "Test User",
         username: "testuser",
       },
-    })
+    });
 
     if (error) {
-      console.error("Error creating test user:", error)
-      return null
+      console.error("Error creating test user:", error);
+      return null;
     }
 
     // Create user profile in users table
@@ -42,17 +44,17 @@ export async function seedTestUser() {
           name: "Test User",
           username: "testuser",
         },
-      ])
+      ]);
 
       if (profileError) {
-        console.error("Error creating user profile:", profileError)
+        console.error("Error creating user profile:", profileError);
       }
     }
 
-    console.log("Test user created successfully")
-    return data.user
+    console.log("Test user created successfully");
+    return data.user;
   } catch (error) {
-    console.error("Error seeding test user:", error)
-    return null
+    console.error("Error seeding test user:", error);
+    return null;
   }
 }

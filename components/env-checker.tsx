@@ -1,32 +1,40 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { hasSupabaseCredentials } from "@/lib/supabase"
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { hasSupabaseCredentials } from "@/lib/supabase/server";
 
 export function EnvChecker() {
-  const [hasCredentials, setHasCredentials] = useState<boolean | null>(null)
+  const [hasCredentials, setHasCredentials] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Check if Supabase credentials are available
     const checkCredentials = async () => {
-      const result = hasSupabaseCredentials()
-      setHasCredentials(result)
-    }
+      const result = hasSupabaseCredentials();
+      setHasCredentials(result);
+    };
 
-    checkCredentials()
-  }, [])
+    checkCredentials();
+  }, []);
 
   if (hasCredentials === null) {
-    return null // Still loading
+    return null; // Still loading
   }
 
   return (
     <Card className="mb-6">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">Environment Status</CardTitle>
-        <CardDescription>Check if required environment variables are available</CardDescription>
+        <CardDescription>
+          Check if required environment variables are available
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
@@ -42,8 +50,9 @@ export function EnvChecker() {
         {!hasCredentials && (
           <div className="mt-4 text-sm text-muted-foreground">
             <p>
-              Supabase environment variables are missing. The application will use mock data instead. To use real data,
-              please set up the following environment variables:
+              Supabase environment variables are missing. The application will
+              use mock data instead. To use real data, please set up the
+              following environment variables:
             </p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>SUPABASE_URL</li>
@@ -55,5 +64,5 @@ export function EnvChecker() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

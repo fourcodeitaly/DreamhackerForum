@@ -1,27 +1,27 @@
-import { Suspense } from "react"
-import { redirect } from "next/navigation"
-import { createServerSupabaseClient } from "@/lib/supabase"
-import { isUserAdmin } from "@/lib/db/users"
-import { AdminUsersList } from "@/components/admin/users-list"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isUserAdmin } from "@/lib/db/users";
+import { AdminUsersList } from "@/components/admin/users-list";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function AdminUsersPage() {
   // Check if user is authenticated and is admin
-  const supabase = createServerSupabaseClient()
+  const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    redirect("/login")
+    redirect("/login");
   }
 
   const {
     data: { session },
-  } = await supabase.auth.getSession()
+  } = await supabase.auth.getSession();
   if (!session) {
-    redirect("/login")
+    redirect("/login");
   }
 
-  const isAdmin = await isUserAdmin(session.user.id)
+  const isAdmin = await isUserAdmin(session.user.id);
   if (!isAdmin) {
-    redirect("/")
+    redirect("/");
   }
 
   return (
@@ -31,5 +31,5 @@ export default async function AdminUsersPage() {
         <AdminUsersList />
       </Suspense>
     </div>
-  )
+  );
 }
