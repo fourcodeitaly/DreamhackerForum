@@ -7,7 +7,8 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const commentId = params.id;
+  const { id } = await params;
+  const commentId = id;
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
@@ -76,7 +77,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const commentId = params.id;
+  const { id } = await params;
+  const commentId = id;
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
@@ -179,7 +181,8 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const commentId = params.id;
+  const { id } = await params;
+  const commentId = id;
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {

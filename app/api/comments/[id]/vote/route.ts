@@ -6,7 +6,9 @@ export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const commentId = params.id;
+  const { id } = await params;
+
+  const commentId = id;
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {

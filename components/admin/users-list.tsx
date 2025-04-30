@@ -65,6 +65,10 @@ export function AdminUsersList() {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
+      if (!supabase) {
+        throw new Error("Supabase client not initialized");
+      }
+
       const { data, error } = await supabase
         .from("users")
         .select("*")
