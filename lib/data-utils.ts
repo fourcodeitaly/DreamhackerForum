@@ -241,3 +241,57 @@ export async function getCategory(categoryId: string): Promise<{ name: { en: str
     return null
   }
 }
+
+// Add this function to your existing data-utils.ts file
+
+export async function getRelatedPostsForServer(postId: string, categoryId?: string | null, limit = 3): Promise<Post[]> {
+  try {
+    const supabase = createUniversalSupabaseClient()
+    if (!supabase) {
+      console.error("Failed to create Supabase client in getRelatedPostsForServer")
+      return []
+    }
+
+    let relatedPosts: Post[] = []
+
+    // First try to get posts from the same category if available
+    if (categoryId) {
+      const { data: categoryPosts } = await supabase
+        .from("posts")
+        .select(`
+          *,
+          user:user_id (id, name, username, image_url),
+          category:category_id (id, name)
+        `)
+        .eq("category_id", categoryId)
+        .neq("id", postId)
+        .limit(limit)
+
+      relatedPosts = (categoryPosts || []) as unknown as Post[]
+    }
+
+    // If we don't have enough posts from the same category, fetch some recent posts
+    if (relatedPosts.length < limit) {
+      const neededPosts = limit - relatedPosts.length
+      const existingIds = [postId, ...relatedPosts.map((p) => p.id)]
+
+      const { data: recentPosts } = await supabase
+        .from("posts")
+        .select(`
+          *,
+          user:user_id (id, name, username, image_url),
+          category:category_id (id, name)
+        `)
+        .not("id", "in", `(${existingIds.join(",")})`)
+        .order("created_at", { ascending: false })
+        .limit(neededPosts)
+
+      relatedPosts = [...relatedPosts, ...(recentPosts || [])] as unknown as Post[]
+    }
+
+    return relatedPosts
+  } catch (error) {
+    console.error("Error fetching related posts:", error)
+    return []
+  }
+}

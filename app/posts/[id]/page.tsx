@@ -48,16 +48,54 @@ export default async function PostPage({ params }: PostPageProps) {
 
       comments = commentsData || []
 
-      // Fetch related posts if we have a category ID
+      // Enhanced related posts fetching
       if (post.category_id) {
-        const { data: relatedPostsData = [] } = await supabase
+        // First try to get posts from the same category
+        const { data: categoryRelatedPosts = [] } = await supabase
           .from("posts")
-          .select("*")
+          .select(`
+            *,
+            user:user_id (id, name, username, image_url),
+            category:category_id (id, name)
+          `)
           .eq("category_id", post.category_id)
           .neq("id", post.id)
           .limit(3)
 
-        relatedPosts = relatedPostsData || []
+        relatedPosts = categoryRelatedPosts
+
+        // If we don't have enough posts from the same category, fetch some recent posts
+        if (relatedPosts.length < 3) {
+          const neededPosts = 3 - relatedPosts.length
+          const existingIds = [post.id, ...relatedPosts.map((p) => p.id)]
+
+          const { data: recentPosts = [] } = await supabase
+            .from("posts")
+            .select(`
+              *,
+              user:user_id (id, name, username, image_url),
+              category:category_id (id, name)
+            `)
+            .not("id", "in", `(${existingIds.join(",")})`)
+            .order("created_at", { ascending: false })
+            .limit(neededPosts)
+
+          relatedPosts = [...relatedPosts, ...recentPosts]
+        }
+      } else {
+        // If no category, just get recent posts
+        const { data: recentPosts = [] } = await supabase
+          .from("posts")
+          .select(`
+            *,
+            user:user_id (id, name, username, image_url),
+            category:category_id (id, name)
+          `)
+          .neq("id", post.id)
+          .order("created_at", { ascending: false })
+          .limit(3)
+
+        relatedPosts = recentPosts
       }
 
       // Add likes count to comments
@@ -88,10 +126,6 @@ export default async function PostPage({ params }: PostPageProps) {
       console.error("Failed to create Supabase client in PostPage")
     }
 
-    // Ensure we have valid values for the RelatedPosts component
-    const validPostId = post.id || id
-    const validCategoryId = post.category_id || null
-
     return (
       <div className="container max-w-4xl py-8">
         <div className="mb-6">
@@ -110,7 +144,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
         <div className="mt-12">
           <Suspense fallback={<Skeleton className="h-48" />}>
-            <RelatedPosts currentPostId={validPostId} categoryId={validCategoryId} initialPosts={relatedPosts} />
+            <RelatedPosts posts={relatedPosts} />
           </Suspense>
         </div>
       </div>
