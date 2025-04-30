@@ -1,12 +1,8 @@
 // Helper function to normalize post data structure
 export function normalizePostData(post: any): any {
   // If it's already in the expected format, return as is
-  if (
-    post &&
-    typeof post.title === "object" &&
-    typeof post.content === "object"
-  ) {
-    return post;
+  if (post && typeof post.title === "object" && typeof post.content === "object") {
+    return post
   }
 
   // Convert to the expected format
@@ -30,8 +26,8 @@ export function normalizePostData(post: any): any {
             vi: post.excerpt_vi || "",
           }
         : undefined,
-    };
+    }
   }
 
-  return post;
+  return post
 }

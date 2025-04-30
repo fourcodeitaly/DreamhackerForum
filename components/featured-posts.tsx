@@ -1,50 +1,48 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useTranslation } from "@/hooks/use-translation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { getPosts } from "@/lib/data-utils-supabase";
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { useTranslation } from "@/hooks/use-translation"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { getPosts } from "@/lib/data-utils-supabase"
 
 export function FeaturedPosts() {
-  const { t } = useTranslation();
-  const [featuredPosts, setFeaturedPosts] = useState<any[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation()
+  const [featuredPosts, setFeaturedPosts] = useState<any[]>([])
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchFeaturedPosts = async () => {
       try {
         // Get posts and filter for featured ones (pinned or with images)
-        const posts = await getPosts(1, 10);
-        const featured = posts
-          .filter((post) => post.is_pinned || post.image_url)
-          .slice(0, 3);
+        const posts = await getPosts(1, 10)
+        const featured = posts.filter((post) => post.is_pinned || post.image_url).slice(0, 3)
 
-        setFeaturedPosts(featured);
+        setFeaturedPosts(featured)
       } catch (error) {
-        console.error("Error fetching featured posts:", error);
+        console.error("Error fetching featured posts:", error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchFeaturedPosts();
-  }, []);
+    fetchFeaturedPosts()
+  }, [])
 
   useEffect(() => {
-    if (featuredPosts.length === 0) return;
+    if (featuredPosts.length === 0) return
 
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % featuredPosts.length);
-    }, 5000);
+      setActiveIndex((prev) => (prev + 1) % featuredPosts.length)
+    }, 5000)
 
-    return () => clearInterval(interval);
-  }, [featuredPosts.length]);
+    return () => clearInterval(interval)
+  }, [featuredPosts.length])
 
   if (isLoading) {
     return (
@@ -53,10 +51,10 @@ export function FeaturedPosts() {
           <div className="h-8 w-8 border-4 border-t-primary rounded-full animate-spin" />
         </div>
       </div>
-    );
+    )
   }
 
-  if (featuredPosts.length === 0) return null;
+  if (featuredPosts.length === 0) return null
 
   return (
     <div className="relative overflow-hidden rounded-xl">
@@ -69,24 +67,16 @@ export function FeaturedPosts() {
             <Card className="border-0 overflow-hidden">
               <div className="relative h-80 w-full">
                 <img
-                  src={
-                    post.image_url || "/placeholder.svg?height=600&width=1200"
-                  }
+                  src={post.image_url || "/placeholder.svg?height=600&width=1200"}
                   alt={post.title?.en || ""}
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 text-white">
-                  <Badge className="mb-2 bg-blue-600 hover:bg-blue-700">
-                    {post.category_id || t("featured")}
-                  </Badge>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2">
-                    {post.title?.en || ""}
-                  </h2>
+                  <Badge className="mb-2 bg-blue-600 hover:bg-blue-700">{post.category_id || t("featured")}</Badge>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-2">{post.title?.en || ""}</h2>
                   <p className="text-sm md:text-base mb-4 line-clamp-2">
-                    {post.content?.en
-                      ?.substring(0, 150)
-                      .replace(/<[^>]*>/g, "") || ""}
+                    {post.content?.en?.substring(0, 150).replace(/<[^>]*>/g, "") || ""}
                   </p>
                   <Button asChild variant="default" size="sm">
                     <Link href={`/posts/${post.id}`}>{t("readMore")}</Link>
@@ -103,11 +93,7 @@ export function FeaturedPosts() {
           variant="outline"
           size="icon"
           className="h-8 w-8 rounded-full bg-black/20 backdrop-blur-sm border-white/20 text-white hover:bg-black/30 hover:text-white"
-          onClick={() =>
-            setActiveIndex(
-              (prev) => (prev - 1 + featuredPosts.length) % featuredPosts.length
-            )
-          }
+          onClick={() => setActiveIndex((prev) => (prev - 1 + featuredPosts.length) % featuredPosts.length)}
         >
           <ChevronLeft className="h-4 w-4" />
           <span className="sr-only">{t("previous")}</span>
@@ -116,9 +102,7 @@ export function FeaturedPosts() {
           variant="outline"
           size="icon"
           className="h-8 w-8 rounded-full bg-black/20 backdrop-blur-sm border-white/20 text-white hover:bg-black/30 hover:text-white"
-          onClick={() =>
-            setActiveIndex((prev) => (prev + 1) % featuredPosts.length)
-          }
+          onClick={() => setActiveIndex((prev) => (prev + 1) % featuredPosts.length)}
         >
           <ChevronRight className="h-4 w-4" />
           <span className="sr-only">{t("next")}</span>
@@ -131,9 +115,7 @@ export function FeaturedPosts() {
             key={index}
             className={cn(
               "h-2 w-2 rounded-full transition-colors",
-              index === activeIndex
-                ? "bg-white"
-                : "bg-white/50 hover:bg-white/75"
+              index === activeIndex ? "bg-white" : "bg-white/50 hover:bg-white/75",
             )}
             onClick={() => setActiveIndex(index)}
             aria-label={`Go to slide ${index + 1}`}
@@ -141,5 +123,5 @@ export function FeaturedPosts() {
         ))}
       </div>
     </div>
-  );
+  )
 }

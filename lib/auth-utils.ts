@@ -1,33 +1,40 @@
-import { createServerSupabaseClient } from "./supabase/server";
+import { createServerSupabaseClient } from "./supabase/server"
+import { cache } from "react"
 
-export async function getUserFromSession() {
+// Use React cache to prevent multiple fetches of the same data
+export const getUserFromSession = cache(async () => {
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient()
 
     if (!supabase) {
-      return null;
+      console.error("Failed to create Supabase client")
+      return null
     }
-
-    // const test = await supabase.auth.getUserIdentities();
-    // console.log("test", test);
 
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession()
 
-    if (!user) {
-      return null;
+    if (!session) {
+      return null
     }
 
-    const { data: userData } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    const { data: userData, error } = await supabase.from("users").select("*").eq("id", session.user.id).single()
 
-    return userData;
+    if (error) {
+      console.error("Error fetching user data:", error)
+      return null
+    }
+
+    return userData
   } catch (error) {
-    console.error("Error getting user from session:", error);
-    return null;
+    console.error("Error getting user from session:", error)
+    return null
   }
+})
+
+// Check if user is admin
+export async function isUserAdmin() {
+  const user = await getUserFromSession()
+  return user?.role === "admin"
 }

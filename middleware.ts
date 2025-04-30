@@ -1,52 +1,72 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-// import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { createServerClient } from "@supabase/ssr"
 
-// This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
+  const response = NextResponse.next()
+
   // Create a Supabase client configured to use cookies
-  // const supabase = createMiddlewareClient({
-  //   req: request,
-  //   res: NextResponse.next(),
-  // });
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          // Set the cookie in the response
+          response.cookies.set(name, value, options)
+        })
+      },
+    },
+  })
 
   // Refresh session if expired - required for Server Components
-  // const {
-  //   data: { session },
-  // } = await supabase.auth.getSession();
+  await supabase.auth.getSession()
 
-  // // Admin-only routes
-  // const adminRoutes = ["/create-post", "/posts/[id]/edit"];
+  // Admin-only routes
+  const adminRoutes = ["/admin", "/admin/users", "/create-post", "/posts/:path*/edit"]
 
-  // // Check if the current route is an admin route
-  // const isAdminRoute = adminRoutes.some((route) => {
-  //   if (route.includes("[id]")) {
-  //     // Handle dynamic routes
-  //     const pattern = route.replace("[id]", "[^/]+");
-  //     const regex = new RegExp(`^${pattern}$`);
-  //     return regex.test(request.nextUrl.pathname);
-  //   }
-  //   return route === request.nextUrl.pathname;
-  // });
+  // Check if the current route is an admin route
+  const isAdminRoute = adminRoutes.some((route) => {
+    if (route.includes(":path*")) {
+      // Handle dynamic routes
+      const pattern = route.replace(":path*", "[^/]+")
+      const regex = new RegExp(`^${pattern}$`)
+      return regex.test(request.nextUrl.pathname)
+    }
+    return route === request.nextUrl.pathname
+  })
 
-  // console.log("isAdminRoute", isAdminRoute);
-  // console.log("session", session);
+  if (isAdminRoute) {
+    // Get the session
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
-  // // If it's an admin route and the user is not authenticated, redirect to login
-  // if (isAdminRoute && !session) {
-  //   const redirectUrl = new URL("/login", request.url);
-  //   redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-  //   return NextResponse.redirect(redirectUrl);
-  // }
+    // If no session and trying to access admin route, redirect to login
+    if (!session) {
+      const redirectUrl = new URL("/login", request.url)
+      redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
 
-  // For admin routes, we need to check if the user is an admin
-  // This would typically be done by checking a role in the database
-  // For now, we'll just continue and handle the check in the component
-
-  return NextResponse.next();
+  return response
 }
 
 // See "Matching Paths" below to learn more
-// export const config = {
-//   matcher: ["/create-post", "/posts/:path*/edit"],
-// };
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public (public files)
+     */
+    "/((?!_next/static|_next/image|favicon.ico|public).*)",
+  ],
+}

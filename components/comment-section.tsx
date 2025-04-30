@@ -1,62 +1,52 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
 
-import { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardFooter,
-} from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
-import { useTranslation } from "@/hooks/use-translation";
-import { formatRelativeTime, cn } from "@/lib/utils";
-import { Heart, Loader2, MessageSquare, AlertCircle } from "lucide-react";
-import Link from "next/link";
-import type { Comment } from "@/lib/db/comments";
-import { createClientSupabaseClient } from "@/lib/supabase/client";
+import { useState, useEffect } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
+import { useAuth } from "@/hooks/use-auth"
+import { useTranslation } from "@/hooks/use-translation"
+import { formatRelativeTime, cn } from "@/lib/utils"
+import { Heart, Loader2, MessageSquare, AlertCircle } from "lucide-react"
+import Link from "next/link"
+import type { Comment } from "@/lib/db/comments"
+import { createClientSupabaseClient } from "@/lib/supabase/client"
 
 interface CommentSectionProps {
-  postId: string;
-  initialComments?: Comment[];
+  postId: string
+  initialComments?: Comment[]
 }
 
 // Update the CommentSection component with better styling
-export function CommentSection({
-  postId,
-  initialComments = [],
-}: CommentSectionProps) {
-  const { t } = useTranslation();
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const [comments, setComments] = useState<Comment[]>(initialComments);
-  const [newComment, setNewComment] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingComments, setIsLoading] = useState(
-    initialComments.length === 0
-  );
-  const [error, setError] = useState<string | null>(null);
+export function CommentSection({ postId, initialComments = [] }: CommentSectionProps) {
+  const { t } = useTranslation()
+  const { user, isAuthenticated, isLoading } = useAuth()
+  const [comments, setComments] = useState<Comment[]>(initialComments)
+  const [newComment, setNewComment] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingComments, setIsLoading] = useState(initialComments.length === 0)
+  const [error, setError] = useState<string | null>(null)
 
   // Keep all the useEffect and function implementations the same
 
   // Fetch comments if no initial comments were provided
   useEffect(() => {
     if (initialComments.length === 0) {
-      fetchComments();
+      fetchComments()
     }
-  }, [initialComments.length, postId]);
+  }, [initialComments.length, postId])
 
   const fetchComments = async () => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
-      const supabase = createClientSupabaseClient();
+      const supabase = createClientSupabaseClient()
       if (!supabase) {
-        throw new Error("Failed to create Supabase client");
+        throw new Error("Failed to create Supabase client")
       }
 
       // Fetch comments for this post
@@ -66,13 +56,13 @@ export function CommentSection({
           `
           *,
           user:user_id(id, name, username, image_url)
-        `
+        `,
         )
         .eq("post_id", postId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
 
       if (error) {
-        throw error;
+        throw error
       }
 
       // Get likes for each comment
@@ -83,57 +73,57 @@ export function CommentSection({
             const { count } = await supabase
               .from("comment_likes")
               .select("*", { count: "exact", head: true })
-              .eq("comment_id", comment.id);
+              .eq("comment_id", comment.id)
 
             // Check if current user liked this comment
-            let liked = false;
+            let liked = false
             if (user) {
               const { data: likeData } = await supabase
                 .from("comment_likes")
                 .select("*")
                 .eq("comment_id", comment.id)
                 .eq("user_id", user.id)
-                .single();
-              liked = !!likeData;
+                .single()
+              liked = !!likeData
             }
 
             return {
               ...comment,
               likesCount: count || 0,
               liked,
-            };
+            }
           } catch (likeError) {
-            console.error("Error fetching likes for comment:", likeError);
+            console.error("Error fetching likes for comment:", likeError)
             return {
               ...comment,
               likesCount: 0,
               liked: false,
-            };
+            }
           }
-        })
-      );
+        }),
+      )
 
-      setComments(commentsWithLikes);
+      setComments(commentsWithLikes)
     } catch (err) {
-      console.error("Error fetching comments:", err);
-      setError(err instanceof Error ? err.message : "Failed to load comments");
+      console.error("Error fetching comments:", err)
+      setError(err instanceof Error ? err.message : "Failed to load comments")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (!user || !newComment.trim()) return;
+    if (!user || !newComment.trim()) return
 
-    setIsSubmitting(true);
-    setError(null);
+    setIsSubmitting(true)
+    setError(null)
 
     try {
-      const supabase = createClientSupabaseClient();
+      const supabase = createClientSupabaseClient()
       if (!supabase) {
-        throw new Error("Failed to create Supabase client");
+        throw new Error("Failed to create Supabase client")
       }
 
       // Insert the new comment
@@ -144,14 +134,14 @@ export function CommentSection({
           user_id: user.id,
           content: newComment.trim(),
         })
-        .select();
+        .select()
 
       if (error) {
-        throw error;
+        throw error
       }
 
       if (!data || data.length === 0) {
-        throw new Error("No data returned after comment creation");
+        throw new Error("No data returned after comment creation")
       }
 
       // Fetch the newly created comment with user details
@@ -161,13 +151,13 @@ export function CommentSection({
           `
           *,
           user:user_id(id, name, username, image_url)
-        `
+        `,
         )
         .eq("id", data[0].id)
-        .single();
+        .single()
 
       if (fetchError) {
-        throw fetchError;
+        throw fetchError
       }
 
       // Add the new comment to the list
@@ -178,46 +168,44 @@ export function CommentSection({
           liked: false,
         },
         ...prev,
-      ]);
+      ])
 
-      setNewComment("");
+      setNewComment("")
     } catch (err) {
-      console.error("Error submitting comment:", err);
-      setError(err instanceof Error ? err.message : "Failed to submit comment");
+      console.error("Error submitting comment:", err)
+      setError(err instanceof Error ? err.message : "Failed to submit comment")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleLikeComment = async (commentId: string) => {
-    if (!user) return;
+    if (!user) return
 
     try {
-      const supabase = createClientSupabaseClient();
+      const supabase = createClientSupabaseClient()
       if (!supabase) {
-        throw new Error("Failed to create Supabase client");
+        throw new Error("Failed to create Supabase client")
       }
 
       // Find the comment in our state
-      const commentToUpdate = comments.find((c) => c.id === commentId);
-      if (!commentToUpdate) return;
+      const commentToUpdate = comments.find((c) => c.id === commentId)
+      if (!commentToUpdate) return
 
       // Optimistically update UI
       setComments((prev) =>
         prev.map((comment) => {
           if (comment.id === commentId) {
-            const newLikedState = !comment.liked;
+            const newLikedState = !comment.liked
             return {
               ...comment,
               liked: newLikedState,
-              likesCount: newLikedState
-                ? (comment.likesCount || 0) + 1
-                : Math.max((comment.likesCount || 0) - 1, 0),
-            };
+              likesCount: newLikedState ? (comment.likesCount || 0) + 1 : Math.max((comment.likesCount || 0) - 1, 0),
+            }
           }
-          return comment;
-        })
-      );
+          return comment
+        }),
+      )
 
       // Check if already liked
       const { data: existingLike } = await supabase
@@ -225,40 +213,32 @@ export function CommentSection({
         .select("*")
         .eq("comment_id", commentId)
         .eq("user_id", user.id)
-        .single();
+        .single()
 
       if (existingLike) {
         // Unlike
-        await supabase
-          .from("comment_likes")
-          .delete()
-          .eq("comment_id", commentId)
-          .eq("user_id", user.id);
+        await supabase.from("comment_likes").delete().eq("comment_id", commentId).eq("user_id", user.id)
       } else {
         // Like
-        await supabase
-          .from("comment_likes")
-          .insert([{ comment_id: commentId, user_id: user.id }]);
+        await supabase.from("comment_likes").insert([{ comment_id: commentId, user_id: user.id }])
       }
     } catch (err) {
-      console.error("Error toggling comment like:", err);
+      console.error("Error toggling comment like:", err)
       // Revert the optimistic update if there was an error
-      fetchComments();
+      fetchComments()
     }
-  };
+  }
 
   const handleCommentAdded = () => {
-    fetchComments();
-  };
+    fetchComments()
+  }
 
   return (
     <div className="mt-10 space-y-8">
       <div className="flex items-center gap-3 border-b pb-4">
         <MessageSquare className="h-6 w-6 text-primary" />
         <h2 className="text-2xl font-bold">{t("comments")}</h2>
-        <span className="ml-2 rounded-full bg-secondary px-2.5 py-0.5 text-sm font-medium">
-          {comments.length}
-        </span>
+        <span className="ml-2 rounded-full bg-secondary px-2.5 py-0.5 text-sm font-medium">{comments.length}</span>
       </div>
 
       {isAuthenticated ? (
@@ -267,21 +247,14 @@ export function CommentSection({
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10 border-2 border-primary/10">
                 <AvatarImage
-                  src={
-                    user?.image_url ||
-                    "/placeholder.svg?height=40&width=40&query=user"
-                  }
+                  src={user?.image_url || "/placeholder.svg?height=40&width=40&query=user"}
                   alt={user?.name || ""}
                 />
                 <AvatarFallback>{user?.name?.[0] || "?"}</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">
-                  {user?.name || t("anonymousUser")}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t("writingPublicly")}
-                </p>
+                <p className="font-medium">{user?.name || t("anonymousUser")}</p>
+                <p className="text-xs text-muted-foreground">{t("writingPublicly")}</p>
               </div>
             </div>
           </CardHeader>
@@ -331,12 +304,8 @@ export function CommentSection({
               <MessageSquare className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold">
-                {t("joinTheConversation")}
-              </h3>
-              <p className="mt-1 text-muted-foreground">
-                {t("loginToComment")}
-              </p>
+              <h3 className="text-lg font-semibold">{t("joinTheConversation")}</h3>
+              <p className="mt-1 text-muted-foreground">{t("loginToComment")}</p>
             </div>
             <Button asChild className="mt-2">
               <Link href="/login">{t("login")}</Link>
@@ -348,10 +317,7 @@ export function CommentSection({
       {isLoadingComments ? (
         <div className="space-y-6">
           {[1, 2, 3].map((i) => (
-            <Card
-              key={i}
-              className="animate-pulse overflow-hidden border border-muted/30"
-            >
+            <Card key={i} className="animate-pulse overflow-hidden border border-muted/30">
               <CardHeader className="pb-2">
                 <div className="flex items-center space-x-4">
                   <div className="h-10 w-10 rounded-full bg-muted"></div>
@@ -377,12 +343,7 @@ export function CommentSection({
               <AlertCircle className="h-6 w-6 text-destructive" />
             </div>
             <p className="text-muted-foreground">{t("errorLoadingComments")}</p>
-            <Button
-              onClick={fetchComments}
-              variant="outline"
-              size="sm"
-              className="mt-2"
-            >
+            <Button onClick={fetchComments} variant="outline" size="sm" className="mt-2">
               <Loader2 className="mr-2 h-4 w-4" />
               {t("tryAgain")}
             </Button>
@@ -395,37 +356,25 @@ export function CommentSection({
               <MessageSquare className="h-6 w-6 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground">{t("noComments")}</p>
-            <p className="text-sm text-muted-foreground">
-              {t("beTheFirstToComment")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("beTheFirstToComment")}</p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-6">
           {comments.map((comment) => (
-            <Card
-              key={comment.id}
-              className="overflow-hidden border-muted/50 transition-all hover:border-muted"
-            >
+            <Card key={comment.id} className="overflow-hidden border-muted/50 transition-all hover:border-muted">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-10 w-10 border border-primary/10">
                       <AvatarImage
-                        src={
-                          comment.user?.image_url ||
-                          "/placeholder.svg?height=40&width=40&query=user"
-                        }
+                        src={comment.user?.image_url || "/placeholder.svg?height=40&width=40&query=user"}
                         alt={comment.user?.name || ""}
                       />
-                      <AvatarFallback>
-                        {comment.user?.name?.[0] || "?"}
-                      </AvatarFallback>
+                      <AvatarFallback>{comment.user?.name?.[0] || "?"}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium">
-                        {comment.user?.name || t("anonymousUser")}
-                      </div>
+                      <div className="font-medium">{comment.user?.name || t("anonymousUser")}</div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{formatRelativeTime(comment.created_at)}</span>
                       </div>
@@ -434,9 +383,7 @@ export function CommentSection({
                 </div>
               </CardHeader>
               <CardContent className="pb-3 pt-2">
-                <p className="whitespace-pre-wrap break-words text-base leading-relaxed">
-                  {comment.content}
-                </p>
+                <p className="whitespace-pre-wrap break-words text-base leading-relaxed">{comment.content}</p>
               </CardContent>
               <CardFooter className="border-t bg-muted/10 py-2">
                 <Button
@@ -447,19 +394,9 @@ export function CommentSection({
                   className="flex items-center gap-1 px-2 text-xs"
                 >
                   <Heart
-                    className={cn(
-                      "h-4 w-4",
-                      comment.liked
-                        ? "fill-red-500 text-red-500"
-                        : "text-muted-foreground"
-                    )}
+                    className={cn("h-4 w-4", comment.liked ? "fill-red-500 text-red-500" : "text-muted-foreground")}
                   />
-                  <span
-                    className={cn(
-                      "text-xs",
-                      comment.liked ? "text-red-500" : "text-muted-foreground"
-                    )}
-                  >
+                  <span className={cn("text-xs", comment.liked ? "text-red-500" : "text-muted-foreground")}>
                     {comment.likesCount || 0}
                   </span>
                 </Button>
@@ -469,5 +406,5 @@ export function CommentSection({
         </div>
       )}
     </div>
-  );
+  )
 }

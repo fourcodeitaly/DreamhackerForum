@@ -1,14 +1,20 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-export function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString)
+/**
+ * Formats a date into a relative time string (e.g., "2 hours ago", "yesterday", "2 days ago")
+ * @param date The date to format (Date object or ISO string)
+ * @returns A string representing the relative time
+ */
+export function formatRelativeTime(date: Date | string): string {
   const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  const past = typeof date === "string" ? new Date(date) : date
+
+  if (isNaN(past.getTime())) {
+    return "Invalid date"
+  }
+
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000)
 
   // Less than a minute
   if (diffInSeconds < 60) {
@@ -30,7 +36,10 @@ export function formatRelativeTime(dateString: string): string {
   // Less than a week
   if (diffInSeconds < 604800) {
     const days = Math.floor(diffInSeconds / 86400)
-    return `${days} ${days === 1 ? "day" : "days"} ago`
+    if (days === 1) {
+      return "yesterday"
+    }
+    return `${days} days ago`
   }
 
   // Less than a month
@@ -48,4 +57,10 @@ export function formatRelativeTime(dateString: string): string {
   // More than a year
   const years = Math.floor(diffInSeconds / 31536000)
   return `${years} ${years === 1 ? "year" : "years"} ago`
+}
+
+// If there are other existing utility functions in this file, they would be preserved here
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }

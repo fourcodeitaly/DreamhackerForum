@@ -10,6 +10,7 @@ import { LanguageProvider } from "@/components/language-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { NotificationProvider } from "@/components/notification-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { ServerAuthCheck } from "@/components/server-auth-check"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <ServerAuthCheck />
         {/* Add the NextTopLoader component */}
         <NextTopLoader
           color="#3b82f6"

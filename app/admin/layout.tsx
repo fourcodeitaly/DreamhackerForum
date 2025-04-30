@@ -1,32 +1,32 @@
-import type React from "react";
-import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isUserAdmin } from "@/lib/db/users";
-import { AdminSidebar } from "@/components/admin/sidebar";
-import { cookies } from "next/headers";
+import type React from "react"
+import { redirect } from "next/navigation"
+import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { isUserAdmin } from "@/lib/db/users"
+import { AdminSidebar } from "@/components/admin/sidebar"
+import { cookies } from "next/headers"
 
 export default async function AdminLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const cookieStore = await cookies();
+  const cookieStore = await cookies()
   // Check if user is authenticated and is admin
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createServerSupabaseClient()
   if (!supabase) {
-    redirect("/login");
+    redirect("/login")
   }
 
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await supabase.auth.getSession()
   if (!session) {
-    redirect("/login");
+    redirect("/login")
   }
 
-  const isAdmin = await isUserAdmin(session.user.id);
+  const isAdmin = await isUserAdmin(session.user.id)
   if (!isAdmin) {
-    redirect("/");
+    redirect("/")
   }
 
   return (
@@ -34,5 +34,5 @@ export default async function AdminLayout({
       <AdminSidebar />
       <div className="flex-1 p-8">{children}</div>
     </div>
-  );
+  )
 }
