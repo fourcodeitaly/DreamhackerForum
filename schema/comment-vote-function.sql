@@ -1,3 +1,6 @@
+-- Add original_link column to posts table
+ALTER TABLE posts ADD COLUMN original_link TEXT DEFAULT NULL;
+
 CREATE OR REPLACE FUNCTION handle_comment_vote(
   p_user_id UUID,
   p_comment_id UUID,

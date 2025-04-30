@@ -1,67 +1,72 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/hooks/use-auth"
-import { useLanguage } from "@/hooks/use-language"
-import { useTranslation } from "@/hooks/use-translation"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Markdown } from "@/components/markdown"
-import { formatRelativeTime } from "@/lib/utils"
-import { MessageSquare, Eye, ExternalLink } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { useLanguage } from "@/hooks/use-language";
+import { useTranslation } from "@/hooks/use-translation";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Markdown } from "@/components/markdown";
+import { formatRelativeTime } from "@/lib/utils";
+import { MessageSquare, Eye, ExternalLink } from "lucide-react";
 
 interface PostCardProps {
-  post: any
-  onDelete?: () => void
+  post: any;
+  onDelete?: () => void;
 }
 
 export function PostCard({ post, onDelete }: PostCardProps) {
-  const router = useRouter()
-  const { user } = useAuth()
-  const { language } = useLanguage()
-  const { t } = useTranslation()
-  const [isDeleting, setIsDeleting] = useState(false)
+  const router = useRouter();
+  const { user } = useAuth();
+  const { language } = useLanguage();
+  const { t } = useTranslation();
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const isAuthor = user && post.user_id === user.id
-  const isAdmin = user && user.is_admin
+  const isAuthor = user && post.user_id === user.id;
+  const isAdmin = user && user.is_admin;
 
   const handleEdit = () => {
-    router.push(`/posts/${post.id}/edit`)
-  }
+    router.push(`/posts/${post.id}/edit`);
+  };
 
   const handleDelete = async () => {
     if (window.confirm(t("confirm_delete_post"))) {
-      setIsDeleting(true)
+      setIsDeleting(true);
       try {
         const response = await fetch(`/api/posts/${post.id}`, {
           method: "DELETE",
-        })
+        });
 
         if (response.ok) {
           if (onDelete) {
-            onDelete()
+            onDelete();
           }
         } else {
-          console.error("Failed to delete post")
+          console.error("Failed to delete post");
         }
       } catch (error) {
-        console.error("Error deleting post:", error)
+        console.error("Error deleting post:", error);
       } finally {
-        setIsDeleting(false)
+        setIsDeleting(false);
       }
     }
-  }
+  };
 
-  const postContent = post.content?.[language] || post.content?.en || ""
-  const postTitle = post.title?.[language] || post.title?.en || ""
+  const postContent = post.content?.[language] || post.content?.en || "";
+  const postTitle = post.title?.[language] || post.title?.en || "";
 
   return (
-    <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
+    <Card className="w-2/3 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between">
           <Link href={`/posts/${post.id}`} className="hover:underline">
@@ -69,43 +74,51 @@ export function PostCard({ post, onDelete }: PostCardProps) {
           </Link>
           {(isAuthor || isAdmin) && (
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={handleEdit}>
+              {/* <Button variant="outline" size="sm" onClick={handleEdit}>
                 {t("edit")}
               </Button>
               <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
                 {isDeleting ? t("deleting") : t("delete")}
-              </Button>
+              </Button> */}
             </div>
           )}
         </div>
         <div className="flex items-center space-x-2">
           <Avatar className="h-6 w-6">
-            <AvatarImage src={post.user_avatar || "/images/user-avatar-1.png"} alt={post.username} />
+            <AvatarImage
+              src={post.user_avatar || "https://i.redd.it/o1unzd4c5bu71.png"}
+              alt={post.username}
+            />
             <AvatarFallback>{post.username?.[0]?.toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
-            <Link href={`/profile/${post.username}`} className="text-sm font-medium hover:underline">
+            <Link
+              href={`/profile/${post.username}`}
+              className="text-sm font-medium hover:underline"
+            >
               {post.username}
             </Link>
-            <p className="text-xs text-muted-foreground">{formatRelativeTime(new Date(post.created_at))}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatRelativeTime(new Date(post.created_at))}
+            </p>
           </div>
         </div>
         {post.category && (
           <div>
             <Link href={`/categories/${post.category_id}`}>
               <Badge variant="outline" className="hover:bg-accent">
-                {post.category[language] || post.category.en}
+                {post.category_id || post.category.en}
               </Badge>
             </Link>
           </div>
         )}
       </CardHeader>
       <CardContent>
-        {post.image && (
+        {/* {post.image_url && (
           <Link href={`/posts/${post.id}`}>
             <div className="mb-4 overflow-hidden rounded-md">
               <Image
-                src={post.image || "/placeholder.svg"}
+                src={post.image_url || "/placeholder.svg"}
                 alt={postTitle}
                 width={400}
                 height={200}
@@ -113,7 +126,7 @@ export function PostCard({ post, onDelete }: PostCardProps) {
               />
             </div>
           </Link>
-        )}
+        )} */}
         <div className="text-sm text-muted-foreground line-clamp-3">
           <Markdown content={postContent} preview={true} />
         </div>
@@ -143,5 +156,5 @@ export function PostCard({ post, onDelete }: PostCardProps) {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
