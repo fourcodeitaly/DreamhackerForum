@@ -78,3 +78,72 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
   const user = await getUserById(userId)
   return user?.role === "admin"
 }
+
+// New function to set a user as admin
+export async function setUserAsAdmin(userId: string): Promise<boolean> {
+  const supabase = createServerSupabaseClient()
+
+  if (!supabase) {
+    console.error("Supabase client not available")
+    return false
+  }
+
+  const { error } = await supabase
+    .from("users")
+    .update({
+      role: "admin",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId)
+
+  if (error) {
+    console.error("Error setting user as admin:", error)
+    return false
+  }
+
+  return true
+}
+
+// New function to remove admin role from a user
+export async function removeAdminRole(userId: string): Promise<boolean> {
+  const supabase = createServerSupabaseClient()
+
+  if (!supabase) {
+    console.error("Supabase client not available")
+    return false
+  }
+
+  const { error } = await supabase
+    .from("users")
+    .update({
+      role: "user",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId)
+
+  if (error) {
+    console.error("Error removing admin role:", error)
+    return false
+  }
+
+  return true
+}
+
+// New function to get all admin users
+export async function getAllAdminUsers(): Promise<User[]> {
+  const supabase = createServerSupabaseClient()
+
+  if (!supabase) {
+    console.error("Supabase client not available")
+    return []
+  }
+
+  const { data, error } = await supabase.from("users").select("*").eq("role", "admin")
+
+  if (error) {
+    console.error("Error fetching admin users:", error)
+    return []
+  }
+
+  return data as User[]
+}

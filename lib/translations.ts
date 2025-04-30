@@ -221,6 +221,19 @@ export const translations = {
 
     // Featured
     featured: "Featured",
+
+    // Add these to the English translations section
+    adminPanel: "Admin Panel",
+    userManagement: "User Management",
+    makeAdmin: "Make Admin",
+    removeAdmin: "Remove Admin",
+    promoteToAdmin: "Promote to Admin",
+    removeAdminRole: "Remove Admin Role",
+    confirmPromoteAdmin: "Are you sure you want to give admin privileges to this user?",
+    confirmRemoveAdmin: "Are you sure you want to remove admin privileges from this user?",
+    adminPrivilegesGranted: "Admin privileges granted successfully",
+    adminPrivilegesRemoved: "Admin privileges removed successfully",
+    cannotRemoveOwnAdmin: "Cannot remove your own admin role",
   },
 
   // Chinese (Simplified) translations
@@ -434,6 +447,19 @@ export const translations = {
 
     // Featured
     featured: "精选",
+
+    // Add these to the Chinese translations section
+    adminPanel: "管理面板",
+    userManagement: "用户管理",
+    makeAdmin: "设为管理员",
+    removeAdmin: "移除管理员",
+    promoteToAdmin: "提升为管理员",
+    removeAdminRole: "移除管理员角色",
+    confirmPromoteAdmin: "您确定要授予此用户管理员权限吗？",
+    confirmRemoveAdmin: "您确定要移除此用户的管理员权限吗？",
+    adminPrivilegesGranted: "管理员权限授予成功",
+    adminPrivilegesRemoved: "管理员权限移除成功",
+    cannotRemoveOwnAdmin: "无法移除自己的管理员角色",
   },
 
   // Vietnamese translations
@@ -648,5 +674,18 @@ export const translations = {
 
     // Featured
     featured: "Nổi bật",
+
+    // Add these to the Vietnamese translations section
+    adminPanel: "Bảng quản trị",
+    userManagement: "Quản lý người dùng",
+    makeAdmin: "Đặt làm quản trị viên",
+    removeAdmin: "Gỡ bỏ quản trị viên",
+    promoteToAdmin: "Thăng cấp thành quản trị viên",
+    removeAdminRole: "Gỡ bỏ vai trò quản trị viên",
+    confirmPromoteAdmin: "Bạn có chắc chắn muốn cấp quyền quản trị viên cho người dùng này không?",
+    confirmRemoveAdmin: "Bạn có chắc chắn muốn xóa quyền quản trị viên khỏi người dùng này không?",
+    adminPrivilegesGranted: "Đã cấp quyền quản trị viên thành công",
+    adminPrivilegesRemoved: "Đã xóa quyền quản trị viên thành công",
+    cannotRemoveOwnAdmin: "Không thể xóa vai trò quản trị viên của chính bạn",
   },
 }

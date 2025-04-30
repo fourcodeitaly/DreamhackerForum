@@ -329,6 +329,7 @@ export type Database = {
           joined_at: string | null
           location: string | null
           name: string
+          role: string
           updated_at: string | null
           username: string
         }
@@ -340,6 +341,7 @@ export type Database = {
           joined_at?: string | null
           location?: string | null
           name: string
+          role?: string
           updated_at?: string | null
           username: string
         }
@@ -351,6 +353,7 @@ export type Database = {
           joined_at?: string | null
           location?: string | null
           name?: string
+          role?: string
           updated_at?: string | null
           username?: string
         }

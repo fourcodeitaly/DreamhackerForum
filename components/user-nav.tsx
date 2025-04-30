@@ -14,7 +14,7 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
 import Link from "next/link"
-import { Bell, LogOut, Settings, User } from "lucide-react"
+import { Bell, LogOut, Settings, User, Shield } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export function UserNav({ user }: { user: any }) {
@@ -86,6 +86,17 @@ export function UserNav({ user }: { user: any }) {
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        {user?.role === "admin" && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>{t("adminPanel") || "Admin Panel"}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
