@@ -9,6 +9,8 @@ import { ServerEnvChecker } from "@/components/server-env-checker"
 import { getPosts } from "@/lib/data-utils-supabase"
 import type { Post } from "@/lib/db/posts"
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   // Fetch posts on the server
   let initialPosts: Post[] = []
