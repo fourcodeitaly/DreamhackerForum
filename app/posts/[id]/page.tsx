@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import { PostDetail } from "@/components/post-detail"
-import { CommentSection } from "@/components/comment-section"
+import { CommentSection } from "@/components/comments/comment-section"
 import { RelatedPosts } from "@/components/related-posts"
 import { BackButton } from "@/components/back-button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -29,25 +29,10 @@ export default async function PostPage({ params }: PostPageProps) {
     const supabase = createServerSupabaseClient()
 
     // Initialize with empty arrays in case Supabase client is null
-    let comments: any[] = []
     let relatedPosts: any[] = []
 
-    // Only try to fetch comments and related posts if Supabase client exists
+    // Only try to fetch related posts if Supabase client exists
     if (supabase) {
-      // Fetch comments
-      const { data: commentsData = [] } = await supabase
-        .from("comments")
-        .select(
-          `
-          *,
-          user:user_id(id, name, username, image_url)
-        `,
-        )
-        .eq("post_id", id)
-        .order("created_at", { ascending: false })
-
-      comments = commentsData || []
-
       // Enhanced related posts fetching
       if (post.category_id) {
         // First try to get posts from the same category
@@ -97,31 +82,6 @@ export default async function PostPage({ params }: PostPageProps) {
 
         relatedPosts = recentPosts
       }
-
-      // Add likes count to comments
-      comments = await Promise.all(
-        comments.map(async (comment) => {
-          try {
-            const { count } = await supabase
-              .from("comment_likes")
-              .select("*", { count: "exact", head: true })
-              .eq("comment_id", comment.id)
-
-            return {
-              ...comment,
-              likesCount: count || 0,
-              liked: false, // Default to false, will be updated on client if user is logged in
-            }
-          } catch (error) {
-            console.error("Error fetching comment likes:", error)
-            return {
-              ...comment,
-              likesCount: 0,
-              liked: false,
-            }
-          }
-        }),
-      )
     } else {
       console.error("Failed to create Supabase client in PostPage")
     }
@@ -138,7 +98,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
         <div className="mt-8">
           <Suspense fallback={<Skeleton className="h-48" />}>
-            <CommentSection postId={id} initialComments={comments} />
+            <CommentSection postId={id} />
           </Suspense>
         </div>
 
