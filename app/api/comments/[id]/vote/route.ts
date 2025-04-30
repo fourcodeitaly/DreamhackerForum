@@ -1,26 +1,35 @@
-import { NextResponse } from "next/server"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { getUserFromSession } from "@/lib/auth-utils"
+import { NextResponse } from "next/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getUserFromSession } from "@/lib/auth-utils";
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const commentId = params.id
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const commentId = params.id;
 
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+    return NextResponse.json(
+      { error: "Database connection failed" },
+      { status: 500 }
+    );
   }
 
-  const user = await getUserFromSession(supabase)
+  const user = await getUserFromSession();
   if (!user) {
-    return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+    return NextResponse.json(
+      { error: "Authentication required" },
+      { status: 401 }
+    );
   }
 
   try {
-    const { vote_type } = await request.json()
+    const { vote_type } = await request.json();
 
     // Validate vote type
     if (![1, -1, 0].includes(vote_type)) {
-      return NextResponse.json({ error: "Invalid vote type" }, { status: 400 })
+      return NextResponse.json({ error: "Invalid vote type" }, { status: 400 });
     }
 
     // Check if comment exists
@@ -28,10 +37,10 @@ export async function POST(request: Request, { params }: { params: { id: string 
       .from("comments")
       .select("id, upvotes, downvotes")
       .eq("id", commentId)
-      .single()
+      .single();
 
     if (!comment) {
-      return NextResponse.json({ error: "Comment not found" }, { status: 404 })
+      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
     }
 
     // Get current vote if exists
@@ -40,7 +49,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       .select("vote_type")
       .eq("comment_id", commentId)
       .eq("user_id", user.id)
-      .single()
+      .single();
 
     // Start a transaction
     const { error } = await supabase.rpc("handle_comment_vote", {
@@ -48,10 +57,10 @@ export async function POST(request: Request, { params }: { params: { id: string 
       p_comment_id: commentId,
       p_vote_type: vote_type,
       p_current_vote_type: currentVote?.vote_type || 0,
-    })
+    });
 
     if (error) {
-      throw error
+      throw error;
     }
 
     // Get updated comment
@@ -59,17 +68,21 @@ export async function POST(request: Request, { params }: { params: { id: string 
       .from("comments")
       .select("upvotes, downvotes")
       .eq("id", commentId)
-      .single()
+      .single();
 
     return NextResponse.json({
       success: true,
       vote_type: vote_type,
-      upvotes: updatedComment.upvotes,
-      downvotes: updatedComment.downvotes,
-      vote_score: updatedComment.upvotes - updatedComment.downvotes,
-    })
+      upvotes: updatedComment?.upvotes || 0,
+      downvotes: updatedComment?.downvotes || 0,
+      vote_score:
+        (updatedComment?.upvotes || 0) - (updatedComment?.downvotes || 0),
+    });
   } catch (error) {
-    console.error("Error voting on comment:", error)
-    return NextResponse.json({ error: "Failed to process vote" }, { status: 500 })
+    console.error("Error voting on comment:", error);
+    return NextResponse.json(
+      { error: "Failed to process vote" },
+      { status: 500 }
+    );
   }
 }
