@@ -1,70 +1,21 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   public: {
     Tables: {
-      categories: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      comments: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      users: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      posts: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      post_likes: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      saved_posts: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      comment_likes: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      notifications: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      tags: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-      post_tags: {
-        Row: any
-        Insert: any
-        Update: any
-      }
-    }
+      [_ in never]: never;
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
