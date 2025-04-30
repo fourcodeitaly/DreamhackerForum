@@ -6,13 +6,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Bookmark, Heart, MessageCircle, Share2, Edit } from "lucide-react"
+import { Bookmark, Heart, MessageCircle, Share2, Edit, ExternalLink } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTranslation } from "@/hooks/use-translation"
 import { useLanguage } from "@/hooks/use-language"
-import { cn, formatRelativeTime } from "@/lib/utils"
+import { cn } from "@/lib/utils"
+import { formatRelativeTime } from "@/lib/utils"
 import { PostLanguageSwitcher } from "@/components/post-language-switcher"
 import { normalizePostData } from "@/lib/data-utils"
+import { Markdown } from "@/components/markdown" // Import the Markdown component
 
 interface PostDetailProps {
   post: any
@@ -132,6 +134,9 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
     image: null,
   }
 
+  // Get the creation date safely
+  const creationDate = post.createdAt || post.created_at
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="p-6">
@@ -145,7 +150,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
               <Link href={`/profile/${author.username || "unknown"}`} className="text-base font-medium hover:underline">
                 {author.name || "Unknown Author"}
               </Link>
-              <p className="text-sm text-muted-foreground">{formatRelativeTime(post.createdAt || post.created_at)}</p>
+              <p className="text-sm text-muted-foreground">{formatRelativeTime(creationDate)}</p>
             </div>
           </div>
 
@@ -162,12 +167,26 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
           </div>
         </div>
 
+        {/* Restore the language switcher */}
         <PostLanguageSwitcher
           onLanguageChange={(lang) => setCurrentLanguage(lang as "en" | "zh" | "vi")}
           currentLanguage={currentLanguage}
         />
 
         <h1 className="text-3xl font-bold mb-3">{getLocalizedTitle()}</h1>
+
+        {/* Display the original link if available */}
+        {post.original_link && (
+          <a
+            href={post.original_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-sm text-primary hover:underline mb-4"
+          >
+            <ExternalLink className="h-4 w-4 mr-1" />
+            {t("originalSource") || "Original Source"}
+          </a>
+        )}
 
         <div className="flex flex-wrap gap-2 mt-4">
           {(post.tags || []).map((tag: string) => (
@@ -192,11 +211,8 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         )}
 
         <div className="prose dark:prose-invert max-w-none">
-          {getLocalizedContent()
-            .split("\n")
-            .map((paragraph: string, i: number) => (
-              <p key={i}>{paragraph}</p>
-            ))}
+          {/* Render markdown content */}
+          <Markdown content={getLocalizedContent()} />
         </div>
       </CardContent>
 

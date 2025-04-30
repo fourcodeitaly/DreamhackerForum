@@ -4,13 +4,21 @@ import { UserSavedPosts } from "@/components/user-saved-posts"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getMockUserByUsername } from "@/lib/mock-data"
 import { notFound } from "next/navigation"
+import { createClient } from "@/lib/supabase/server"
 
-export default function ProfilePage({ params }: { params: { username: string } }) {
+export default async function ProfilePage({ params }: { params: { username: string } }) {
   const user = getMockUserByUsername(params.username)
 
   if (!user) {
     notFound()
   }
+
+  const supabase = createClient()
+
+  // Get total post count for this user
+  const { count } = await supabase.from("posts").select("*", { count: "exact", head: true }).eq("author_id", user.id)
+
+  const totalPosts = count || 0
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -23,7 +31,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
           <TabsContent value="posts">
-            <UserPosts username={params.username} />
+            <UserPosts username={params.username} totalPosts={totalPosts} />
           </TabsContent>
           <TabsContent value="saved">
             <UserSavedPosts username={params.username} />

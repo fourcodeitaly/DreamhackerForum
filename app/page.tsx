@@ -6,16 +6,27 @@ import { FeaturedPosts } from "@/components/featured-posts"
 import { Suspense } from "react"
 import { PostListSkeleton } from "@/components/skeletons"
 import { ServerEnvChecker } from "@/components/server-env-checker"
-import { getPosts } from "@/lib/data-utils-supabase"
+import { getPosts, getPostCount } from "@/lib/data-utils-supabase"
 import type { Post } from "@/lib/db/posts"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { page?: string }
+}) {
+  // Get current page from query parameters
+  const page = searchParams.page ? Number.parseInt(searchParams.page) : 1
+  const postsPerPage = 10
+
   // Fetch posts on the server
   let initialPosts: Post[] = []
+  let totalPosts = 0
+
   try {
-    initialPosts = await getPosts(1, 10)
+    initialPosts = await getPosts(page, postsPerPage)
+    totalPosts = await getPostCount()
   } catch (error) {
     console.error("Error fetching posts in Home page:", error)
     // Continue with empty posts array
@@ -42,7 +53,7 @@ export default async function Home() {
             <SortFilter />
           </div>
           <Suspense fallback={<PostListSkeleton />}>
-            <PostList initialPosts={initialPosts} />
+            <PostList initialPosts={initialPosts} totalPosts={totalPosts} currentPage={page} />
           </Suspense>
         </div>
       </div>

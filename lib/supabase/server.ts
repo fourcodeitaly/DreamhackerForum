@@ -49,3 +49,7 @@ export const createServerSupabaseClient = async () => {
     return null
   }
 }
+
+// Add the missing createClient export that was causing the deployment error
+// This is an alias for createServerSupabaseClient for backward compatibility
+export const createClient = createServerSupabaseClient

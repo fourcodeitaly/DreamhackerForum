@@ -2,183 +2,144 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/hooks/use-auth"
+import { useLanguage } from "@/hooks/use-language"
+import { useTranslation } from "@/hooks/use-translation"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
-import { useTranslation } from "@/hooks/use-translation"
-import { useLanguage } from "@/hooks/use-language"
-import { cn, formatRelativeTime } from "@/lib/utils"
-import { likePostAction, savePostAction } from "@/app/actions"
-import { normalizePostData } from "@/lib/data-utils"
-import type { Post } from "@/lib/db/posts"
+import { Markdown } from "@/components/markdown"
+import { formatRelativeTime } from "@/lib/utils"
+import { MessageSquare, Eye, ExternalLink } from "lucide-react"
 
 interface PostCardProps {
-  post: Post
+  post: any
+  onDelete?: () => void
 }
 
-export function PostCard({ post: rawPost }: PostCardProps) {
-  const { t } = useTranslation()
-  const { language } = useLanguage()
+export function PostCard({ post, onDelete }: PostCardProps) {
+  const router = useRouter()
   const { user } = useAuth()
+  const { language } = useLanguage()
+  const { t } = useTranslation()
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  // Normalize post data to ensure consistent structure
-  const post = normalizePostData(rawPost)
+  const isAuthor = user && post.user_id === user.id
+  const isAdmin = user && user.is_admin
 
-  const [liked, setLiked] = useState(post.liked || false)
-  const [likesCount, setLikesCount] = useState(post.likes_count || 0)
-  const [saved, setSaved] = useState(post.saved || false)
-
-  // Get localized content based on current language
-  const getLocalizedTitle = () => {
-    if (typeof post.title === "object") {
-      return post.title[language] || post.title.en || ""
-    }
-    return post.title
+  const handleEdit = () => {
+    router.push(`/posts/${post.id}/edit`)
   }
 
-  const getLocalizedExcerpt = () => {
-    if (post.excerpt && typeof post.excerpt === "object") {
-      return post.excerpt[language] || post.excerpt.en || ""
-    }
+  const handleDelete = async () => {
+    if (window.confirm(t("confirm_delete_post"))) {
+      setIsDeleting(true)
+      try {
+        const response = await fetch(`/api/posts/${post.id}`, {
+          method: "DELETE",
+        })
 
-    // If no excerpt, generate from content
-    if (typeof post.content === "object") {
-      const content = post.content[language] || post.content.en || ""
-      return content.substring(0, 150) + (content.length > 150 ? "..." : "")
-    }
-
-    return ""
-  }
-
-  const handleLike = async () => {
-    if (!user) return
-
-    try {
-      const result = await likePostAction(post.id, user.id)
-
-      if (result.success) {
-        if (result.liked) {
-          setLikesCount((prev) => prev + 1)
+        if (response.ok) {
+          if (onDelete) {
+            onDelete()
+          }
         } else {
-          setLikesCount((prev) => prev - 1)
+          console.error("Failed to delete post")
         }
-        setLiked(result.liked)
+      } catch (error) {
+        console.error("Error deleting post:", error)
+      } finally {
+        setIsDeleting(false)
       }
-    } catch (error) {
-      console.error("Error liking post:", error)
     }
   }
 
-  const handleSave = async () => {
-    if (!user) return
-
-    try {
-      const result = await savePostAction(post.id, user.id)
-
-      if (result.success) {
-        setSaved(result.saved)
-      }
-    } catch (error) {
-      console.error("Error saving post:", error)
-    }
-  }
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: getLocalizedTitle(),
-        text: getLocalizedExcerpt(),
-        url: `/posts/${post.id}`,
-      })
-    } else {
-      // Fallback
-      navigator.clipboard.writeText(window.location.origin + `/posts/${post.id}`)
-      alert(t("linkCopied"))
-    }
-  }
+  const postContent = post.content?.[language] || post.content?.en || ""
+  const postTitle = post.title?.[language] || post.title?.en || ""
 
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
-      <CardHeader className="p-4 pb-0">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={post.author?.image_url || "/placeholder.svg"} alt={post.author?.name} />
-              <AvatarFallback>{post.author?.name?.[0] || "?"}</AvatarFallback>
-            </Avatar>
-            <div>
-              <Link href={`/profile/${post.author?.username}`} className="text-sm font-medium hover:underline">
-                {post.author?.name}
-              </Link>
-              <p className="text-xs text-muted-foreground">{formatRelativeTime(post.created_at)}</p>
+    <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Link href={`/posts/${post.id}`} className="hover:underline">
+            <h2 className="text-xl font-bold">{postTitle}</h2>
+          </Link>
+          {(isAuthor || isAdmin) && (
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" onClick={handleEdit}>
+                {t("edit")}
+              </Button>
+              <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
+                {isDeleting ? t("deleting") : t("delete")}
+              </Button>
             </div>
-          </div>
-
-          {post.is_pinned && (
-            <Badge variant="outline" className="text-xs">
-              {t("pinned")}
-            </Badge>
           )}
         </div>
-      </CardHeader>
-
-      <CardContent className="p-4">
-        <Link href={`/posts/${post.id}`} className="block group">
-          <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            {getLocalizedTitle()}
-          </h3>
-          <p className="text-muted-foreground line-clamp-2 mb-3">{getLocalizedExcerpt()}</p>
-        </Link>
-
-        <div className="flex flex-wrap gap-2 mt-2">
-          {post.tags?.map((tag) => (
-            <Link href={`/tags/${tag}`} key={tag}>
-              <Badge variant="secondary" className="hover:bg-secondary/80">
-                {tag}
+        <div className="flex items-center space-x-2">
+          <Avatar className="h-6 w-6">
+            <AvatarImage src={post.user_avatar || "/images/user-avatar-1.png"} alt={post.username} />
+            <AvatarFallback>{post.username?.[0]?.toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div>
+            <Link href={`/profile/${post.username}`} className="text-sm font-medium hover:underline">
+              {post.username}
+            </Link>
+            <p className="text-xs text-muted-foreground">{formatRelativeTime(new Date(post.created_at))}</p>
+          </div>
+        </div>
+        {post.category && (
+          <div>
+            <Link href={`/categories/${post.category_id}`}>
+              <Badge variant="outline" className="hover:bg-accent">
+                {post.category[language] || post.category.en}
               </Badge>
             </Link>
-          ))}
-        </div>
-
-        {post.image_url && (
-          <Link href={`/posts/${post.id}`} className="block mt-4">
-            <img
-              src={post.image_url || "/placeholder.svg"}
-              alt={getLocalizedTitle()}
-              className="rounded-md w-full h-48 object-cover"
-            />
+          </div>
+        )}
+      </CardHeader>
+      <CardContent>
+        {post.image && (
+          <Link href={`/posts/${post.id}`}>
+            <div className="mb-4 overflow-hidden rounded-md">
+              <Image
+                src={post.image || "/placeholder.svg"}
+                alt={postTitle}
+                width={400}
+                height={200}
+                className="w-full h-48 object-cover transition-transform hover:scale-105"
+              />
+            </div>
           </Link>
         )}
-      </CardContent>
-
-      <CardFooter className="p-4 pt-0 flex items-center justify-between">
-        <div className="flex space-x-4">
-          <Button variant="ghost" size="sm" className="flex items-center space-x-1 h-8 px-2" onClick={handleLike}>
-            <Heart className={cn("h-4 w-4", liked ? "fill-red-500 text-red-500" : "text-muted-foreground")} />
-            <span className={cn(liked ? "text-red-500" : "text-muted-foreground")}>{likesCount}</span>
-          </Button>
-
-          <Link href={`/posts/${post.id}#comments`}>
-            <Button variant="ghost" size="sm" className="flex items-center space-x-1 h-8 px-2">
-              <MessageCircle className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{post.comments_count}</span>
-            </Button>
-          </Link>
+        <div className="text-sm text-muted-foreground line-clamp-3">
+          <Markdown content={postContent} preview={true} />
         </div>
-
-        <div className="flex space-x-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShare}>
-            <Share2 className="h-4 w-4 text-muted-foreground" />
-            <span className="sr-only">{t("share")}</span>
-          </Button>
-
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSave}>
-            <Bookmark className={cn("h-4 w-4", saved ? "fill-current" : "text-muted-foreground")} />
-            <span className="sr-only">{t("save")}</span>
-          </Button>
+        {post.original_link && (
+          <div className="mt-2 flex items-center text-xs text-muted-foreground">
+            <a
+              href={post.original_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalLink className="mr-1 h-3 w-3" />
+              {t("original_source")}
+            </a>
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className="flex justify-between text-xs text-muted-foreground">
+        <div className="flex items-center">
+          <Eye className="mr-1 h-4 w-4" />
+          {post.views || 0}
+        </div>
+        <div className="flex items-center">
+          <MessageSquare className="mr-1 h-4 w-4" />
+          {post.comment_count || 0}
         </div>
       </CardFooter>
     </Card>

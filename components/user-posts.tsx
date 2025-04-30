@@ -8,11 +8,13 @@ import { useTranslation } from "@/hooks/use-translation"
 
 interface UserPostsProps {
   username: string
+  initialPosts: any[]
+  totalPosts?: number
 }
 
-export function UserPosts({ username }: UserPostsProps) {
+export function UserPosts({ username, initialPosts, totalPosts }: UserPostsProps) {
   const { t } = useTranslation()
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<any[]>(initialPosts)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
 

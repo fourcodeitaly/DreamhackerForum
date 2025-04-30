@@ -12,6 +12,7 @@ export async function createPostAction(formData: {
   categoryId?: string
   tags?: string[]
   imageUrl?: string
+  originalLink?: string // Added originalLink
   isPinned?: boolean
 }) {
   try {
@@ -23,6 +24,7 @@ export async function createPostAction(formData: {
       category_id: formData.categoryId,
       tags: formData.tags,
       image_url: formData.imageUrl,
+      original_link: formData.originalLink || null, // Added original_link
       is_pinned: formData.isPinned || false,
     })
 
@@ -51,6 +53,7 @@ export async function updatePostAction(
     categoryId?: string
     tags?: string[]
     imageUrl?: string
+    originalLink?: string // Added originalLink
     isPinned?: boolean
   },
 ) {
@@ -62,6 +65,7 @@ export async function updatePostAction(
       category_id: formData.categoryId,
       tags: formData.tags,
       image_url: formData.imageUrl,
+      original_link: formData.originalLink, // Added original_link
       is_pinned: formData.isPinned,
     })
 

@@ -18,10 +18,10 @@ import {
 } from "@/components/ui/select"
 import { useTranslation } from "@/hooks/use-translation"
 import { useRouter } from "next/navigation"
-import { Loader2, Upload, X, Languages } from "lucide-react"
+import { Loader2, Upload, X, Languages, LinkIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { RichTextEditor } from "@/components/rich-text-editor"
+import { MarkdownEditor } from "@/components/markdown-editor" // Use Markdown Editor
 import { translateText } from "@/lib/translation-service"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks/use-auth"
@@ -57,6 +57,7 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
   const [currentTag, setCurrentTag] = useState("")
   const [image, setImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image_url || null)
+  const [originalLink, setOriginalLink] = useState<string>(initialData?.original_link || "") // Added original link
   const [isLoading, setIsLoading] = useState(false)
   const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">("en")
   const [isTranslating, setIsTranslating] = useState(false)
@@ -165,12 +166,23 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
       return
     }
 
+    // Validate URL format if original link is provided
+    if (originalLink && !isValidUrl(originalLink)) {
+      toast({
+        title: t("validationError"),
+        description: t("invalidUrlFormat"),
+        variant: "destructive",
+      })
+      setIsLoading(false)
+      return
+    }
+
     try {
-      // Generate excerpt from content
+      // Generate excerpt from content (strip markdown formatting)
       const excerpt = {
-        en: content.en.substring(0, 150).replace(/<[^>]*>/g, ""),
-        zh: content.zh ? content.zh.substring(0, 150).replace(/<[^>]*>/g, "") : undefined,
-        vi: content.vi ? content.vi.substring(0, 150).replace(/<[^>]*>/g, "") : undefined,
+        en: content.en.substring(0, 150).replace(/[#*_~`[\]()]/g, ""),
+        zh: content.zh ? content.zh.substring(0, 150).replace(/[#*_~`[\]()]/g, "") : undefined,
+        vi: content.vi ? content.vi.substring(0, 150).replace(/[#*_~`[\]()]/g, "") : undefined,
       }
 
       if (isEditing && initialData) {
@@ -181,6 +193,7 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
           categoryId: category,
           tags,
           imageUrl: imagePreview,
+          originalLink: originalLink || undefined, // Include original link
         }).catch((error) => {
           console.error("Error updating post:", error)
           return { success: false, message: "Error updating post" }
@@ -208,6 +221,7 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
           categoryId: category,
           tags,
           imageUrl: imagePreview,
+          originalLink: originalLink || undefined, // Include original link
         }).catch((error) => {
           console.error("Error creating post:", error)
           return { success: false, message: "Error creating post" }
@@ -236,6 +250,17 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Validate URL format
+  const isValidUrl = (urlString: string): boolean => {
+    try {
+      if (!urlString) return true
+      new URL(urlString)
+      return true
+    } catch (e) {
+      return false
     }
   }
 
@@ -426,6 +451,24 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
             </Tabs>
           </div>
 
+          {/* Original Link Field */}
+          <div className="space-y-2">
+            <Label htmlFor="original-link" className="flex items-center gap-2">
+              <LinkIcon className="h-4 w-4" />
+              {t("originalSource") || "Original Source Link"}
+            </Label>
+            <Input
+              id="original-link"
+              type="url"
+              value={originalLink}
+              onChange={(e) => setOriginalLink(e.target.value)}
+              placeholder="https://example.com/article"
+            />
+            <p className="text-xs text-muted-foreground">
+              {t("optionalSourceLink") || "Optional source link for reference"}
+            </p>
+          </div>
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="content">{t("content")}</Label>
@@ -508,21 +551,21 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
               </div>
 
               <TabsContent value="en" className="mt-2">
-                <RichTextEditor
+                <MarkdownEditor
                   value={content.en}
                   onChange={(value) => handleContentChange("en", value)}
                   placeholder={t("postContentPlaceholderEn")}
                 />
               </TabsContent>
               <TabsContent value="zh" className="mt-2">
-                <RichTextEditor
+                <MarkdownEditor
                   value={content.zh}
                   onChange={(value) => handleContentChange("zh", value)}
                   placeholder={t("postContentPlaceholderZh")}
                 />
               </TabsContent>
               <TabsContent value="vi" className="mt-2">
-                <RichTextEditor
+                <MarkdownEditor
                   value={content.vi}
                   onChange={(value) => handleContentChange("vi", value)}
                   placeholder={t("postContentPlaceholderVi")}

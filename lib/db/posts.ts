@@ -15,6 +15,7 @@ export type Post = {
   content: MultilingualContent
   excerpt: MultilingualContent | null
   image_url: string | null
+  original_link: string | null // Added original_link field
   is_pinned: boolean
   created_at: string
   updated_at: string
@@ -159,6 +160,7 @@ export async function createPost(postData: Omit<Post, "id" | "created_at" | "upd
         content: postData.content,
         excerpt: postData.excerpt,
         image_url: postData.image_url,
+        original_link: postData.original_link, // Added original_link
         is_pinned: postData.is_pinned || false,
       },
     ])
