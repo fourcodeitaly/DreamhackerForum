@@ -1,7 +1,7 @@
-import { ResourceList } from "@/components/resource-list";
-import { ResourceCategories } from "@/components/resource-categories";
+import { ResourceList } from "@/components/resource-list"
+import { ResourceCategories } from "@/components/resource-categories"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 export default function ResourcesPage() {
   return (
@@ -16,5 +16,5 @@ export default function ResourcesPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

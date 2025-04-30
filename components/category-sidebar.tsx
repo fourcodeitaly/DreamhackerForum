@@ -37,19 +37,16 @@ export function CategorySidebar({
       ],
     },
     {
-      id: "business-school",
+      id: "master",
       name: t("businessSchool"),
       categories: [
         { id: "school-introduction", name: t("schoolIntroduction") },
         { id: "major-and-ranking", name: t("majorAndRanking") },
-        { id: "business-application-faq", name: t("applicationFAQ") },
-        {
-          id: "business-recommendation-letter",
-          name: t("recommendationLetter"),
-        },
+        { id: "master-application-faq", name: t("applicationFAQ") },
+        { id: "master-recommendation-letter", name: t("recommendationLetter") },
         { id: "ps-resume", name: t("psResume") },
         { id: "business-interview", name: t("businessInterview") },
-        { id: "business-application-summary", name: t("applicationSummary") },
+        { id: "master-application-summary", name: t("applicationSummary") },
       ],
     },
     {

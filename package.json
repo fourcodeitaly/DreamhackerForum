@@ -59,13 +59,13 @@
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
     "@supabase/supabase-js": "latest",
+    "nextjs-toploader": "latest",
     "react-markdown": "latest",
     "remark-gfm": "latest",
     "rehype-raw": "latest",
     "rehype-sanitize": "latest",
     "react-syntax-highlighter": "latest",
-    "@supabase/ssr": "latest",
-    "nextjs-toploader": "latest"
+    "@supabase/ssr": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

@@ -1,21 +1,15 @@
-import { NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { getUserFromSession } from "@/lib/auth-utils";
+import { NextResponse } from "next/server"
+import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { getUserFromSession } from "@/lib/auth-utils"
 
 // Get a single comment with its replies
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = await params;
-  const commentId = id;
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const { id } = await params
+  const commentId = id
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createServerSupabaseClient()
   if (!supabase) {
-    return NextResponse.json(
-      { error: "Database connection failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
   }
 
   try {
@@ -25,25 +19,25 @@ export async function GET(
         `
         *,
         user:user_id (id, name, username, image_url, role)
-      `
+      `,
       )
       .eq("id", commentId)
-      .single();
+      .single()
 
     if (error) {
-      throw error;
+      throw error
     }
 
     if (!comment) {
-      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Comment not found" }, { status: 404 })
     }
 
     // Get vote score
-    const voteScore = (comment.upvotes || 0) - (comment.downvotes || 0);
+    const voteScore = (comment.upvotes || 0) - (comment.downvotes || 0)
 
     // Get user vote if logged in
-    const user = await getUserFromSession();
-    let userVote = 0;
+    const user = await getUserFromSession()
+    let userVote = 0
 
     if (user) {
       const { data: vote } = await supabase
@@ -51,9 +45,9 @@ export async function GET(
         .select("vote_type")
         .eq("comment_id", commentId)
         .eq("user_id", user.id)
-        .single();
+        .single()
 
-      userVote = vote?.vote_type || 0;
+      userVote = vote?.vote_type || 0
     }
 
     return NextResponse.json({
@@ -62,67 +56,45 @@ export async function GET(
         vote_score: voteScore,
         user_vote: userVote,
       },
-    });
+    })
   } catch (error) {
-    console.error("Error fetching comment:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch comment" },
-      { status: 500 }
-    );
+    console.error("Error fetching comment:", error)
+    return NextResponse.json({ error: "Failed to fetch comment" }, { status: 500 })
   }
 }
 
 // Update a comment
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = await params;
-  const commentId = id;
+export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+  const { id } = await params
+  const commentId = id
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createServerSupabaseClient()
   if (!supabase) {
-    return NextResponse.json(
-      { error: "Database connection failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
   }
 
-  const user = await getUserFromSession();
+  const user = await getUserFromSession()
   if (!user) {
-    return NextResponse.json(
-      { error: "Authentication required" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 })
   }
 
   try {
     // Get the comment to check ownership
-    const { data: comment } = await supabase
-      .from("comments")
-      .select("user_id")
-      .eq("id", commentId)
-      .single();
+    const { data: comment } = await supabase.from("comments").select("user_id").eq("id", commentId).single()
 
     if (!comment) {
-      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Comment not found" }, { status: 404 })
     }
 
     // Check if user owns the comment or is admin
     if (comment.user_id !== user.id && user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Not authorized to edit this comment" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Not authorized to edit this comment" }, { status: 403 })
     }
 
-    const { content, is_markdown } = await request.json();
+    const { content, is_markdown } = await request.json()
 
     if (!content) {
-      return NextResponse.json(
-        { error: "Content is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Content is required" }, { status: 400 })
     }
 
     // Update the comment
@@ -140,17 +112,16 @@ export async function PATCH(
         `
         *,
         user:user_id (id, name, username, image_url, role)
-      `
+      `,
       )
-      .single();
+      .single()
 
     if (error) {
-      throw error;
+      throw error
     }
 
     // Get vote score
-    const voteScore =
-      (updatedComment.upvotes || 0) - (updatedComment.downvotes || 0);
+    const voteScore = (updatedComment.upvotes || 0) - (updatedComment.downvotes || 0)
 
     // Get user vote
     const { data: vote } = await supabase
@@ -158,7 +129,7 @@ export async function PATCH(
       .select("vote_type")
       .eq("comment_id", commentId)
       .eq("user_id", user.id)
-      .single();
+      .single()
 
     return NextResponse.json({
       comment: {
@@ -166,58 +137,39 @@ export async function PATCH(
         vote_score: voteScore,
         user_vote: vote?.vote_type || 0,
       },
-    });
+    })
   } catch (error) {
-    console.error("Error updating comment:", error);
-    return NextResponse.json(
-      { error: "Failed to update comment" },
-      { status: 500 }
-    );
+    console.error("Error updating comment:", error)
+    return NextResponse.json({ error: "Failed to update comment" }, { status: 500 })
   }
 }
 
 // Delete a comment
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = await params;
-  const commentId = id;
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const { id } = await params
+  const commentId = id
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createServerSupabaseClient()
   if (!supabase) {
-    return NextResponse.json(
-      { error: "Database connection failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
   }
 
-  const user = await getUserFromSession();
+  const user = await getUserFromSession()
   if (!user) {
-    return NextResponse.json(
-      { error: "Authentication required" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 })
   }
 
   try {
     // Get the comment to check ownership
-    const { data: comment } = await supabase
-      .from("comments")
-      .select("user_id")
-      .eq("id", commentId)
-      .single();
+    const { data: comment } = await supabase.from("comments").select("user_id").eq("id", commentId).single()
 
     if (!comment) {
-      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Comment not found" }, { status: 404 })
     }
 
     // Check if user owns the comment or is admin
     if (comment.user_id !== user.id && user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Not authorized to delete this comment" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Not authorized to delete this comment" }, { status: 403 })
     }
 
     // Instead of actually deleting, mark as deleted
@@ -228,18 +180,15 @@ export async function DELETE(
         status: "deleted",
         updated_at: new Date().toISOString(),
       })
-      .eq("id", commentId);
+      .eq("id", commentId)
 
     if (error) {
-      throw error;
+      throw error
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting comment:", error);
-    return NextResponse.json(
-      { error: "Failed to delete comment" },
-      { status: 500 }
-    );
+    console.error("Error deleting comment:", error)
+    return NextResponse.json({ error: "Failed to delete comment" }, { status: 500 })
   }
 }

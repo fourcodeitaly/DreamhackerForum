@@ -1,17 +1,10 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,98 +14,90 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
-import { Search, Shield, ShieldOff } from "lucide-react";
-import { createClientSupabaseClient } from "@/lib/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
+} from "@/components/ui/alert-dialog"
+import { useToast } from "@/hooks/use-toast"
+import { Search, Shield, ShieldOff } from "lucide-react"
+import { createClientSupabaseClient } from "@/lib/supabase/client"
+import { useAuth } from "@/hooks/use-auth"
 
 export function AdminUsersList() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [dialogAction, setDialogAction] = useState<"promote" | "demote" | null>(
-    null
-  );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { toast } = useToast();
-  const { user: currentUser } = useAuth();
-  const supabase = createClientSupabaseClient();
+  const [users, setUsers] = useState<any[]>([])
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [dialogAction, setDialogAction] = useState<"promote" | "demote" | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const { toast } = useToast()
+  const { user: currentUser } = useAuth()
+  const supabase = createClientSupabaseClient()
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers()
+  }, [])
 
   useEffect(() => {
     if (searchQuery.trim() === "") {
-      setFilteredUsers(users);
+      setFilteredUsers(users)
     } else {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery.toLowerCase()
       setFilteredUsers(
         users.filter(
           (user) =>
             user.name?.toLowerCase().includes(query) ||
             user.email?.toLowerCase().includes(query) ||
-            user.username?.toLowerCase().includes(query)
-        )
-      );
+            user.username?.toLowerCase().includes(query),
+        ),
+      )
     }
-  }, [searchQuery, users]);
+  }, [searchQuery, users])
 
   const fetchUsers = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       if (!supabase) {
-        throw new Error("Supabase client not initialized");
+        throw new Error("Supabase client not initialized")
       }
 
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .order("name");
+      const { data, error } = await supabase.from("users").select("*").order("name")
 
       if (error) {
-        throw error;
+        throw error
       }
 
-      setUsers(data || []);
-      setFilteredUsers(data || []);
+      setUsers(data || [])
+      setFilteredUsers(data || [])
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching users:", error)
       toast({
         title: "Error",
         description: "Failed to load users",
         variant: "destructive",
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const handlePromoteToAdmin = (user: any) => {
-    setSelectedUser(user);
-    setDialogAction("promote");
-    setIsDialogOpen(true);
-  };
+    setSelectedUser(user)
+    setDialogAction("promote")
+    setIsDialogOpen(true)
+  }
 
   const handleRemoveAdmin = (user: any) => {
-    setSelectedUser(user);
-    setDialogAction("demote");
-    setIsDialogOpen(true);
-  };
+    setSelectedUser(user)
+    setDialogAction("demote")
+    setIsDialogOpen(true)
+  }
 
   const confirmAction = async () => {
-    if (!selectedUser || !dialogAction) return;
+    if (!selectedUser || !dialogAction) return
 
-    setIsProcessing(true);
+    setIsProcessing(true)
     try {
-      const endpoint =
-        dialogAction === "promote"
-          ? "/api/admin/set-admin"
-          : "/api/admin/remove-admin";
+      const endpoint = dialogAction === "promote" ? "/api/admin/set-admin" : "/api/admin/remove-admin"
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -120,12 +105,12 @@ export function AdminUsersList() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId: selectedUser.id }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to update user role");
+        throw new Error(data.message || "Failed to update user role")
       }
 
       // Update local state
@@ -135,37 +120,30 @@ export function AdminUsersList() {
             return {
               ...user,
               role: dialogAction === "promote" ? "admin" : "user",
-            };
+            }
           }
-          return user;
-        })
-      );
+          return user
+        }),
+      )
 
       toast({
         title: "Success",
-        description:
-          data.message ||
-          `User ${
-            dialogAction === "promote"
-              ? "promoted to admin"
-              : "demoted from admin"
-          }`,
-      });
+        description: data.message || `User ${dialogAction === "promote" ? "promoted to admin" : "demoted from admin"}`,
+      })
     } catch (error) {
-      console.error("Error updating user role:", error);
+      console.error("Error updating user role:", error)
       toast({
         title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to update user role",
+        description: error instanceof Error ? error.message : "Failed to update user role",
         variant: "destructive",
-      });
+      })
     } finally {
-      setIsProcessing(false);
-      setIsDialogOpen(false);
-      setSelectedUser(null);
-      setDialogAction(null);
+      setIsProcessing(false)
+      setIsDialogOpen(false)
+      setSelectedUser(null)
+      setDialogAction(null)
     }
-  };
+  }
 
   return (
     <div>
@@ -224,11 +202,7 @@ export function AdminUsersList() {
                         <Badge variant="outline">User</Badge>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {new Date(
-                        user.joined_at || user.created_at
-                      ).toLocaleDateString()}
-                    </TableCell>
+                    <TableCell>{new Date(user.joined_at || user.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       {user.role === "admin" ? (
                         <Button
@@ -237,20 +211,14 @@ export function AdminUsersList() {
                           onClick={() => handleRemoveAdmin(user)}
                           disabled={user.id === currentUser?.id}
                           title={
-                            user.id === currentUser?.id
-                              ? "Cannot remove your own admin role"
-                              : "Remove admin role"
+                            user.id === currentUser?.id ? "Cannot remove your own admin role" : "Remove admin role"
                           }
                         >
                           <ShieldOff className="h-4 w-4 mr-2" />
                           Remove Admin
                         </Button>
                       ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handlePromoteToAdmin(user)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handlePromoteToAdmin(user)}>
                           <Shield className="h-4 w-4 mr-2" />
                           Make Admin
                         </Button>
@@ -267,11 +235,7 @@ export function AdminUsersList() {
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {dialogAction === "promote"
-                ? "Promote to Admin"
-                : "Remove Admin Role"}
-            </AlertDialogTitle>
+            <AlertDialogTitle>{dialogAction === "promote" ? "Promote to Admin" : "Remove Admin Role"}</AlertDialogTitle>
             <AlertDialogDescription>
               {dialogAction === "promote"
                 ? `Are you sure you want to give admin privileges to ${selectedUser?.name}? This will grant them full access to manage the forum.`
@@ -279,9 +243,7 @@ export function AdminUsersList() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isProcessing}>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmAction} disabled={isProcessing}>
               {isProcessing ? (
                 <>
@@ -298,5 +260,5 @@ export function AdminUsersList() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
+  )
 }
