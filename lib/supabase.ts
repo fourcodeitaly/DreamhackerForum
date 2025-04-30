@@ -45,6 +45,7 @@ export const createServerSupabaseClient = () => {
 
 // Create a singleton client for client-side usage
 
+// Update the createClientSupabaseClient function to include proper cookie settings
 export const createClientSupabaseClient = () => {
   if (clientSupabaseClient) return clientSupabaseClient
 
@@ -57,7 +58,20 @@ export const createClientSupabaseClient = () => {
   }
 
   try {
-    clientSupabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+    clientSupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        storageKey: "dreamhacker-forum-auth",
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        cookieOptions: {
+          name: "dreamhacker-forum-auth",
+          path: "/",
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        },
+      },
+    })
     return clientSupabaseClient
   } catch (error) {
     console.error("Error creating client Supabase client:", error)

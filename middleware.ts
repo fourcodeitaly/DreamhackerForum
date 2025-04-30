@@ -5,7 +5,8 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   // Create a Supabase client configured to use cookies
-  const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() })
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient({ req: request, res })
 
   // Refresh session if expired - required for Server Components
   const {
@@ -37,7 +38,7 @@ export async function middleware(request: NextRequest) {
   // This would typically be done by checking a role in the database
   // For now, we'll just continue and handle the check in the component
 
-  return NextResponse.next()
+  return res
 }
 
 // See "Matching Paths" below to learn more

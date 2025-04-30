@@ -44,12 +44,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: { session },
         } = await supabase.auth.getSession()
 
+        console.log("Current session:", session ? "Exists" : "None")
+
         if (session) {
           try {
             // Get user profile from the users table - this will now use the synced UUID
-            const { data: userData } = await supabase.from("users").select("*").eq("id", session.user.id).single()
+            const { data: userData, error: userError } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", session.user.id)
+              .single()
 
-            if (userData) {
+            if (userError) {
+              console.error("Error fetching user data:", userError)
+              setUser(null)
+            } else if (userData) {
+              console.log("User data loaded:", userData.username)
               setUser(userData as User)
             } else {
               console.warn("User authenticated but no profile found in users table")
@@ -71,9 +81,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (session) {
             try {
               // Get user profile from the users table
-              const { data: userData } = await supabase.from("users").select("*").eq("id", session.user.id).single()
+              const { data: userData, error: userError } = await supabase
+                .from("users")
+                .select("*")
+                .eq("id", session.user.id)
+                .single()
 
-              if (userData) {
+              if (userError) {
+                console.error("Error fetching user data on auth change:", userError)
+                setUser(null)
+              } else if (userData) {
+                console.log("User data updated on auth change:", userData.username)
                 setUser(userData as User)
               } else {
                 console.warn("Auth state changed but no profile found in users table")

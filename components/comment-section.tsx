@@ -23,11 +23,11 @@ interface CommentSectionProps {
 // Update the CommentSection component with better styling
 export function CommentSection({ postId, initialComments = [] }: CommentSectionProps) {
   const { t } = useTranslation()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isLoading } = useAuth()
   const [comments, setComments] = useState<Comment[]>(initialComments)
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLoading, setIsLoading] = useState(initialComments.length === 0)
+  const [isLoadingComments, setIsLoading] = useState(initialComments.length === 0)
   const [error, setError] = useState<string | null>(null)
 
   // Keep all the useEffect and function implementations the same
@@ -225,6 +225,10 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
     }
   }
 
+  const handleCommentAdded = () => {
+    fetchComments()
+  }
+
   return (
     <div className="mt-10 space-y-8">
       <div className="flex items-center gap-3 border-b pb-4">
@@ -306,7 +310,7 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
         </Card>
       )}
 
-      {isLoading ? (
+      {isLoadingComments ? (
         <div className="space-y-6">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse overflow-hidden border border-muted/30">

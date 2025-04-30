@@ -11,16 +11,23 @@ import { Button } from "@/components/ui/button"
 import { AlertCircle } from "lucide-react"
 
 export function AdminCheck({ children }: { children: React.ReactNode }) {
-  const { isAdmin, isAuthenticated, isLoading } = useAuth()
+  const { isAdmin, isAuthenticated, isLoading, user } = useAuth()
   const router = useRouter()
   const { t } = useTranslation()
 
   useEffect(() => {
     // If authentication is done loading and user is not authenticated, redirect to login
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login")
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        console.log("User not authenticated, redirecting to login")
+        router.push("/login")
+      } else if (!isAdmin) {
+        console.log("User authenticated but not admin:", user?.role)
+      } else {
+        console.log("Admin access granted")
+      }
     }
-  }, [isLoading, isAuthenticated, router])
+  }, [isLoading, isAuthenticated, isAdmin, router, user])
 
   // If still loading, show nothing
   if (isLoading) {
