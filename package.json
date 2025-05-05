@@ -60,9 +60,9 @@
     "zod": "^3.24.1",
     "@supabase/supabase-js": "latest",
     "nextjs-toploader": "latest",
-    "@supabase/ssr": "latest",
     "react-markdown": "latest",
-    "remark-gfm": "latest"
+    "remark-gfm": "latest",
+    "@supabase/ssr": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

@@ -24,5 +24,5 @@ export default function Loading() {
         <div className="h-48 bg-gray-200 rounded animate-pulse" />
       </div>
     </div>
-  );
+  )
 }

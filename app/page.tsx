@@ -3,6 +3,7 @@ import { SortFilter } from "@/components/sort-filter"
 import { CategorySidebar } from "@/components/category-sidebar"
 import { SearchBar } from "@/components/search-bar"
 import { FeaturedPosts } from "@/components/featured-posts"
+import { TopContributors } from "@/components/top-contributors"
 import { Suspense } from "react"
 import { PostListSkeleton } from "@/components/skeletons"
 import { ServerEnvChecker } from "@/components/server-env-checker"
@@ -40,11 +41,14 @@ export default async function Home({
       <div className="mb-8">
         <FeaturedPosts />
       </div>
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/4 lg:w-1/5">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left sidebar */}
+        <div className="lg:w-1/5">
           <CategorySidebar />
         </div>
-        <div className="md:w-3/4 lg:w-4/5">
+
+        {/* Main content */}
+        <div className="lg:w-3/5">
           <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <h1 className="text-3xl font-bold">Recent Discussions</h1>
             <SearchBar />
@@ -55,6 +59,11 @@ export default async function Home({
           <Suspense fallback={<PostListSkeleton />}>
             <PostList initialPosts={initialPosts} totalPosts={totalPosts} currentPage={page} />
           </Suspense>
+        </div>
+
+        {/* Right sidebar */}
+        <div className="lg:w-1/5">
+          <TopContributors />
         </div>
       </div>
     </div>

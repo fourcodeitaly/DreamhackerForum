@@ -234,6 +234,7 @@ export const translations = {
     adminPrivilegesGranted: "Admin privileges granted successfully",
     adminPrivilegesRemoved: "Admin privileges removed successfully",
     cannotRemoveOwnAdmin: "Cannot remove your own admin role",
+    topContributors: "Top Contributors",
   },
 
   // Chinese (Simplified) translations
@@ -460,6 +461,7 @@ export const translations = {
     adminPrivilegesGranted: "管理员权限授予成功",
     adminPrivilegesRemoved: "管理员权限移除成功",
     cannotRemoveOwnAdmin: "无法移除自己的管理员角色",
+    topContributors: "热门贡献者",
   },
 
   // Vietnamese translations
@@ -687,5 +689,6 @@ export const translations = {
     adminPrivilegesGranted: "Đã cấp quyền quản trị viên thành công",
     adminPrivilegesRemoved: "Đã xóa quyền quản trị viên thành công",
     cannotRemoveOwnAdmin: "Không thể xóa vai trò quản trị viên của chính bạn",
+    topContributors: "Người đóng góp hàng đầu",
   },
 }
