@@ -1,41 +1,21 @@
-import { createClient } from "@supabase/supabase-js"
-import type { Database } from "./database.types"
 import type { Post } from "./db/posts"
+import { query, queryOne } from "./db/postgres"
+import { localAuth } from "./auth/local-auth"
 import { createClientSupabaseClient } from "./supabase/client"
 
-// Create a single supabase client for interacting with your database
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-)
-
 export async function getCategories() {
-  const { data, error } = await supabase.from("categories").select("*").order("created_at", { ascending: false })
-
-  if (error) {
+  try {
+    const categories = await query("SELECT * FROM categories ORDER BY created_at DESC")
+    return categories
+  } catch (error) {
     console.error("Error fetching categories:", error)
     return []
   }
-
-  return data
 }
 
 export async function getCategory(categoryId: string): Promise<{ name: { en: string } } | null> {
   try {
-    const supabase = await createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getCategory")
-      return null
-    }
-
-    const { data, error } = await supabase.from("categories").select("name").eq("id", categoryId).single()
-
-    if (error) {
-      console.error("Error fetching category:", error)
-      return null
-    }
-
-    return data as { name: { en: string } } | null
+    return await queryOne("SELECT name FROM categories WHERE id = $1", [categoryId])
   } catch (error) {
     console.error("Error fetching category:", error)
     return null
@@ -45,43 +25,44 @@ export async function getCategory(categoryId: string): Promise<{ name: { en: str
 // Helper function to get posts with no fallback to mock data
 export async function getPosts(page = 1, limit = 10, categoryId?: string): Promise<Post[]> {
   try {
-    // Create a Supabase client
-    const supabase = createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getPosts")
-      return []
-    }
-
     // Calculate offset based on page and limit
     const offset = (page - 1) * limit
 
-    // Build query - explicitly specify the foreign key relationship
-    let query = supabase
-      .from("posts")
-      .select(
-        `
-        *,
-        user:user_id (id, name, username, image_url),
-        category:category_id (id, name)
-      `,
-      )
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1)
+    // Build query with proper joins
+    let sql = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'username', u.username,
+          'image_url', u.image_url
+        ) as user,
+        json_build_object(
+          'id', c.id,
+          'name', c.name
+        ) as category
+      FROM posts p
+      LEFT JOIN users u ON p.user_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+    `
+
+    const params = []
 
     // Add category filter if provided
     if (categoryId) {
-      query = query.eq("category_id", categoryId)
+      sql += " WHERE p.category_id = $1"
+      params.push(categoryId)
     }
+
+    // Add order and pagination
+    sql += " ORDER BY p.created_at DESC"
+    sql += " LIMIT $" + (params.length + 1) + " OFFSET $" + (params.length + 2)
+    params.push(limit, offset)
 
     // Execute query
-    const { data, error } = await query
-
-    if (error) {
-      console.error("Supabase error in getPosts:", error)
-      return []
-    }
-
-    return data as unknown as Post[]
+    const posts = await query(sql, params)
+    return posts as unknown as Post[]
   } catch (error) {
     console.error("Error fetching posts:", error)
     return []
@@ -91,26 +72,16 @@ export async function getPosts(page = 1, limit = 10, categoryId?: string): Promi
 // Helper function to get total post count
 export async function getPostCount(categoryId?: string): Promise<number> {
   try {
-    const supabase = createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getPostCount")
-      return 0
-    }
-
-    let query = supabase.from("posts").select("*", { count: "exact", head: true })
+    let sql = "SELECT COUNT(*) FROM posts"
+    const params = []
 
     if (categoryId) {
-      query = query.eq("category_id", categoryId)
+      sql += " WHERE category_id = $1"
+      params.push(categoryId)
     }
 
-    const { count, error } = await query
-
-    if (error) {
-      console.error("Supabase error in getPostCount:", error)
-      return 0
-    }
-
-    return count || 0
+    const result = await queryOne(sql, params)
+    return Number.parseInt(result?.count || "0")
   } catch (error) {
     console.error("Error counting posts:", error)
     return 0
@@ -120,30 +91,27 @@ export async function getPostCount(categoryId?: string): Promise<number> {
 // Helper function to get post by ID with no fallback to mock data
 export async function getPostById(id: string): Promise<Post | null> {
   try {
-    const supabase = await createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getPostById")
-      return null
-    }
+    const sql = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'username', u.username,
+          'image_url', u.image_url
+        ) as user,
+        json_build_object(
+          'id', c.id,
+          'name', c.name
+        ) as category
+      FROM posts p
+      LEFT JOIN users u ON p.user_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.id = $1
+    `
 
-    const { data, error } = await supabase
-      .from("posts")
-      .select(
-        `
-        *,
-        user:user_id (id, name, username, image_url),
-        category:category_id (id, name)
-      `,
-      )
-      .eq("id", id)
-      .single()
-
-    if (error) {
-      console.error("Supabase error in getPostById:", error)
-      return null
-    }
-
-    return data as unknown as Post
+    const post = await queryOne(sql, [id])
+    return post as unknown as Post
   } catch (error) {
     console.error("Error fetching post:", error)
     return null
@@ -168,39 +136,37 @@ export async function getCategoryPostCount(categoryId: string): Promise<number> 
 // Helper function to get comments by post ID
 export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
   try {
-    // Use server client on server, client client on client
-    const supabase = await createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getCommentsByPostId")
-      return []
-    }
+    const sql = `
+      SELECT 
+        c.*,
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'username', u.username,
+          'image_url', u.image_url
+        ) as user
+      FROM comments c
+      LEFT JOIN users u ON c.user_id = u.id
+      WHERE c.post_id = $1
+      ORDER BY c.created_at DESC
+    `
 
-    const { data, error } = await supabase
-      .from("comments")
-      .select(
-        `
-        *,
-        user:user_id(id, name, username, image_url)
-      `,
-      )
-      .eq("post_id", postId)
-      .order("created_at", { ascending: false })
-
-    if (error) {
-      console.error("Error fetching comments:", error)
-      return []
-    }
-
-    return data as unknown as Comment[]
+    const comments = await query(sql, [postId])
+    return comments as unknown as Comment[]
   } catch (error) {
     console.error("Error fetching comments:", error)
     return []
   }
 }
 
-// Helper function to check if user is authenticated with Supabase
+// Helper function to check if user is authenticated
 export async function isUserAuthenticated(): Promise<boolean> {
   try {
+    // If local auth is enabled, check if there's a current user
+    if (localAuth.isEnabled()) {
+      return !!localAuth.getCurrentUser()
+    }
+
     // This should only be called on the client side
     if (typeof window === "undefined") {
       console.warn("isUserAuthenticated was called on the server side")
@@ -208,7 +174,6 @@ export async function isUserAuthenticated(): Promise<boolean> {
     }
 
     const supabase = await createClientSupabaseClient()
-
     if (!supabase) return false
 
     const { data } = await supabase.auth.getUser()
@@ -227,76 +192,71 @@ export async function getRelatedPosts(currentPostId: string, categoryId?: string
       return []
     }
 
-    const supabase = await createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getRelatedPosts")
-      return []
-    }
+    let sql = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'username', u.username,
+          'image_url', u.image_url
+        ) as user,
+        json_build_object(
+          'id', c.id,
+          'name', c.name
+        ) as category
+      FROM posts p
+      LEFT JOIN users u ON p.user_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.id != $1
+    `
 
-    // Start with a base query that doesn't include the current post
-    let query = supabase
-      .from("posts")
-      .select(
-        `
-        *,
-        user:user_id (id, name, username, image_url),
-        category:category_id (id, name)
-      `,
-      )
-      .limit(3)
-
-    // Only add the not-equal filter if currentPostId is valid
-    if (currentPostId && currentPostId !== "undefined") {
-      query = query.neq("id", currentPostId)
-    }
+    const params = [currentPostId]
 
     // Only add category filter if categoryId is provided and valid
     if (categoryId && categoryId !== "undefined") {
-      query = query.eq("category_id", categoryId)
+      sql += " AND p.category_id = $2"
+      params.push(categoryId)
     }
 
-    const { data, error } = await query
+    sql += " LIMIT 3"
 
-    if (error) {
-      console.error("Error fetching related posts:", error)
-      return []
-    }
-
-    return data as Post[]
+    const posts = await query(sql, params)
+    return posts as unknown as Post[]
   } catch (error) {
     console.error("Error fetching related posts:", error)
     return []
   }
 }
 
-// Add this function to your existing data-utils.ts file
-
 export async function getRelatedPostsForServer(postId: string, categoryId?: string | null, limit = 3): Promise<Post[]> {
   try {
-    const supabase = await createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getRelatedPostsForServer")
-      return []
-    }
-
     let relatedPosts: Post[] = []
 
     // First try to get posts from the same category if available
     if (categoryId) {
-      const { data: categoryPosts } = await supabase
-        .from("posts")
-        .select(
-          `
-          *,
-          user:user_id (id, name, username, image_url),
-          category:category_id (id, name)
-        `,
-        )
-        .eq("category_id", categoryId)
-        .neq("id", postId)
-        .limit(limit)
+      const sql = `
+        SELECT 
+          p.*,
+          json_build_object(
+            'id', u.id,
+            'name', u.name,
+            'username', u.username,
+            'image_url', u.image_url
+          ) as user,
+          json_build_object(
+            'id', c.id,
+            'name', c.name
+          ) as category
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.category_id = $1 AND p.id != $2
+        LIMIT $3
+      `
 
-      relatedPosts = (categoryPosts || []) as unknown as Post[]
+      const categoryPosts = await query(sql, [categoryId, postId, limit])
+      relatedPosts = categoryPosts as unknown as Post[]
     }
 
     // If we don't have enough posts from the same category, fetch some recent posts
@@ -304,19 +264,28 @@ export async function getRelatedPostsForServer(postId: string, categoryId?: stri
       const neededPosts = limit - relatedPosts.length
       const existingIds = [postId, ...relatedPosts.map((p) => p.id)]
 
-      const { data: recentPosts } = await supabase
-        .from("posts")
-        .select(
-          `
-          *,
-          user:user_id (id, name, username, image_url),
-          category:category_id (id, name)
-        `,
-        )
-        .not("id", "in", `(${existingIds.join(",")})`)
-        .order("created_at", { ascending: false })
-        .limit(neededPosts)
+      const sql = `
+        SELECT 
+          p.*,
+          json_build_object(
+            'id', u.id,
+            'name', u.name,
+            'username', u.username,
+            'image_url', u.image_url
+          ) as user,
+          json_build_object(
+            'id', c.id,
+            'name', c.name
+          ) as category
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.id != ALL($1::uuid[])
+        ORDER BY p.created_at DESC
+        LIMIT $2
+      `
 
+      const recentPosts = await query(sql, [existingIds, neededPosts])
       relatedPosts = [...relatedPosts, ...(recentPosts || [])] as unknown as Post[]
     }
 
@@ -330,33 +299,31 @@ export async function getRelatedPostsForServer(postId: string, categoryId?: stri
 // Helper function to get user posts
 export async function getUserPosts(userId: string, page = 1, limit = 10): Promise<Post[]> {
   try {
-    const supabase = await createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getUserPosts")
-      return []
-    }
-
     const offset = (page - 1) * limit
 
-    const { data, error } = await supabase
-      .from("posts")
-      .select(
-        `
-        *,
-        user:user_id (id, name, username, image_url),
-        category:category_id (id, name)
-      `,
-      )
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1)
+    const sql = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'username', u.username,
+          'image_url', u.image_url
+        ) as user,
+        json_build_object(
+          'id', c.id,
+          'name', c.name
+        ) as category
+      FROM posts p
+      LEFT JOIN users u ON p.user_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.user_id = $1
+      ORDER BY p.created_at DESC
+      LIMIT $2 OFFSET $3
+    `
 
-    if (error) {
-      console.error("Error fetching user posts:", error)
-      return []
-    }
-
-    return data as unknown as Post[]
+    const posts = await query(sql, [userId, limit, offset])
+    return posts as unknown as Post[]
   } catch (error) {
     console.error("Error fetching user posts:", error)
     return []
@@ -366,23 +333,9 @@ export async function getUserPosts(userId: string, page = 1, limit = 10): Promis
 // Helper function to get user post count
 export async function getUserPostCount(userId: string): Promise<number> {
   try {
-    const supabase = await createClientSupabaseClient()
-    if (!supabase) {
-      console.error("Failed to create Supabase client in getUserPostCount")
-      return 0
-    }
-
-    const { count, error } = await supabase
-      .from("posts")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", userId)
-
-    if (error) {
-      console.error("Error counting user posts:", error)
-      return 0
-    }
-
-    return count || 0
+    const sql = "SELECT COUNT(*) FROM posts WHERE user_id = $1"
+    const result = await queryOne(sql, [userId])
+    return Number.parseInt(result?.count || "0")
   } catch (error) {
     console.error("Error counting user posts:", error)
     return 0
@@ -390,65 +343,69 @@ export async function getUserPostCount(userId: string): Promise<number> {
 }
 
 export async function getUser(username: string) {
-  const { data, error } = await supabase.from("users").select("*").eq("username", username).single()
-
-  if (error) {
+  try {
+    return await queryOne("SELECT * FROM users WHERE username = $1", [username])
+  } catch (error) {
     console.error("Error fetching user:", error)
     return null
   }
-
-  return data
 }
 
 export async function getFeaturedPosts(limit = 3) {
-  const { data, error } = await supabase
-    .from("posts")
-    .select(`
-      *,
-      users (
-        id,
-        username,
-        avatar_url
-      ),
-      categories (
-        id,
-        name
-      )
-    `)
-    .eq("is_featured", true)
-    .order("created_at", { ascending: false })
-    .limit(limit)
+  try {
+    const sql = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'avatar_url', u.image_url
+        ) as users,
+        json_build_object(
+          'id', c.id,
+          'name', c.name
+        ) as categories
+      FROM posts p
+      LEFT JOIN users u ON p.user_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.is_featured = true
+      ORDER BY p.created_at DESC
+      LIMIT $1
+    `
 
-  if (error) {
+    return await query(sql, [limit])
+  } catch (error) {
     console.error("Error fetching featured posts:", error)
     return []
   }
-
-  return data
 }
 
 export async function searchPosts(query: string) {
-  const { data, error } = await supabase
-    .from("posts")
-    .select(`
-      *,
-      users (
-        id,
-        username,
-        avatar_url
-      ),
-      categories (
-        id,
-        name
-      )
-    `)
-    .or(`title.ilike.%${query}%, content.ilike.%${query}%`)
-    .order("created_at", { ascending: false })
+  try {
+    const sql = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'avatar_url', u.image_url
+        ) as users,
+        json_build_object(
+          'id', c.id,
+          'name', c.name
+        ) as categories
+      FROM posts p
+      LEFT JOIN users u ON p.user_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE 
+        p.title::text ILIKE $1 OR 
+        p.content::text ILIKE $1
+      ORDER BY p.created_at DESC
+    `
 
-  if (error) {
+    return await query(sql, [`%${query}%`])
+  } catch (error) {
     console.error("Error searching posts:", error)
     return []
   }
-
-  return data
 }

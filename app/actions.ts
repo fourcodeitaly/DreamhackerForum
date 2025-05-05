@@ -3,7 +3,8 @@
 import { createPost, updatePost } from "@/lib/db/posts"
 import type { MultilingualContent } from "@/lib/db/posts"
 import { revalidatePath } from "next/cache"
-import { createClientSupabaseClient } from "@/lib/supabase/client"
+import { query, queryOne } from "@/lib/db/postgres"
+import { localAuth } from "@/lib/auth/local-auth"
 
 export async function createPostAction(formData: {
   userId: string
@@ -12,7 +13,7 @@ export async function createPostAction(formData: {
   categoryId?: string
   tags?: string[]
   imageUrl?: string
-  originalLink?: string // Added originalLink
+  originalLink?: string
   isPinned?: boolean
 }) {
   try {
@@ -24,7 +25,7 @@ export async function createPostAction(formData: {
       category_id: formData.categoryId,
       tags: formData.tags,
       image_url: formData.imageUrl,
-      original_link: formData.originalLink || null, // Added original_link
+      original_link: formData.originalLink || null,
       is_pinned: formData.isPinned || false,
     })
 
@@ -53,7 +54,7 @@ export async function updatePostAction(
     categoryId?: string
     tags?: string[]
     imageUrl?: string
-    originalLink?: string // Added originalLink
+    originalLink?: string
     isPinned?: boolean
   },
 ) {
@@ -65,7 +66,7 @@ export async function updatePostAction(
       category_id: formData.categoryId,
       tags: formData.tags,
       image_url: formData.imageUrl,
-      original_link: formData.originalLink, // Added original_link
+      original_link: formData.originalLink,
       is_pinned: formData.isPinned,
     })
 
@@ -87,29 +88,28 @@ export async function updatePostAction(
 }
 
 export async function likePostAction(postId: string, userId: string) {
-  const supabase = createClientSupabaseClient()
-  if (!supabase) {
-    return { success: false, message: "Database connection error" }
+  // Check if local auth is enabled
+  if (localAuth.isEnabled()) {
+    // For local development, simulate like functionality
+    return { success: true, liked: true }
   }
 
   try {
     // Check if already liked
-    const { data: existingLike } = await supabase
-      .from("post_likes")
-      .select("*")
-      .eq("post_id", postId)
-      .eq("user_id", userId)
-      .single()
+    const existingLike = await queryOne("SELECT * FROM post_likes WHERE post_id = $1 AND user_id = $2", [
+      postId,
+      userId,
+    ])
 
     if (existingLike) {
       // Unlike
-      await supabase.from("post_likes").delete().eq("post_id", postId).eq("user_id", userId)
+      await query("DELETE FROM post_likes WHERE post_id = $1 AND user_id = $2", [postId, userId])
 
       revalidatePath(`/posts/${postId}`)
       return { success: true, liked: false }
     } else {
       // Like
-      await supabase.from("post_likes").insert([{ post_id: postId, user_id: userId }])
+      await query("INSERT INTO post_likes (post_id, user_id) VALUES ($1, $2)", [postId, userId])
 
       revalidatePath(`/posts/${postId}`)
       return { success: true, liked: true }
@@ -121,28 +121,27 @@ export async function likePostAction(postId: string, userId: string) {
 }
 
 export async function savePostAction(postId: string, userId: string) {
-  const supabase = createClientSupabaseClient()
-  if (!supabase) {
-    return { success: false, message: "Database connection error" }
+  // Check if local auth is enabled
+  if (localAuth.isEnabled()) {
+    // For local development, simulate save functionality
+    return { success: true, saved: true }
   }
 
   try {
     // Check if already saved
-    const { data: existingSave } = await supabase
-      .from("saved_posts")
-      .select("*")
-      .eq("post_id", postId)
-      .eq("user_id", userId)
-      .single()
+    const existingSave = await queryOne("SELECT * FROM saved_posts WHERE post_id = $1 AND user_id = $2", [
+      postId,
+      userId,
+    ])
 
     if (existingSave) {
       // Unsave
-      await supabase.from("saved_posts").delete().eq("post_id", postId).eq("user_id", userId)
+      await query("DELETE FROM saved_posts WHERE post_id = $1 AND user_id = $2", [postId, userId])
 
       return { success: true, saved: false }
     } else {
       // Save
-      await supabase.from("saved_posts").insert([{ post_id: postId, user_id: userId }])
+      await query("INSERT INTO saved_posts (post_id, user_id) VALUES ($1, $2)", [postId, userId])
 
       return { success: true, saved: true }
     }

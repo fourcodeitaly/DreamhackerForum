@@ -1,4 +1,5 @@
-import { createServerSupabaseClient } from "../supabase/server"
+import { query, queryOne } from "../db/postgres"
+import { localAuth } from "../auth/local-auth"
 
 export type UserRole = "user" | "admin"
 
@@ -16,134 +17,128 @@ export type User = {
 }
 
 export async function getUserById(id: string): Promise<User | null> {
-  const supabase = await createServerSupabaseClient()
-
-  if (!supabase) {
-    console.error("Supabase client not available")
-    return null
+  // If local auth is enabled, use it
+  if (localAuth.isEnabled()) {
+    return localAuth.getUserById(id)
   }
 
-  const { data, error } = await supabase.from("users").select("*").eq("id", id).single()
-
-  if (error) {
+  try {
+    return await queryOne<User>("SELECT * FROM users WHERE id = $1", [id])
+  } catch (error) {
     console.error("Error fetching user:", error)
     return null
   }
-
-  return data as User
 }
 
 export async function getUserByUsername(username: string): Promise<User | null> {
-  const supabase = await createServerSupabaseClient()
-
-  if (!supabase) {
-    console.error("Supabase client not available")
-    return null
+  // If local auth is enabled, use it
+  if (localAuth.isEnabled()) {
+    const users = localAuth.getAllUsers()
+    return users.find((u) => u.username === username) || null
   }
 
-  const { data, error } = await supabase.from("users").select("*").eq("username", username).single()
-
-  if (error) {
+  try {
+    return await queryOne<User>("SELECT * FROM users WHERE username = $1", [username])
+  } catch (error) {
     console.error("Error fetching user by username:", error)
     return null
   }
-
-  return data as User
 }
 
 export async function updateUser(id: string, userData: Partial<User>): Promise<User | null> {
-  const supabase = await createServerSupabaseClient()
+  try {
+    // Build dynamic update query
+    const updates: string[] = []
+    const values: any[] = []
+    let paramIndex = 1
 
-  if (!supabase) {
-    console.error("Supabase client not available")
-    return null
-  }
+    // Add each field to the update query
+    Object.entries(userData).forEach(([key, value]) => {
+      if (value !== undefined) {
+        updates.push(`${key} = $${paramIndex}`)
+        values.push(value)
+        paramIndex++
+      }
+    })
 
-  const { data, error } = await supabase
-    .from("users")
-    .update({ ...userData, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .select()
-    .single()
+    // Add updated_at timestamp
+    updates.push(`updated_at = $${paramIndex}`)
+    values.push(new Date().toISOString())
+    paramIndex++
 
-  if (error) {
+    // Add the user ID as the last parameter
+    values.push(id)
+
+    // Construct the final query
+    const sql = `
+      UPDATE users 
+      SET ${updates.join(", ")} 
+      WHERE id = $${paramIndex}
+      RETURNING *
+    `
+
+    return await queryOne<User>(sql, values)
+  } catch (error) {
     console.error("Error updating user:", error)
     return null
   }
-
-  return data as User
 }
 
 export async function isUserAdmin(userId: string): Promise<boolean> {
-  const user = await getUserById(userId)
-  return user?.role === "admin"
+  // If local auth is enabled, use it
+  if (localAuth.isEnabled()) {
+    return localAuth.isUserAdmin(userId)
+  }
+
+  try {
+    const user = await getUserById(userId)
+    return user?.role === "admin"
+  } catch (error) {
+    console.error("Error checking if user is admin:", error)
+    return false
+  }
 }
 
 // New function to set a user as admin
 export async function setUserAsAdmin(userId: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient()
+  try {
+    const sql = `
+      UPDATE users
+      SET role = 'admin', updated_at = $1
+      WHERE id = $2
+    `
 
-  if (!supabase) {
-    console.error("Supabase client not available")
-    return false
-  }
-
-  const { error } = await supabase
-    .from("users")
-    .update({
-      role: "admin",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId)
-
-  if (error) {
+    await query(sql, [new Date().toISOString(), userId])
+    return true
+  } catch (error) {
     console.error("Error setting user as admin:", error)
     return false
   }
-
-  return true
 }
 
 // New function to remove admin role from a user
 export async function removeAdminRole(userId: string): Promise<boolean> {
-  const supabase = await createServerSupabaseClient()
+  try {
+    const sql = `
+      UPDATE users
+      SET role = 'user', updated_at = $1
+      WHERE id = $2
+    `
 
-  if (!supabase) {
-    console.error("Supabase client not available")
-    return false
-  }
-
-  const { error } = await supabase
-    .from("users")
-    .update({
-      role: "user",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId)
-
-  if (error) {
+    await query(sql, [new Date().toISOString(), userId])
+    return true
+  } catch (error) {
     console.error("Error removing admin role:", error)
     return false
   }
-
-  return true
 }
 
 // New function to get all admin users
 export async function getAllAdminUsers(): Promise<User[]> {
-  const supabase = await createServerSupabaseClient()
-
-  if (!supabase) {
-    console.error("Supabase client not available")
-    return []
-  }
-
-  const { data, error } = await supabase.from("users").select("*").eq("role", "admin")
-
-  if (error) {
+  try {
+    return await query<User>("SELECT * FROM users WHERE role = $1", ["admin"])
+  } catch (error) {
     console.error("Error fetching admin users:", error)
     return []
   }
-
-  return data as User[]
 }

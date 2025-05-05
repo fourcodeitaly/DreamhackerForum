@@ -1,22 +1,19 @@
-import { hasSupabaseCredentials } from "@/lib/supabase/server"
+import { checkConnection } from "@/lib/db/postgres"
 
 export async function ServerEnvChecker() {
-  const hasCredentials = hasSupabaseCredentials()
+  const dbConnected = await checkConnection().catch(() => false)
 
-  // Only show in development
-  if (process.env.NODE_ENV !== "development") {
-    return null
+  if (!dbConnected) {
+    return (
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <p className="font-bold">Database Connection Warning</p>
+        <p>
+          Could not connect to the database. Some features may not work properly. If you're in development mode, mock
+          data will be used where possible.
+        </p>
+      </div>
+    )
   }
 
-  return (
-    <div className="mb-6 p-4 rounded-lg border bg-amber-50 text-amber-800 border-amber-200">
-      <h3 className="text-lg font-medium">Environment Status</h3>
-      <p className="text-sm mt-1">Supabase Environment Variables: {hasCredentials ? "✅ Available" : "❌ Missing"}</p>
-      {!hasCredentials && (
-        <div className="mt-2 text-sm">
-          <p>The application will use mock data. To use real data, please set up the required environment variables.</p>
-        </div>
-      )}
-    </div>
-  )
+  return null
 }
