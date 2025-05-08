@@ -46,8 +46,6 @@ export async function getCommentsByPostId(
 
     const comments = await query<Comment>(sql, [postId, userId || null]);
 
-    console.log(comments);
-
     return comments;
   } catch (error) {
     console.error("Error fetching comments:", error);
@@ -292,8 +290,6 @@ export async function handleCommentVote(
       );
 
       const currentVoteType = currentVote.rows[0]?.vote_type || 0;
-
-      console.log(currentVoteType);
 
       // Remove old vote if exists
       if (currentVoteType !== 0) {

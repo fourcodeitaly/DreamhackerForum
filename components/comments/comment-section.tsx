@@ -63,7 +63,6 @@ export function CommentSection({
         setComments((prev) => [...prev, ...data.comments]);
       } else {
         setComments(data.comments);
-        console.log(data.comments);
       }
 
       setHasMore(data.pagination.hasMore);

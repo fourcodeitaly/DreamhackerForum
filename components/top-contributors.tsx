@@ -37,8 +37,6 @@ export function TopContributors() {
         }
         const contributors = await response.json();
 
-        console.log(contributors);
-
         setContributors(contributors);
       } catch (err) {
         console.error("Error fetching top contributors:", err);
