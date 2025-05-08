@@ -191,7 +191,8 @@ export async function getPostById(
         json_build_object(
           'id', c.id,
           'name', c.name
-        ) as category
+        ) as category,
+        (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       LEFT JOIN categories c ON p.category_id = c.id
@@ -277,7 +278,7 @@ export async function deletePost(postId: string): Promise<boolean> {
         postId,
       ]);
 
-      return result.rowCount > 0;
+      return result.rowCount && result.rowCount > 0;
     });
   } catch (error) {
     console.error("Error deleting post:", error);
@@ -387,7 +388,7 @@ export async function getPosts(
     );
     const total = Number.parseInt(countResult?.count || "0");
 
-    // Build the query for posts
+    // Build the query for posts with comment count
     let sql = `
       SELECT 
         p.*,
@@ -400,7 +401,8 @@ export async function getPosts(
         json_build_object(
           'id', c.id,
           'name', c.name
-        ) as category
+        ) as category,
+        (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       LEFT JOIN categories c ON p.category_id = c.id
@@ -469,24 +471,6 @@ export async function getPosts(
       likesByPostId[like.post_id] = Number.parseInt(like.count);
     });
 
-    // Get comment counts for all posts
-    const commentsSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM comments
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
-    const commentsResults = await query<{ post_id: string; count: string }>(
-      commentsSql,
-      [postIds]
-    );
-
-    // Create a map of comment counts by post_id
-    const commentsByPostId: Record<string, number> = {};
-    commentsResults.forEach((comment) => {
-      commentsByPostId[comment.post_id] = Number.parseInt(comment.count);
-    });
-
     // If userId is provided, check which posts the user has liked and saved
     let likedPostIds: string[] = [];
     let savedPostIds: string[] = [];
@@ -522,7 +506,7 @@ export async function getPosts(
       ...post,
       tags: tagsByPostId[post.id] || [],
       likes_count: likesByPostId[post.id] || 0,
-      comments_count: commentsByPostId[post.id] || 0,
+      comments_count: Number(post.comments_count) || 0,
       liked: likedPostIds.includes(post.id),
       saved: savedPostIds.includes(post.id),
     }));
@@ -1086,5 +1070,24 @@ export async function getRelatedPosts(
   } catch (error) {
     console.error("Error fetching related posts:", error);
     return [];
+  }
+}
+
+// Helper function to get total post count
+export async function getPostCount(categoryId?: string): Promise<number> {
+  try {
+    let sql = "SELECT COUNT(*) FROM posts";
+    const params = [];
+
+    if (categoryId) {
+      sql += " WHERE category_id = $1";
+      params.push(categoryId);
+    }
+
+    const result = await queryOne(sql, params);
+    return Number.parseInt(result?.count || "0");
+  } catch (error) {
+    console.error("Error counting posts:", error);
+    return 0;
   }
 }

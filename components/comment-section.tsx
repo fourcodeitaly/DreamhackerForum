@@ -41,6 +41,7 @@ export function CommentSection({
 
   // Fetch comments if no initial comments were provided
   useEffect(() => {
+    console.log(initialComments);
     if (initialComments.length === 0) {
       fetchComments();
     }

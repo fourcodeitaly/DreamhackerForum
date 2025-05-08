@@ -9,10 +9,10 @@ export type Comment = {
   content: string;
   created_at: string;
   updated_at: string;
+  upvotes: number;
+  downvotes: number;
   // Joined fields
   author?: User;
-  likes_count?: number;
-  liked?: boolean;
   vote_score?: number;
   user_vote?: number;
 };
@@ -22,7 +22,7 @@ export async function getCommentsByPostId(
   userId?: string
 ): Promise<Comment[]> {
   try {
-    // Get comments with author information
+    // Get comments with author information and vote data
     const sql = `
       SELECT 
         c.*,
@@ -31,61 +31,24 @@ export async function getCommentsByPostId(
           'name', u.name,
           'username', u.username,
           'image_url', u.image_url
-        ) as author
+        ) as author,
+        COALESCE(c.upvotes, 0) - COALESCE(c.downvotes, 0) as vote_score,
+        CASE 
+          WHEN cv.vote_type IS NOT NULL THEN cv.vote_type
+          ELSE 0
+        END as user_vote
       FROM comments c
       LEFT JOIN users u ON c.user_id = u.id
+      LEFT JOIN comment_votes cv ON c.id = cv.comment_id AND cv.user_id = $2
       WHERE c.post_id = $1
       ORDER BY c.created_at DESC
     `;
 
-    const comments = await query<Comment>(sql, [postId]);
+    const comments = await query<Comment>(sql, [postId, userId || null]);
 
-    if (comments.length === 0) {
-      return [];
-    }
+    console.log(comments);
 
-    // Get comment IDs for additional queries
-    const commentIds = comments.map((comment) => comment.id);
-
-    // Get likes count for all comments
-    const likesSql = `
-      SELECT comment_id, COUNT(*) as count
-      FROM comment_likes
-      WHERE comment_id = ANY($1::uuid[])
-      GROUP BY comment_id
-    `;
-    const likesResults = await query<{ comment_id: string; count: string }>(
-      likesSql,
-      [commentIds]
-    );
-
-    // Create a map of like counts by comment_id
-    const likesByCommentId: Record<string, number> = {};
-    likesResults.forEach((like) => {
-      likesByCommentId[like.comment_id] = Number.parseInt(like.count);
-    });
-
-    // If userId is provided, check which comments the user has liked
-    let likedCommentIds: string[] = [];
-    if (userId) {
-      const likedSql = `
-        SELECT comment_id
-        FROM comment_likes
-        WHERE user_id = $1 AND comment_id = ANY($2::uuid[])
-      `;
-      const likedResults = await query<{ comment_id: string }>(likedSql, [
-        userId,
-        commentIds,
-      ]);
-      likedCommentIds = likedResults.map((like) => like.comment_id);
-    }
-
-    // Combine all data
-    return comments.map((comment) => ({
-      ...comment,
-      likes_count: likesByCommentId[comment.id] || 0,
-      liked: likedCommentIds.includes(comment.id),
-    }));
+    return comments;
   } catch (error) {
     console.error("Error fetching comments:", error);
     return [];
@@ -130,8 +93,6 @@ export async function createComment(
     return {
       ...comment,
       author: author || undefined,
-      likes_count: 0,
-      liked: false,
     };
   } catch (error) {
     console.error("Error creating comment:", error);
@@ -313,6 +274,83 @@ export async function deleteComment(
     return true;
   } catch (error) {
     console.error("Error deleting comment:", error);
+    throw error;
+  }
+}
+
+export async function handleCommentVote(
+  commentId: string,
+  userId: string,
+  voteType: number
+): Promise<{ upvotes: number; downvotes: number; vote_score: number } | null> {
+  try {
+    return await transaction(async (client) => {
+      // Get current vote if exists
+      const currentVote = await client.query(
+        "SELECT vote_type FROM comment_votes WHERE comment_id = $1 AND user_id = $2",
+        [commentId, userId]
+      );
+
+      const currentVoteType = currentVote.rows[0]?.vote_type || 0;
+
+      console.log(currentVoteType);
+
+      // Remove old vote if exists
+      if (currentVoteType !== 0) {
+        await client.query(
+          `UPDATE comments 
+           SET 
+             upvotes = upvotes - CASE WHEN $1 = 1 THEN 1 ELSE 0 END,
+             downvotes = downvotes - CASE WHEN $1 = -1 THEN 1 ELSE 0 END,
+             updated_at = CURRENT_TIMESTAMP
+           WHERE id = $2
+           RETURNING *`,
+          [currentVoteType, commentId]
+        );
+      }
+
+      // Add new vote
+      if (voteType !== 0) {
+        await client.query(
+          `UPDATE comments 
+           SET 
+             upvotes = upvotes + CASE WHEN $1 = 1 THEN 1 ELSE 0 END,
+             downvotes = downvotes + CASE WHEN $1 = -1 THEN 1 ELSE 0 END,
+             updated_at = CURRENT_TIMESTAMP
+           WHERE id = $2
+           RETURNING *`,
+          [voteType, commentId]
+        );
+      }
+
+      // Update or insert vote record
+      await client.query(
+        `INSERT INTO comment_votes (user_id, comment_id, vote_type)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (user_id, comment_id) 
+         DO UPDATE SET vote_type = $3`,
+        [userId, commentId, voteType]
+      );
+
+      // Get final updated comment stats
+      const updatedComment = await client.query(
+        "SELECT upvotes, downvotes FROM comments WHERE id = $1",
+        [commentId]
+      );
+
+      if (!updatedComment.rows[0]) {
+        return null;
+      }
+
+      const { upvotes, downvotes } = updatedComment.rows[0];
+      return {
+        upvotes: Number(upvotes),
+        downvotes: Number(downvotes),
+        vote_score: Number(upvotes) - Number(downvotes),
+      };
+    });
+  } catch (error) {
+    console.error("Error handling comment vote:", error);
     throw error;
   }
 }

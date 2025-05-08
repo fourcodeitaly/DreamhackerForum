@@ -1,13 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/hooks/use-auth"
-import { useTranslation } from "@/hooks/use-translation"
-import { formatRelativeTime, cn } from "@/lib/utils"
+import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
+import { formatRelativeTime, cn } from "@/lib/utils";
 import {
   ArrowDown,
   ArrowUp,
@@ -19,25 +29,25 @@ import {
   MessageSquare,
   MoreVertical,
   Trash2,
-} from "lucide-react"
-import { CommentForm } from "./comment-form"
-import { CommentEditor } from "./comment-editor"
-import { ReportCommentDialog } from "./report-comment-dialog"
-import { Badge } from "@/components/ui/badge"
-import { Markdown } from "@/components/markdown"
-import type { Comment } from "@/lib/types/comment"
+} from "lucide-react";
+import { CommentForm } from "./comment-form";
+import { CommentEditor } from "./comment-editor";
+import { ReportCommentDialog } from "./report-comment-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Markdown } from "@/components/markdown";
+import type { Comment } from "@/lib/types/comment";
 
 interface CommentItemProps {
-  comment: Comment
-  postId: string
-  depth: number
-  replyCount: number
-  isRepliesExpanded: boolean
-  isLoadingReplies: boolean
-  onToggleReplies: () => void
-  onNewReply: (parentId: string, reply: Comment) => void
-  onCommentUpdate: (comment: Comment) => void
-  onCommentDelete: (commentId: string) => void
+  comment: Comment;
+  postId: string;
+  depth: number;
+  replyCount: number;
+  isRepliesExpanded: boolean;
+  isLoadingReplies: boolean;
+  onToggleReplies: () => void;
+  onNewReply: (parentId: string, reply: Comment) => void;
+  onCommentUpdate: (comment: Comment) => void;
+  onCommentDelete: (commentId: string) => void;
 }
 
 export function CommentItem({
@@ -52,29 +62,29 @@ export function CommentItem({
   onCommentUpdate,
   onCommentDelete,
 }: CommentItemProps) {
-  const { t } = useTranslation()
-  const { user, isAuthenticated } = useAuth()
-  const [isReplying, setIsReplying] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [isReporting, setIsReporting] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
+  const [isReplying, setIsReplying] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isReporting, setIsReporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [voteStatus, setVoteStatus] = useState({
-    score: comment.vote_score || 0,
+    score: (comment.upvotes || 0) - (comment.downvotes || 0),
     userVote: comment.user_vote || 0,
     isVoting: false,
-  })
+  });
 
-  const isDeleted = comment.status === "deleted"
-  const isOwner = user?.id === comment.user_id
-  const isAdmin = user?.role === "admin"
-  const canModify = isOwner || isAdmin
+  const isDeleted = comment.status === "deleted";
+  const isOwner = user?.id === comment.user_id;
+  const isAdmin = user?.role === "admin";
+  const canModify = isOwner || isAdmin;
 
   // Handle voting
   const handleVote = async (voteType: 1 | -1) => {
-    if (!isAuthenticated || voteStatus.isVoting) return
+    if (!isAuthenticated || voteStatus.isVoting) return;
 
     // If user clicks the same vote button, treat as toggling the vote off
-    const newVoteType = voteStatus.userVote === voteType ? 0 : voteType
+    const newVoteType = voteStatus.userVote === voteType ? 0 : voteType;
 
     // Optimistically update UI
     setVoteStatus((prev) => ({
@@ -82,7 +92,7 @@ export function CommentItem({
       score: prev.score + (newVoteType - prev.userVote),
       userVote: newVoteType,
       isVoting: true,
-    }))
+    }));
 
     try {
       const response = await fetch(`/api/comments/${comment.id}/vote`, {
@@ -91,75 +101,75 @@ export function CommentItem({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ vote_type: newVoteType }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to vote")
+        throw new Error("Failed to vote");
       }
 
-      const data = await response.json()
+      const data = await response.json();
 
       // Update with actual server data
       setVoteStatus((prev) => ({
         ...prev,
         score: data.vote_score,
         userVote: data.vote_type,
-      }))
+      }));
     } catch (error) {
-      console.error("Error voting:", error)
+      console.error("Error voting:", error);
 
       // Revert optimistic update on error
       setVoteStatus((prev) => ({
         ...prev,
         score: comment.vote_score || 0,
         userVote: comment.user_vote || 0,
-      }))
+      }));
     } finally {
-      setVoteStatus((prev) => ({ ...prev, isVoting: false }))
+      setVoteStatus((prev) => ({ ...prev, isVoting: false }));
     }
-  }
+  };
 
   // Handle reply submission
   const handleReplySubmit = (newReply: Comment) => {
-    onNewReply(comment.id, newReply)
-    setIsReplying(false)
-  }
+    onNewReply(comment.id, newReply);
+    setIsReplying(false);
+  };
 
   // Handle comment update
   const handleCommentUpdate = (updatedComment: Comment) => {
-    onCommentUpdate(updatedComment)
-    setIsEditing(false)
-  }
+    onCommentUpdate(updatedComment);
+    setIsEditing(false);
+  };
 
   // Handle comment delete
   const handleDelete = async () => {
-    if (isDeleting) return
+    if (isDeleting) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
 
     try {
       const response = await fetch(`/api/comments/${comment.id}`, {
         method: "DELETE",
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to delete comment")
+        throw new Error("Failed to delete comment");
       }
 
-      onCommentDelete(comment.id)
+      onCommentDelete(comment.id);
     } catch (error) {
-      console.error("Error deleting comment:", error)
+      console.error("Error deleting comment:", error);
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   return (
     <Card
       className={cn(
         "overflow-hidden border-muted/50 transition-all",
         depth > 0 && "border-l-0 rounded-l-none",
-        isDeleted && "opacity-70",
+        isDeleted && "opacity-70"
       )}
     >
       <CardHeader className="pb-2 pt-3">
@@ -167,23 +177,35 @@ export function CommentItem({
           <div className="flex items-center space-x-3">
             <Avatar className="h-8 w-8 border border-primary/10">
               <AvatarImage
-                src={comment.user?.image_url || "/placeholder.svg?height=32&width=32&query=user"}
-                alt={comment.user?.name || ""}
+                src={
+                  comment.author?.image_url ||
+                  "/placeholder.svg?height=32&width=32&query=user"
+                }
+                alt={comment.author?.name || ""}
               />
-              <AvatarFallback>{comment.user?.name?.[0] || "?"}</AvatarFallback>
+              <AvatarFallback>
+                {comment.author?.name?.[0] || "?"}
+              </AvatarFallback>
             </Avatar>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium">{comment.user?.name || t("anonymousUser")}</span>
-                {comment.user?.role === "admin" && (
-                  <Badge variant="outline" className="text-xs px-1 py-0 h-5 bg-primary/5">
+                <span className="font-medium">
+                  {comment.author?.name || t("anonymousUser")}
+                </span>
+                {comment.author?.role === "admin" && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs px-1 py-0 h-5 bg-primary/5"
+                  >
                     {t("admin")}
                   </Badge>
                 )}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>{formatRelativeTime(comment.created_at)}</span>
-                {comment.is_edited && <span className="italic">{t("edited")}</span>}
+                {comment.is_edited && (
+                  <span className="italic">{t("edited")}</span>
+                )}
               </div>
             </div>
           </div>
@@ -203,7 +225,10 @@ export function CommentItem({
                       <Edit className="mr-2 h-4 w-4" />
                       <span>{t("edit")}</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleDelete} disabled={isDeleting}>
+                    <DropdownMenuItem
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                    >
                       <Trash2 className="mr-2 h-4 w-4" />
                       <span>{t("delete")}</span>
                     </DropdownMenuItem>
@@ -223,17 +248,25 @@ export function CommentItem({
 
       <CardContent className="pb-3 pt-1">
         {isEditing ? (
-          <CommentEditor comment={comment} onCancel={() => setIsEditing(false)} onUpdate={handleCommentUpdate} />
+          <CommentEditor
+            comment={comment}
+            onCancel={() => setIsEditing(false)}
+            onUpdate={handleCommentUpdate}
+          />
         ) : (
           <>
             {isDeleted ? (
-              <p className="italic text-muted-foreground">{t("commentDeleted")}</p>
+              <p className="italic text-muted-foreground">
+                {t("commentDeleted")}
+              </p>
             ) : comment.is_markdown ? (
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 <Markdown content={comment.content} />
               </div>
             ) : (
-              <p className="whitespace-pre-wrap break-words text-base leading-relaxed">{comment.content}</p>
+              <p className="whitespace-pre-wrap break-words text-base leading-relaxed">
+                {comment.content}
+              </p>
             )}
           </>
         )}
@@ -246,7 +279,10 @@ export function CommentItem({
               <Button
                 variant="ghost"
                 size="icon"
-                className={cn("h-6 w-6 rounded-full", voteStatus.userVote === 1 && "text-primary")}
+                className={cn(
+                  "h-6 w-6 rounded-full",
+                  voteStatus.userVote === 1 && "text-primary"
+                )}
                 onClick={() => handleVote(1)}
                 disabled={!isAuthenticated || voteStatus.isVoting}
               >
@@ -258,7 +294,7 @@ export function CommentItem({
                 className={cn(
                   "mx-1 min-w-[20px] text-center text-sm font-medium",
                   voteStatus.score > 0 && "text-primary",
-                  voteStatus.score < 0 && "text-destructive",
+                  voteStatus.score < 0 && "text-destructive"
                 )}
               >
                 {voteStatus.score}
@@ -267,7 +303,10 @@ export function CommentItem({
               <Button
                 variant="ghost"
                 size="icon"
-                className={cn("h-6 w-6 rounded-full", voteStatus.userVote === -1 && "text-destructive")}
+                className={cn(
+                  "h-6 w-6 rounded-full",
+                  voteStatus.userVote === -1 && "text-destructive"
+                )}
                 onClick={() => handleVote(-1)}
                 disabled={!isAuthenticated || voteStatus.isVoting}
               >
@@ -306,7 +345,9 @@ export function CommentItem({
             ) : (
               <ChevronDown className="mr-1 h-3 w-3" />
             )}
-            {isRepliesExpanded ? t("hideReplies", { count: replyCount }) : t("showReplies", { count: replyCount })}
+            {isRepliesExpanded
+              ? t("hideReplies", { count: replyCount })
+              : t("showReplies", { count: replyCount })}
           </Button>
         )}
       </CardFooter>
@@ -324,8 +365,12 @@ export function CommentItem({
       )}
 
       {isReporting && (
-        <ReportCommentDialog commentId={comment.id} isOpen={isReporting} onClose={() => setIsReporting(false)} />
+        <ReportCommentDialog
+          commentId={comment.id}
+          isOpen={isReporting}
+          onClose={() => setIsReporting(false)}
+        />
       )}
     </Card>
-  )
+  );
 }

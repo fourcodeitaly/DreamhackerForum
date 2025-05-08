@@ -1,46 +1,61 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Bookmark, Heart, MessageCircle, Share2, Edit, ExternalLink } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
-import { useTranslation } from "@/hooks/use-translation"
-import { useLanguage } from "@/hooks/use-language"
-import { cn } from "@/lib/utils"
-import { formatRelativeTime } from "@/lib/utils"
-import { PostLanguageSwitcher } from "@/components/post-language-switcher"
-import { normalizePostData } from "@/lib/data-utils"
-import { Markdown } from "@/components/markdown" // Import the Markdown component
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  Bookmark,
+  Heart,
+  MessageCircle,
+  Share2,
+  Edit,
+  ExternalLink,
+} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/hooks/use-language";
+import { cn } from "@/lib/utils";
+import { formatRelativeTime } from "@/lib/utils";
+import { PostLanguageSwitcher } from "@/components/post-language-switcher";
+import { normalizePostData } from "@/lib/data-utils";
+import { Markdown } from "@/components/markdown"; // Import the Markdown component
+import { Post } from "@/lib/db/posts";
 
 interface PostDetailProps {
-  post: any
+  post: Post;
 }
 
 export function PostDetail({ post: rawPost }: PostDetailProps) {
-  const { t } = useTranslation()
-  const { language } = useLanguage()
-  const { user, isAdmin } = useAuth()
+  const { t } = useTranslation();
+  const { language } = useLanguage();
+  const { user, isAdmin } = useAuth();
 
-  const [post, setPost] = useState<any>(null)
-  const [liked, setLiked] = useState(false)
-  const [likesCount, setLikesCount] = useState(0)
-  const [saved, setSaved] = useState(false)
-  const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">("en")
+  const [post, setPost] = useState<Post>(rawPost);
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [saved, setSaved] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">(
+    "en"
+  );
 
   useEffect(() => {
     if (rawPost) {
-      const normalizedPost = normalizePostData(rawPost)
-      setPost(normalizedPost)
-      setLiked(normalizedPost.liked || false)
-      setLikesCount(normalizedPost.likes_count || 0)
-      setSaved(normalizedPost.saved || false)
-      setCurrentLanguage(language)
+      const normalizedPost = normalizePostData(rawPost);
+      setPost(normalizedPost);
+      setLiked(normalizedPost.liked || false);
+      setLikesCount(normalizedPost.likes_count || 0);
+      setSaved(normalizedPost.saved || false);
+      setCurrentLanguage(language);
     }
-  }, [rawPost, language])
+  }, [rawPost, language]);
 
   // Handle case where post might be null or undefined
   if (!post) {
@@ -48,19 +63,23 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       <Card className="overflow-hidden">
         <CardHeader className="p-6">
           <div className="text-center p-8">
-            <h2 className="text-xl font-semibold text-gray-700">Post not found</h2>
-            <p className="text-gray-500 mt-2">The post you're looking for doesn't exist or has been removed.</p>
+            <h2 className="text-xl font-semibold text-gray-700">
+              Post not found
+            </h2>
+            <p className="text-gray-500 mt-2">
+              The post you're looking for doesn't exist or has been removed.
+            </p>
           </div>
         </CardHeader>
       </Card>
-    )
+    );
   }
 
   // Handle multilingual content
   const getLocalizedContent = () => {
     // Check if post has multilingual content structure
     if (post.content && typeof post.content === "object") {
-      return post.content[currentLanguage] || post.content.en || ""
+      return post.content[currentLanguage] || post.content.en || "";
     }
 
     // Legacy format or fallback
@@ -70,72 +89,76 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
             .split("\n")
             .map((paragraph: string) => `[中文] ${paragraph}`)
             .join("\n")
-        : ""
+        : "";
     } else if (currentLanguage === "vi") {
       return post.content
         ? post.content
             .split("\n")
             .map((paragraph: string) => `[Tiếng Việt] ${paragraph}`)
             .join("\n")
-        : ""
+        : "";
     }
-    return post.content || ""
-  }
+    return post.content || "";
+  };
 
   const getLocalizedTitle = () => {
     // Check if post has multilingual title structure
     if (post.title && typeof post.title === "object") {
-      return post.title[currentLanguage] || post.title.en || ""
+      return post.title[currentLanguage] || post.title.en || "";
     }
 
     // Legacy format or fallback
     if (currentLanguage === "zh") {
-      return post.title ? `[中文] ${post.title}` : ""
+      return post.title ? `[中文] ${post.title}` : "";
     } else if (currentLanguage === "vi") {
-      return post.title ? `[Tiếng Việt] ${post.title}` : ""
+      return post.title ? `[Tiếng Việt] ${post.title}` : "";
     }
-    return post.title || ""
-  }
+    return post.title || "";
+  };
 
   const handleLike = () => {
-    if (!user) return
+    if (!user) return;
 
     if (liked) {
-      setLikesCount((prev) => prev - 1)
+      setLikesCount((prev) => prev - 1);
     } else {
-      setLikesCount((prev) => prev + 1)
+      setLikesCount((prev) => prev + 1);
     }
-    setLiked(!liked)
-  }
+    setLiked(!liked);
+  };
 
   const handleSave = () => {
-    if (!user) return
-    setSaved(!saved)
-  }
+    if (!user) return;
+    setSaved(!saved);
+  };
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
         title: getLocalizedTitle(),
-        text: post.excerpt ? post.excerpt[currentLanguage] || post.excerpt.en : "",
+        text: post.excerpt
+          ? post.excerpt[currentLanguage] || post.excerpt.en
+          : "",
         url: `/posts/${post.id}`,
-      })
+      });
     } else {
       // Fallback
-      navigator.clipboard.writeText(window.location.origin + `/posts/${post.id}`)
-      alert(t("linkCopied"))
+      navigator.clipboard.writeText(
+        window.location.origin + `/posts/${post.id}`
+      );
+      alert(t("linkCopied"));
     }
-  }
+  };
 
   // Ensure author exists with fallbacks
   const author = post.author || {
     name: "Unknown Author",
     username: "unknown",
     image: null,
-  }
+  };
 
   // Get the creation date safely
-  const creationDate = post.createdAt || post.created_at
+  const creationDate = post.createdAt || post.created_at;
 
   return (
     <Card className="overflow-hidden">
@@ -143,14 +166,27 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={author.image || "/placeholder.svg?height=40&width=40&query=user"} alt={author.name} />
-              <AvatarFallback>{author.name ? author.name[0] : "U"}</AvatarFallback>
+              <AvatarImage
+                src={
+                  author.image ||
+                  "/placeholder.svg?height=40&width=40&query=user"
+                }
+                alt={author.name}
+              />
+              <AvatarFallback>
+                {author.name ? author.name[0] : "U"}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <Link href={`/profile/${author.username || "unknown"}`} className="text-base font-medium hover:underline">
+              <Link
+                href={`/profile/${author.username || "unknown"}`}
+                className="text-base font-medium hover:underline"
+              >
                 {author.name || "Unknown Author"}
               </Link>
-              <p className="text-sm text-muted-foreground">{formatRelativeTime(creationDate)}</p>
+              <p className="text-sm text-muted-foreground">
+                {formatRelativeTime(creationDate)}
+              </p>
             </div>
           </div>
 
@@ -169,11 +205,13 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
         {/* Restore the language switcher */}
         <PostLanguageSwitcher
-          onLanguageChange={(lang) => setCurrentLanguage(lang as "en" | "zh" | "vi")}
+          onLanguageChange={(lang) =>
+            setCurrentLanguage(lang as "en" | "zh" | "vi")
+          }
           currentLanguage={currentLanguage}
         />
 
-        <h1 className="text-3xl font-bold mb-3">{getLocalizedTitle()}</h1>
+        <h1 className="text-3xl font-bold mb-3 pt-6">{getLocalizedTitle()}</h1>
 
         {/* Display the original link if available */}
         {post.original_link && (
@@ -203,7 +241,9 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         {post.image && (
           <div className="mb-6">
             <img
-              src={post.image || "/placeholder.svg?height=400&width=800&query=post"}
+              src={
+                post.image || "/placeholder.svg?height=400&width=800&query=post"
+              }
               alt={getLocalizedTitle()}
               className="rounded-md w-full max-h-96 object-cover"
             />
@@ -218,35 +258,66 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
       <CardFooter className="p-6 flex items-center justify-between border-t">
         <div className="flex space-x-6">
-          <Button variant="ghost" size="sm" className="flex items-center space-x-2" onClick={handleLike}>
-            <Heart className={cn("h-5 w-5", liked ? "fill-red-500 text-red-500" : "text-muted-foreground")} />
-            <span className={cn(liked ? "text-red-500" : "text-muted-foreground")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center space-x-2"
+            onClick={handleLike}
+          >
+            <Heart
+              className={cn(
+                "h-5 w-5",
+                liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              )}
+            />
+            <span
+              className={cn(liked ? "text-red-500" : "text-muted-foreground")}
+            >
               {likesCount} {t("likes")}
             </span>
           </Button>
 
           <Link href="#comments">
-            <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-2"
+            >
               <MessageCircle className="h-5 w-5 text-muted-foreground" />
               <span className="text-muted-foreground">
-                {post.commentsCount || 0} {t("comments")}
+                {post.comments_count || 0} {t("comments")}
               </span>
             </Button>
           </Link>
         </div>
 
         <div className="flex space-x-2">
-          <Button variant="ghost" size="sm" className="flex items-center space-x-2" onClick={handleShare}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center space-x-2"
+            onClick={handleShare}
+          >
             <Share2 className="h-5 w-5 text-muted-foreground" />
             <span className="text-muted-foreground">{t("share")}</span>
           </Button>
 
-          <Button variant="ghost" size="sm" className="flex items-center space-x-2" onClick={handleSave}>
-            <Bookmark className={cn("h-5 w-5", saved ? "fill-current" : "text-muted-foreground")} />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center space-x-2"
+            onClick={handleSave}
+          >
+            <Bookmark
+              className={cn(
+                "h-5 w-5",
+                saved ? "fill-current" : "text-muted-foreground"
+              )}
+            />
             <span className="text-muted-foreground">{t("save")}</span>
           </Button>
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

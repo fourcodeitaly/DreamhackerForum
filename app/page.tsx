@@ -7,9 +7,8 @@ import { TopContributors } from "@/components/top-contributors";
 import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/skeletons";
 import { ServerEnvChecker } from "@/components/server-env-checker";
-import { getPosts, getPostCount } from "@/lib/data-utils-supabase";
 import type { Post } from "@/lib/db/posts";
-
+import { getPosts } from "@/lib/db/posts";
 export const dynamic = "force-dynamic";
 
 export default async function Home({
@@ -28,8 +27,9 @@ export default async function Home({
   let totalPosts = 0;
 
   try {
-    initialPosts = await getPosts(pageNumber, postsPerPage);
-    totalPosts = await getPostCount();
+    const { posts, total } = await getPosts(pageNumber, postsPerPage);
+    initialPosts = posts;
+    totalPosts = total;
   } catch (error) {
     console.error("Error fetching posts in Home page:", error);
     // Continue with empty posts array

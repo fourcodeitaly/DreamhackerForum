@@ -51,7 +51,6 @@
     "next-themes": "latest",
     "nextjs-toploader": "latest",
     "pg": "^8.15.6",
-    "pg-native": "latest",
     "react": "^19",
     "react-day-picker": "8.10.1",
     "react-dom": "^19",

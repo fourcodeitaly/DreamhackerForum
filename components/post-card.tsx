@@ -17,9 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { Markdown } from "@/components/markdown";
 import { formatRelativeTime } from "@/lib/utils";
 import { MessageSquare, Eye, ExternalLink } from "lucide-react";
+import { Post } from "@/lib/db/posts";
 
 interface PostCardProps {
-  post: any;
+  post: Post;
   onDelete?: () => void;
 }
 
@@ -29,9 +30,8 @@ export function PostCard({ post, onDelete }: PostCardProps) {
   const { language } = useLanguage();
   const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
-
   const isAuthor = user && post.user_id === user.id;
-  const isAdmin = user && user.is_admin;
+  const isAdmin = user && user.role === "admin";
 
   const handleEdit = () => {
     router.push(`/posts/${post.id}/edit`);
@@ -84,20 +84,24 @@ export function PostCard({ post, onDelete }: PostCardProps) {
         <div className="flex items-center space-x-2">
           <Avatar className="h-6 w-6">
             <AvatarImage
-              src={post.user_avatar || "https://i.redd.it/o1unzd4c5bu71.png"}
-              alt={post.username}
+              src={
+                post.author?.image_url || "https://i.redd.it/o1unzd4c5bu71.png"
+              }
+              alt={post.author?.username || ""}
             />
-            <AvatarFallback>{post.username?.[0]?.toUpperCase()}</AvatarFallback>
+            <AvatarFallback>
+              {post.author?.username?.[0]?.toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div>
             <Link
-              href={`/profile/${post.username}`}
+              href={`/profile/${post.author?.username}`}
               className="text-sm font-medium hover:underline"
             >
-              {post.username}
+              {post.author?.username}
             </Link>
             <p className="text-xs text-muted-foreground">
-              {formatRelativeTime(new Date(post.created_at))}
+              {formatRelativeTime(new Date(post.created_at || ""))}
             </p>
           </div>
         </div>
@@ -105,7 +109,7 @@ export function PostCard({ post, onDelete }: PostCardProps) {
           <div>
             <Link href={`/categories/${post.category_id}`}>
               <Badge variant="outline" className="hover:bg-accent">
-                {post.category_id || post.category.en}
+                {post.category.name.en}
               </Badge>
             </Link>
           </div>
@@ -146,11 +150,11 @@ export function PostCard({ post, onDelete }: PostCardProps) {
       <CardFooter className="flex justify-between text-xs text-muted-foreground">
         <div className="flex items-center">
           <Eye className="mr-1 h-4 w-4" />
-          {post.views || 0}
+          {post.view_count || 0}
         </div>
         <div className="flex items-center">
           <MessageSquare className="mr-1 h-4 w-4" />
-          {post.comment_count || 0}
+          {post.comments_count || 0}
         </div>
       </CardFooter>
     </Card>

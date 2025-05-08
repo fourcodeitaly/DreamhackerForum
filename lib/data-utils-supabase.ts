@@ -79,25 +79,6 @@ export async function getPosts(
   }
 }
 
-// Helper function to get total post count
-export async function getPostCount(categoryId?: string): Promise<number> {
-  try {
-    let sql = "SELECT COUNT(*) FROM posts";
-    const params = [];
-
-    if (categoryId) {
-      sql += " WHERE category_id = $1";
-      params.push(categoryId);
-    }
-
-    const result = await queryOne(sql, params);
-    return Number.parseInt(result?.count || "0");
-  } catch (error) {
-    console.error("Error counting posts:", error);
-    return 0;
-  }
-}
-
 // Helper function to get post by ID with no fallback to mock data
 export async function getPostById(id: string): Promise<Post | null> {
   try {

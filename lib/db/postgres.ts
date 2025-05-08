@@ -9,8 +9,6 @@ let pool: Pool | null = null;
 function getPool(): Pool {
   if (!pool) {
     // Use connection string if available, otherwise build from individual params
-    console.log(config);
-
     pool = new Pool({
       // If no connection string is provided, use individual parameters
       host: config.host?.toString(),
