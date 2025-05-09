@@ -81,30 +81,30 @@ export function PostCard({ post, onDelete }: PostCardProps) {
             </div>
           )}
         </div>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <Avatar className="h-6 w-6">
             <AvatarImage
               src={
-                post.author?.image_url || "https://i.redd.it/o1unzd4c5bu71.png"
+                post.user?.image_url || "https://i.redd.it/o1unzd4c5bu71.png"
               }
-              alt={post.author?.username || ""}
+              alt={post.user?.username || ""}
             />
             <AvatarFallback>
-              {post.author?.username?.[0]?.toUpperCase()}
+              {post.user?.username?.[0]?.toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div>
             <Link
-              href={`/profile/${post.author?.username}`}
+              href={`/profile/${post.user?.username}`}
               className="text-sm font-medium hover:underline"
             >
-              {post.author?.username}
+              {post.user?.username}
             </Link>
             <p className="text-xs text-muted-foreground">
-              {/* {formatRelativeTime(new Date(post.created_at || ""))} */}
+              {new Date(post.created_at || "").toLocaleDateString()}
             </p>
           </div>
-        </div>
+        </div> */}
         {post.category && (
           <div>
             <Link href={`/categories/${post.category_id}`}>
