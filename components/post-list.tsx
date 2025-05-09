@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
 import { PostCard } from "./post-card";
 import { Pagination } from "./pagination";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import type { Post } from "@/lib/db/posts/posts-modify";
 
 interface PostListProps {
@@ -11,6 +9,7 @@ interface PostListProps {
   page?: number;
   sort?: string;
   category?: string;
+  pathname: string;
 }
 
 export async function PostList({
@@ -20,8 +19,8 @@ export async function PostList({
   page,
   sort,
   category,
+  pathname,
 }: PostListProps) {
-  const pathname = "/posts/";
   const postsPerPage = 10;
   const totalPages = Math.ceil(totalPosts / postsPerPage);
   const effectivePage = page || currentPage;

@@ -42,7 +42,12 @@ export default async function CategoryPage({
         <SortFilter />
       </div>
       <Suspense fallback={<PostListSkeleton />}>
-        <PostList posts={posts} totalPosts={total} currentPage={page} />
+        <PostList
+          posts={posts}
+          totalPosts={total}
+          currentPage={page}
+          pathname={`/categories/${id}`}
+        />
       </Suspense>
     </div>
   );

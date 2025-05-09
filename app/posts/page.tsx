@@ -72,6 +72,7 @@ export default async function Posts({
               posts={initialPosts}
               totalPosts={totalPosts}
               currentPage={pageNumber}
+              pathname="/posts"
             />
           </Suspense>
         </div>
