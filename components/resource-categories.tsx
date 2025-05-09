@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useTranslation } from "@/hooks/use-translation"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "@/hooks/use-translation";
+import { cn } from "@/utils/utils";
 
 export function ResourceCategories() {
-  const { t } = useTranslation()
-  const [activeCategory, setActiveCategory] = useState("all")
+  const { t } = useTranslation();
+  const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = [
     { id: "all", name: t("allResources") },
@@ -18,7 +18,7 @@ export function ResourceCategories() {
     { id: "application", name: t("applicationResources") },
     { id: "cultural", name: t("culturalResources") },
     { id: "financial", name: t("financialResources") },
-  ]
+  ];
 
   return (
     <Card className="sticky top-20">
@@ -30,7 +30,10 @@ export function ResourceCategories() {
           <Button
             key={category.id}
             variant="ghost"
-            className={cn("w-full justify-start", activeCategory === category.id && "bg-muted")}
+            className={cn(
+              "w-full justify-start",
+              activeCategory === category.id && "bg-muted"
+            )}
             onClick={() => setActiveCategory(category.id)}
           >
             {category.name}
@@ -38,5 +41,5 @@ export function ResourceCategories() {
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }

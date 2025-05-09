@@ -4,7 +4,7 @@ import { Users, FileText, MessageSquare, Shield } from "lucide-react";
 import { ActivityChart } from "@/components/admin/activity-chart";
 import { RecentActivity } from "@/components/admin/recent-activity";
 import { SystemStatus } from "@/components/admin/system-status";
-import { getAdminStats } from "@/lib/db/admin";
+import { getAdminStats } from "@/lib/db/admin/admin";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {

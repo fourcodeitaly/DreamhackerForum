@@ -1,59 +1,89 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Bold, Italic, List, ListOrdered, LinkIcon, ImageIcon, AlignLeft, AlignCenter, AlignRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
+  LinkIcon,
+  ImageIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+} from "lucide-react";
+import { cn } from "@/utils/utils";
 
 interface RichTextEditorProps {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  className?: string
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
 }
 
-export function RichTextEditor({ value, onChange, placeholder = "", className }: RichTextEditorProps) {
-  const [editorContent, setEditorContent] = useState(value)
-  const editorRef = useRef<HTMLDivElement>(null)
+export function RichTextEditor({
+  value,
+  onChange,
+  placeholder = "",
+  className,
+}: RichTextEditorProps) {
+  const [editorContent, setEditorContent] = useState(value);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editorRef.current && value !== editorRef.current.innerHTML) {
-      editorRef.current.innerHTML = value
+      editorRef.current.innerHTML = value;
     }
-  }, [value])
+  }, [value]);
 
   const handleContentChange = (e: React.FormEvent<HTMLDivElement>) => {
-    const content = e.currentTarget.innerHTML
-    setEditorContent(content)
-    onChange(content)
-  }
+    const content = e.currentTarget.innerHTML;
+    setEditorContent(content);
+    onChange(content);
+  };
 
-  const execCommand = (command: string, value: string | null = null) => {
-    document.execCommand(command, false, value)
+  const execCommand = (
+    command: string,
+    value: string | undefined = undefined
+  ) => {
+    document.execCommand(command, false, value);
     if (editorRef.current) {
-      const content = editorRef.current.innerHTML
-      setEditorContent(content)
-      onChange(content)
+      const content = editorRef.current.innerHTML;
+      setEditorContent(content);
+      onChange(content);
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Tab") {
-      e.preventDefault()
-      execCommand("insertHTML", "&nbsp;&nbsp;&nbsp;&nbsp;")
+      e.preventDefault();
+      execCommand("insertHTML", "&nbsp;&nbsp;&nbsp;&nbsp;");
     }
-  }
+  };
 
   return (
     <div className={cn("border rounded-md flex flex-col", className)}>
       <div className="flex flex-wrap gap-1 p-2 border-b bg-muted/50">
-        <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => execCommand("bold")}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => execCommand("bold")}
+        >
           <Bold className="h-4 w-4" />
           <span className="sr-only">Bold</span>
         </Button>
-        <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => execCommand("italic")}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => execCommand("italic")}
+        >
           <Italic className="h-4 w-4" />
           <span className="sr-only">Italic</span>
         </Button>
@@ -83,8 +113,8 @@ export function RichTextEditor({ value, onChange, placeholder = "", className }:
           size="icon"
           className="h-8 w-8"
           onClick={() => {
-            const url = prompt("Enter link URL:")
-            if (url) execCommand("createLink", url)
+            const url = prompt("Enter link URL:");
+            if (url) execCommand("createLink", url);
           }}
         >
           <LinkIcon className="h-4 w-4" />
@@ -126,8 +156,8 @@ export function RichTextEditor({ value, onChange, placeholder = "", className }:
           size="icon"
           className="h-8 w-8"
           onClick={() => {
-            const url = prompt("Enter image URL:")
-            if (url) execCommand("insertImage", url)
+            const url = prompt("Enter image URL:");
+            if (url) execCommand("insertImage", url);
           }}
         >
           <ImageIcon className="h-4 w-4" />
@@ -136,11 +166,10 @@ export function RichTextEditor({ value, onChange, placeholder = "", className }:
       </div>
       <div
         ref={editorRef}
-        className="min-h-[200px] p-3 outline-none overflow-auto"
+        className="min-h-[200px] p-3 outline-none overflow-auto empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground"
         contentEditable
         onInput={handleContentChange}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
         data-placeholder={placeholder}
         style={{
           minHeight: "200px",
@@ -148,5 +177,5 @@ export function RichTextEditor({ value, onChange, placeholder = "", className }:
         }}
       />
     </div>
-  )
+  );
 }

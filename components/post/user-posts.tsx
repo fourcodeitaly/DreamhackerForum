@@ -1,21 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { PostCard } from "@/components/post-card"
-import { Button } from "@/components/ui/button"
-import { useTranslation } from "@/hooks/use-translation"
+import { useState } from "react";
+import { PostCard } from "@/components/post/post-card";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface UserPostsProps {
-  username: string
-  initialPosts: any[]
-  totalPosts?: number
+  username: string;
+  initialPosts: any[];
+  totalPosts?: number;
 }
 
-export function UserPosts({ username, initialPosts, totalPosts }: UserPostsProps) {
-  const { t } = useTranslation()
-  const [posts, setPosts] = useState<any[]>(initialPosts)
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
+export function UserPosts({
+  username,
+  initialPosts,
+  totalPosts,
+}: UserPostsProps) {
+  const { t } = useTranslation();
+  const [posts, setPosts] = useState<any[]>(initialPosts);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   // useEffect(() => {
   //   // Simulate fetching posts with pagination
@@ -44,7 +48,10 @@ export function UserPosts({ username, initialPosts, totalPosts }: UserPostsProps
 
           {hasMore && (
             <div className="flex justify-center mt-8">
-              <Button variant="outline" onClick={() => setPage((prev) => prev + 1)}>
+              <Button
+                variant="outline"
+                onClick={() => setPage((prev) => prev + 1)}
+              >
                 {t("loadMore")}
               </Button>
             </div>
@@ -52,5 +59,5 @@ export function UserPosts({ username, initialPosts, totalPosts }: UserPostsProps
         </>
       )}
     </div>
-  )
+  );
 }

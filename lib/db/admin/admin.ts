@@ -1,4 +1,4 @@
-import { queryOne } from "./postgres";
+import { queryOne } from "../postgres";
 
 interface AdminStats {
   totalUsers: number;

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { RegisterForm } from "@/components/register-form"
-import { useTranslation } from "@/hooks/use-translation"
-import Link from "next/link"
+import { RegisterForm } from "@/components/auth/register-form";
+import { useTranslation } from "@/hooks/use-translation";
+import Link from "next/link";
 
 export default function RegisterPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto px-4 py-16 flex justify-center">
@@ -14,11 +14,14 @@ export default function RegisterPage() {
         <RegisterForm />
         <p className="mt-4 text-center">
           {t("alreadyHaveAccount")}{" "}
-          <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link
+            href="/login"
+            className="text-blue-600 hover:underline dark:text-blue-400"
+          >
             {t("login")}
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }

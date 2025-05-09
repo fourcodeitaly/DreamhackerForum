@@ -1,9 +1,17 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { LayoutDashboard, Users, FileText, Tag, Settings, Home, Shield } from "lucide-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/utils/utils";
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
+  Tag,
+  Settings,
+  Home,
+  Shield,
+} from "lucide-react";
 
 const adminRoutes = [
   {
@@ -31,10 +39,10 @@ const adminRoutes = [
     href: "/admin/settings",
     icon: Settings,
   },
-]
+];
 
 export function AdminSidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <div className="w-64 bg-background border-r border-border min-h-screen p-4">
@@ -52,7 +60,7 @@ export function AdminSidebar() {
               "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
               pathname === route.href
                 ? "bg-accent text-accent-foreground font-medium"
-                : "text-muted-foreground hover:bg-accent/50",
+                : "text-muted-foreground hover:bg-accent/50"
             )}
           >
             <route.icon className="h-4 w-4" />
@@ -71,5 +79,5 @@ export function AdminSidebar() {
         </div>
       </nav>
     </div>
-  )
+  );
 }

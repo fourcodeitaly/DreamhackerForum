@@ -1,14 +1,14 @@
-import { getPostById } from "@/lib/db/posts/post-get"
-import PostEditor from "@/components/post-editor"
+import { getPostById } from "@/lib/db/posts/post-get";
+import PostEditor from "@/components/post/post-editor";
 
 export default async function EditPostPage({
   params,
 }: {
-  params: { id: string }
+  params: { id: string };
 }) {
-  const { id } = await params
+  const { id } = await params;
 
-  const post = await getPostById(id)
+  const post = await getPostById(id);
 
-  return <PostEditor post={post} />
+  return <PostEditor post={post} />;
 }

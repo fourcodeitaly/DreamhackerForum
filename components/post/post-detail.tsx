@@ -22,9 +22,9 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { useLanguage } from "@/hooks/use-language";
-import { cn } from "@/lib/utils";
-import { PostLanguageSwitcher } from "@/components/post-language-switcher";
-import { normalizePostData } from "@/lib/data-utils";
+import { cn, formatRelativeTime } from "@/utils/utils";
+import { PostLanguageSwitcher } from "@/components/post/post-language-switcher";
+import { normalizePostData } from "@/utils/data-utils";
 import { Markdown } from "@/components/markdown"; // Import the Markdown component
 import type { Post } from "@/lib/db/posts/posts-modify";
 
@@ -156,9 +156,6 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
     image_url: null,
   };
 
-  // Get the creation date safely
-  const creationDate = post.created_at;
-
   return (
     <Card className="overflow-hidden p-0 border-0 md:border shadow-none">
       <CardHeader className="p-0 md:p-6">
@@ -184,7 +181,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
                 {author.name || "Unknown Author"}
               </Link>
               <p className="text-sm text-muted-foreground">
-                {/* {formatRelativeTime(creationDate || new Date())} */}
+                {formatRelativeTime(post.created_at || new Date())}
               </p>
             </div>
           </div>

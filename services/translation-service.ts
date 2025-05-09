@@ -1,21 +1,24 @@
-import { Groq } from "groq-sdk"
-import { config } from "./config"
+import { Groq } from "groq-sdk";
+import { config } from "../lib/config";
 
 // Initialize OpenAI client with Groq API configuration
-let client: Groq
+let client: Groq;
 
-export async function translateText(text: string, targetLanguage: string): Promise<string> {
-  if (!text) return ""
+export async function translateText(
+  text: string,
+  targetLanguage: string
+): Promise<string> {
+  if (!text) return "";
 
   if (config.groqApiKey) {
     client = new Groq({
       apiKey: config.groqApiKey,
-    })
+    });
   }
 
   if (!client) {
-    console.error("No API key found")
-    throw new Error("No API key found")
+    console.error("No API key found");
+    throw new Error("No API key found");
   }
 
   try {
@@ -24,14 +27,14 @@ export async function translateText(text: string, targetLanguage: string): Promi
       zh: "Chinese",
       vi: "Vietnamese",
       en: "English",
-    }
+    };
 
-    const targetLanguageName = languageMap[targetLanguage] || targetLanguage
+    const targetLanguageName = languageMap[targetLanguage] || targetLanguage;
 
-    console.log("Translating ", text.slice(0, 100), " to ", targetLanguageName)
+    console.log("Translating ", text.slice(0, 100), " to ", targetLanguageName);
 
     // Create a prompt for translation
-    const prompt = `Translate the following text to ${targetLanguageName}: "${text}"`
+    const prompt = `Translate the following text to ${targetLanguageName}: "${text}"`;
 
     // Call Groq API
     const completion = await client.chat.completions.create({
@@ -49,17 +52,17 @@ export async function translateText(text: string, targetLanguage: string): Promi
       ],
       max_tokens: 2000, // Adjust based on expected response length
       temperature: 0.7, // Adjust for creativity vs. accuracy
-    })
+    });
 
     // Extract the translated text
-    const translatedText = completion.choices[0]?.message?.content?.trim()
+    const translatedText = completion.choices[0]?.message?.content?.trim();
     if (!translatedText) {
-      throw new Error("No translation returned from Groq API")
+      throw new Error("No translation returned from Groq API");
     }
 
-    return translatedText
+    return translatedText;
   } catch (error) {
-    console.error("Error translating text with Groq API:", error)
-    throw new Error(`Translation failed: ${error}`)
+    console.error("Error translating text with Groq API:", error);
+    throw new Error(`Translation failed: ${error}`);
   }
 }

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { PostForm } from "@/components/post-form"
-import { useTranslation } from "@/hooks/use-translation"
-import { AdminCheck } from "@/components/admin-check"
+import { PostForm } from "@/components/post/post-form";
+import { useTranslation } from "@/hooks/use-translation";
+import { AdminCheck } from "@/components/admin/admin-check";
 
 export default function CreatePostPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <AdminCheck>
@@ -14,5 +14,5 @@ export default function CreatePostPage() {
         <PostForm />
       </div>
     </AdminCheck>
-  )
+  );
 }

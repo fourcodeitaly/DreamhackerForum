@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useNotifications as useNotificationsContext } from "@/components/notification-provider"
+import { useNotifications as useNotificationsContext } from "@/components/providers/notification-provider";
 
 export function useNotifications() {
-  return useNotificationsContext()
+  return useNotificationsContext();
 }

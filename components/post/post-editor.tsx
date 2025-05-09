@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { MultilingualPostForm } from "@/components/multilingual-post-form"
-import { useTranslation } from "@/hooks/use-translation"
-import { AdminCheck } from "@/components/admin-check"
-import type { Post } from "@/lib/db/posts/posts-modify"
+import { MultilingualPostForm } from "@/components/post/multilingual-post-form";
+import { useTranslation } from "@/hooks/use-translation";
+import { AdminCheck } from "@/components/admin/admin-check";
+import type { Post } from "@/lib/db/posts/posts-modify";
 
 export default function PostEditor({ post }: { post: Post | null }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   if (!post) {
     return (
@@ -14,7 +14,7 @@ export default function PostEditor({ post }: { post: Post | null }) {
         <h1 className="text-3xl font-bold mb-6">{t("postNotFound")}</h1>
         <p>{t("postNotFoundDescription")}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -24,5 +24,5 @@ export default function PostEditor({ post }: { post: Post | null }) {
         <MultilingualPostForm initialData={post} isEditing={true} />
       </div>
     </AdminCheck>
-  )
+  );
 }

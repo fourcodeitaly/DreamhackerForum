@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { Calendar, MapPin, Settings } from "lucide-react";
 import Link from "next/link";
-import { ProfileEditForm } from "@/components/profile-edit-form";
+import { ProfileEditForm } from "@/components/user/profile-edit-form";
 
 interface UserProfileProps {
   user: any;

@@ -1,12 +1,10 @@
-import { UserProfile } from "@/components/user-profile";
-import { UserPosts } from "@/components/user-posts";
-import { UserSavedPosts } from "@/components/user-saved-posts";
-import { UserActivity } from "@/components/user-activity";
+import { UserProfile } from "@/components/user/user-profile";
+import { UserPosts } from "@/components/post/user-posts";
+import { UserSavedPosts } from "@/components/user/user-saved-posts";
+import { UserActivity } from "@/components/user/user-activity";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notFound } from "next/navigation";
-import { queryOne } from "@/lib/db/postgres";
-import { getUserStats } from "@/lib/db/users/users-query";
-import { getUserByUsername } from "@/lib/db/users";
+import { getUserByUsername, getUserStats } from "@/lib/db/users-get";
 
 export default async function ProfilePage({
   params,

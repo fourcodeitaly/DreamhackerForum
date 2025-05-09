@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { LoginForm } from "@/components/login-form"
-import { useTranslation } from "@/hooks/use-translation"
-import Link from "next/link"
+import { LoginForm } from "@/components/auth/login-form";
+import { useTranslation } from "@/hooks/use-translation";
+import Link from "next/link";
 
 export default function LoginPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto px-4 py-16 flex justify-center">
@@ -14,11 +14,14 @@ export default function LoginPage() {
         <LoginForm />
         <p className="mt-4 text-center">
           {t("dontHaveAccount")}{" "}
-          <Link href="/register" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link
+            href="/register"
+            className="text-blue-600 hover:underline dark:text-blue-400"
+          >
             {t("register")}
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }
