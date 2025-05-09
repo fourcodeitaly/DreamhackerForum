@@ -180,7 +180,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
             <div>
               <Link
                 href={`/profile/${author.username || "unknown"}`}
-                className="text-base font-medium hover:underline"
+                className="text-sm font-medium hover:underline"
               >
                 {author.name || "Unknown Author"}
               </Link>

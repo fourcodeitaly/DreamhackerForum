@@ -29,10 +29,10 @@ export default async function PostPage({ params }: PostPageProps) {
     }
 
     return (
-      <div className="container max-w-4xl py-8">
-        <div className="mb-6">
+      <div className="container max-w-4xl py-4 md:py-8">
+        {/* <div className="mb-6">
           <BackButton />
-        </div>
+        </div> */}
 
         <Suspense fallback={<Skeleton className="h-48" />}>
           <PostDetail post={post} />

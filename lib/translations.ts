@@ -495,7 +495,7 @@ export const translations = {
   vi: {
     // General
     home: "Trang chủ",
-    resources: "Tài nguyên",
+    resources: "Tài liệu",
     login: "Đăng nhập",
     register: "Đăng ký",
     logout: "Đăng xuất",
@@ -567,7 +567,7 @@ export const translations = {
     selectImage: "Chọn hình ảnh",
     removeImage: "Xóa hình ảnh",
     cancel: "Hủy",
-    edit: "Chỉnh sửa bài viết",
+    edit: "Chỉnh sửa",
 
     // Post form multilingual
     editPost: "Chỉnh sửa bài viết",
@@ -686,13 +686,13 @@ export const translations = {
 
     // Resources
     resourceCategories: "Danh mục",
-    allResources: "Tất cả tài nguyên",
-    visaResources: "Tài nguyên visa",
-    interviewResources: "Tài nguyên phỏng vấn",
-    languageResources: "Tài nguyên ngôn ngữ",
-    applicationResources: "Tài nguyên ứng dụng",
-    culturalResources: "Tài nguyên văn hóa",
-    financialResources: "Tài nguyên tài chính",
+    allResources: "Tất cả tài liệu",
+    visaResources: "Tài liệu visa",
+    interviewResources: "Tài liệu phỏng vấn",
+    languageResources: "Tài liệu ngôn ngữ",
+    applicationResources: "Tài liệu ứng dụng",
+    culturalResources: "Tài liệu văn hóa",
+    financialResources: "Tài liệu tài chính",
     addedBy: "Thêm bởi",
     download: "Tải xuống",
     view: "Xem",
