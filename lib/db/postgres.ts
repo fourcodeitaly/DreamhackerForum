@@ -1,14 +1,11 @@
 import { Pool, type PoolClient } from "pg";
 import { config } from "../config";
-import path from "path";
-import fs from "fs";
 // Create a connection pool with proper configuration for serverless environments
 let pool: Pool | null = null;
 
 // Initialize the pool lazily to avoid issues during build time
 function getPool(): Pool {
   if (!pool) {
-    console.log(config);
     // Use connection string if available, otherwise build from individual params
     pool = new Pool({
       // If no connection string is provided, use individual parameters

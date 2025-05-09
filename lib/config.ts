@@ -8,6 +8,7 @@ const localConfig = {
   password: process.env.LOCAL_POSTGRES_PASSWORD,
   isAWS: false,
   ssl: process.env.SSL,
+  groqApiKey: process.env.GROQ_API_KEY,
 };
 
 const awsConfig = {
@@ -18,6 +19,7 @@ const awsConfig = {
   password: process.env.AWS_POSTGRES_PASSWORD,
   ssl: process.env.SSL,
   isAWS: true,
+  groqApiKey: process.env.GROQ_API_KEY,
 };
 
 export const config = isAWS === "true" ? awsConfig : localConfig;

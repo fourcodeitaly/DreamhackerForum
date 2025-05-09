@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { query, queryOne, transaction } from "../db/postgres";
 import type { User } from "./users";
 import type {
@@ -5,6 +6,8 @@ import type {
   CommentSortType,
   CommentVoteType,
 } from "@/lib/types/comment";
+import { getUserFromSession } from "../auth-utils";
+import { request } from "http";
 
 export const commentSort = async (
   comments: Comment[],
@@ -410,3 +413,51 @@ export async function handleCommentVote(
     throw error;
   }
 }
+
+export const commentReport = async (
+  commentId: string,
+  userId: string,
+  reason: string
+) => {
+  try {
+    if (!reason) {
+      return NextResponse.json(
+        { error: "Reason is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if comment exists
+    const comment = await queryOne("SELECT id FROM comments WHERE id = $1", [
+      commentId,
+    ]);
+
+    if (!comment) {
+      return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+    }
+
+    // Check if user already reported this comment
+    const existingReport = await queryOne(
+      "SELECT id FROM comment_reports WHERE comment_id = $1 AND user_id = $2",
+      [commentId, userId]
+    );
+
+    if (existingReport) {
+      return NextResponse.json(
+        { error: "You have already reported this comment" },
+        { status: 400 }
+      );
+    }
+
+    // Create report
+    await query(
+      "INSERT INTO comment_reports (comment_id, user_id, reason) VALUES ($1, $2, $3)",
+      [commentId, userId, reason]
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Error reporting comment:", error);
+    return false;
+  }
+};

@@ -128,20 +128,44 @@ export function MultilingualPostForm({
     try {
       // Translate title
       if (title[sourceLang]) {
-        const translatedTitle = await translateText(
-          title[sourceLang],
-          targetLang
-        );
-        setTitle((prev) => ({ ...prev, [targetLang]: translatedTitle }));
+        const response = await fetch("/api/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: title[sourceLang],
+            targetLanguage: targetLang,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Translation failed");
+        }
+
+        const { translatedText } = await response.json();
+        setTitle((prev) => ({ ...prev, [targetLang]: translatedText }));
       }
 
       // Translate content
       if (content[sourceLang]) {
-        const translatedContent = await translateText(
-          content[sourceLang],
-          targetLang
-        );
-        setContent((prev) => ({ ...prev, [targetLang]: translatedContent }));
+        const response = await fetch("/api/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: content[sourceLang],
+            targetLanguage: targetLang,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Translation failed");
+        }
+
+        const { translatedText } = await response.json();
+        setContent((prev) => ({ ...prev, [targetLang]: translatedText }));
       }
 
       toast({
