@@ -1,11 +1,15 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, FileText, MessageSquare, Shield } from "lucide-react";
+import { CardDescription } from "@/components/ui/card"
+import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Users, FileText, MessageSquare, Shield } from "lucide-react"
+import { ActivityChart } from "@/components/admin/activity-chart"
+import { RecentActivity } from "@/components/admin/recent-activity"
+import { SystemStatus } from "@/components/admin/system-status"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 export default async function AdminDashboard() {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createServerSupabaseClient()
 
   // Initialize with default values
   let stats = {
@@ -13,39 +17,33 @@ export default async function AdminDashboard() {
     totalPosts: 0,
     totalComments: 0,
     totalAdmins: 0,
-  };
+  }
 
   if (supabase) {
     try {
       // Get total users
-      const { count: userCount } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true });
+      const { count: userCount } = await supabase.from("users").select("*", { count: "exact", head: true })
 
       // Get total posts
-      const { count: postCount } = await supabase
-        .from("posts")
-        .select("*", { count: "exact", head: true });
+      const { count: postCount } = await supabase.from("posts").select("*", { count: "exact", head: true })
 
       // Get total comments
-      const { count: commentCount } = await supabase
-        .from("comments")
-        .select("*", { count: "exact", head: true });
+      const { count: commentCount } = await supabase.from("comments").select("*", { count: "exact", head: true })
 
       // Get total admins
       const { count: adminCount } = await supabase
         .from("users")
         .select("*", { count: "exact", head: true })
-        .eq("role", "admin");
+        .eq("role", "admin")
 
       stats = {
         totalUsers: userCount || 0,
         totalPosts: postCount || 0,
         totalComments: commentCount || 0,
         totalAdmins: adminCount || 0,
-      };
+      }
     } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
+      console.error("Error fetching dashboard stats:", error)
     }
   }
 
@@ -76,9 +74,7 @@ export default async function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Comments
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Comments</CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -97,30 +93,23 @@ export default async function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              This section will show recent user activity, posts, and comments.
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <ActivityChart />
+        <RecentActivity />
+      </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SystemStatus />
         <Card>
           <CardHeader>
-            <CardTitle>System Status</CardTitle>
+            <CardTitle>Moderation Queue</CardTitle>
+            <CardDescription>Reported content awaiting review</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
-              This section will show system status, database health, and other
-              metrics.
-            </p>
+            <p className="text-muted-foreground">No items currently in the moderation queue.</p>
           </CardContent>
         </Card>
       </div>
     </div>
-  );
+  )
 }

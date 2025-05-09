@@ -1,4 +1,4 @@
-const isAWS = process.env.USE_AWS;
+const isAWS = process.env.USE_AWS
 
 const localConfig = {
   host: process.env.LOCAL_POSTGRES_HOST,
@@ -9,7 +9,7 @@ const localConfig = {
   isAWS: false,
   ssl: process.env.SSL,
   groqApiKey: process.env.GROQ_API_KEY,
-};
+}
 
 const awsConfig = {
   host: process.env.AWS_POSTGRES_HOST,
@@ -20,6 +20,6 @@ const awsConfig = {
   ssl: process.env.SSL,
   isAWS: true,
   groqApiKey: process.env.GROQ_API_KEY,
-};
+}
 
-export const config = isAWS === "true" ? awsConfig : localConfig;
+export const config = isAWS === "true" ? awsConfig : localConfig

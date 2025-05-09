@@ -1,30 +1,26 @@
-import { NextResponse } from "next/server";
-import { getUserFromSession } from "@/lib/auth-utils";
-import {
-  getCommentsByPostId,
-  createComment,
-  commentSort,
-} from "@/lib/db/comments";
-import { CommentSortType } from "@/lib/types/comment";
+import { NextResponse } from "next/server"
+import { getUserFromSession } from "@/lib/auth-utils"
+import { getCommentsByPostId, createComment, commentSort } from "@/lib/db/comments"
+import type { CommentSortType } from "@/lib/types/comment"
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const postId = searchParams.get("post_id");
-  const parentId = searchParams.get("parent_id") || null;
-  const sort = searchParams.get("sort") || "top";
-  const page = Number.parseInt(searchParams.get("page") || "1");
-  const limit = Number.parseInt(searchParams.get("limit") || "50");
+  const { searchParams } = new URL(request.url)
+  const postId = searchParams.get("post_id")
+  const parentId = searchParams.get("parent_id") || null
+  const sort = searchParams.get("sort") || "top"
+  const page = Number.parseInt(searchParams.get("page") || "1")
+  const limit = Number.parseInt(searchParams.get("limit") || "50")
 
   if (!postId) {
-    return NextResponse.json({ error: "Post ID is required" }, { status: 400 });
+    return NextResponse.json({ error: "Post ID is required" }, { status: 400 })
   }
 
   // Get current user for like status
-  const user = await getUserFromSession();
+  const user = await getUserFromSession()
 
   try {
     // Get comments using the new PostgreSQL function
-    const comments = await getCommentsByPostId(postId, user?.id);
+    const comments = await getCommentsByPostId(postId, user?.id)
 
     const { comments: processedComments, pagination } = await commentSort(
       comments,
@@ -33,8 +29,8 @@ export async function GET(request: Request) {
       parentId,
       sort as CommentSortType,
       page,
-      limit
-    );
+      limit,
+    )
 
     return NextResponse.json({
       comments: processedComments,
@@ -43,34 +39,25 @@ export async function GET(request: Request) {
         limit,
         hasMore: pagination.hasMore,
       },
-    });
+    })
   } catch (error) {
-    console.error("Error fetching comments:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch comments" },
-      { status: 500 }
-    );
+    console.error("Error fetching comments:", error)
+    return NextResponse.json({ error: "Failed to fetch comments" }, { status: 500 })
   }
 }
 
 export async function POST(request: Request) {
-  const user = await getUserFromSession();
+  const user = await getUserFromSession()
 
   if (!user) {
-    return NextResponse.json(
-      { error: "Authentication required" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 })
   }
 
   try {
-    const { post_id, parent_id, content, is_markdown } = await request.json();
+    const { post_id, parent_id, content, is_markdown } = await request.json()
 
     if (!post_id || !content) {
-      return NextResponse.json(
-        { error: "Post ID and content are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Post ID and content are required" }, { status: 400 })
     }
 
     // Create new comment using the new PostgreSQL function
@@ -85,13 +72,10 @@ export async function POST(request: Request) {
       is_markdown: is_markdown || false,
       is_edited: false,
       edited_at: null,
-    });
+    })
 
     if (!comment) {
-      return NextResponse.json(
-        { error: "Failed to create comment" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to create comment" }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -99,12 +83,9 @@ export async function POST(request: Request) {
         ...comment,
         reply_count: 0,
       },
-    });
+    })
   } catch (error) {
-    console.error("Error creating comment:", error);
-    return NextResponse.json(
-      { error: "Failed to create comment" },
-      { status: 500 }
-    );
+    console.error("Error creating comment:", error)
+    return NextResponse.json({ error: "Failed to create comment" }, { status: 500 })
   }
 }

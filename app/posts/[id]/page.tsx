@@ -1,31 +1,27 @@
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import { PostDetail } from "@/components/post-detail";
-import { CommentSection } from "@/components/comments/comment-section";
-import { RelatedPosts } from "@/components/related-posts";
-import { BackButton } from "@/components/back-button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getPostById, getRelatedPosts } from "@/lib/db/posts/post-get";
-import { getCommentsByPostId } from "@/lib/db/comments";
+import { Suspense } from "react"
+import { notFound } from "next/navigation"
+import { PostDetail } from "@/components/post-detail"
+import { CommentSection } from "@/components/comments/comment-section"
+import { RelatedPosts } from "@/components/related-posts"
+import { BackButton } from "@/components/back-button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { getPostById, getRelatedPosts } from "@/lib/db/posts/post-get"
 
 interface PostPageProps {
   params: {
-    id: string;
-  };
+    id: string
+  }
 }
 
 export default async function PostPage({ params }: PostPageProps) {
   try {
-    const { id } = await params;
+    const { id } = await params
 
     // Get the post and related posts
-    const [post, relatedPosts] = await Promise.all([
-      getPostById(id),
-      getRelatedPosts(id),
-    ]);
+    const [post, relatedPosts] = await Promise.all([getPostById(id), getRelatedPosts(id)])
 
     if (!post) {
-      notFound();
+      notFound()
     }
 
     return (
@@ -50,9 +46,9 @@ export default async function PostPage({ params }: PostPageProps) {
           </Suspense>
         </div>
       </div>
-    );
+    )
   } catch (error) {
-    console.error("Error in PostPage:", error);
+    console.error("Error in PostPage:", error)
 
     return (
       <div className="container max-w-4xl py-8">
@@ -61,15 +57,12 @@ export default async function PostPage({ params }: PostPageProps) {
         </div>
 
         <div className="p-6 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
-          <h2 className="text-xl font-semibold text-red-800 dark:text-red-400 mb-2">
-            Error Loading Post
-          </h2>
+          <h2 className="text-xl font-semibold text-red-800 dark:text-red-400 mb-2">Error Loading Post</h2>
           <p className="text-red-700 dark:text-red-300">
-            We encountered an error while loading this post. Please try again
-            later.
+            We encountered an error while loading this post. Please try again later.
           </p>
         </div>
       </div>
-    );
+    )
   }
 }

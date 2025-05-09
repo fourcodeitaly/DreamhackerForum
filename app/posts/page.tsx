@@ -1,46 +1,44 @@
-import { PostList } from "@/components/post-list";
-import { SortFilter } from "@/components/sort-filter";
-import { CategorySidebar } from "@/components/category-sidebar";
-import { SearchBar } from "@/components/search-bar";
-import { FeaturedPosts } from "@/components/featured-posts";
-import { TopContributors } from "@/components/top-contributors";
-import { Suspense } from "react";
-import { PostListSkeleton } from "@/components/skeletons";
-import { ServerEnvChecker } from "@/components/server-env-checker";
-import type { Post } from "@/lib/db/posts/posts-modify";
-import { getPosts } from "@/lib/db/posts/post-get";
-import { Contributor, getTopContributors } from "@/lib/db/users";
-export const dynamic = "force-dynamic";
+import { PostList } from "@/components/post-list"
+import { SortFilter } from "@/components/sort-filter"
+import { CategorySidebar } from "@/components/category-sidebar"
+import { SearchBar } from "@/components/search-bar"
+import { FeaturedPosts } from "@/components/featured-posts"
+import { TopContributors } from "@/components/top-contributors"
+import { Suspense } from "react"
+import { PostListSkeleton } from "@/components/skeletons"
+import { ServerEnvChecker } from "@/components/server-env-checker"
+import type { Post } from "@/lib/db/posts/posts-modify"
+import { getPosts } from "@/lib/db/posts/post-get"
+import { type Contributor, getTopContributors } from "@/lib/db/users"
+export const dynamic = "force-dynamic"
 
 export default async function Posts({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string }
 }) {
   // Get current page from query parameters
-  const { page } = await searchParams;
-  const pageNumber = page ? Number.parseInt(page) : 1;
+  const { page } = await searchParams
+  const pageNumber = page ? Number.parseInt(page) : 1
   // const page = searchParams.page ? Number.parseInt(searchParams.page) : 1;
-  const postsPerPage = 10;
+  const postsPerPage = 10
 
   // Fetch posts on the server
-  let initialPosts: Post[] = [];
-  let totalPosts = 0;
-  let featuredPosts: Post[] = [];
-  let topContributors: Contributor[] = [];
+  let initialPosts: Post[] = []
+  let totalPosts = 0
+  let featuredPosts: Post[] = []
+  let topContributors: Contributor[] = []
 
   try {
-    const { posts, total } = await getPosts(pageNumber, postsPerPage);
-    featuredPosts = posts
-      .filter((post) => post.is_pinned || post.image_url)
-      .slice(0, 3);
+    const { posts, total } = await getPosts(pageNumber, postsPerPage)
+    featuredPosts = posts.filter((post) => post.is_pinned || post.image_url).slice(0, 3)
 
-    initialPosts = posts;
-    totalPosts = total;
+    initialPosts = posts
+    totalPosts = total
 
-    topContributors = await getTopContributors();
+    topContributors = await getTopContributors()
   } catch (error) {
-    console.error("Error fetching posts in Home page:", error);
+    console.error("Error fetching posts in Home page:", error)
     // Continue with empty posts array
   }
 
@@ -68,12 +66,7 @@ export default async function Posts({
             <SortFilter />
           </div>
           <Suspense fallback={<PostListSkeleton />}>
-            <PostList
-              posts={initialPosts}
-              totalPosts={totalPosts}
-              currentPage={pageNumber}
-              pathname="/posts"
-            />
+            <PostList posts={initialPosts} totalPosts={totalPosts} currentPage={pageNumber} pathname="/posts" />
           </Suspense>
         </div>
 
@@ -83,5 +76,5 @@ export default async function Posts({
         </div>
       </div>
     </div>
-  );
+  )
 }

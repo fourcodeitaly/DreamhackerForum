@@ -1,29 +1,29 @@
-import { query, queryOne } from "../db/postgres";
+import { query, queryOne } from "../db/postgres"
 
 export interface Contributor {
-  id: string;
-  username: string;
-  name: string;
-  image_url: string | null;
-  post_count: number;
-  comment_count: number;
-  total_likes: number;
+  id: string
+  username: string
+  name: string
+  image_url: string | null
+  post_count: number
+  comment_count: number
+  total_likes: number
 }
 
-export type UserRole = "user" | "admin";
+export type UserRole = "user" | "admin"
 
 export type User = {
-  id: string;
-  username: string;
-  email: string;
-  name: string;
-  image_url?: string;
-  bio?: string;
-  location?: string;
-  role?: UserRole;
-  joined_at: string;
-  updated_at: string;
-};
+  id: string
+  username: string
+  email: string
+  name: string
+  image_url?: string
+  bio?: string
+  location?: string
+  role?: UserRole
+  joined_at: string
+  updated_at: string
+}
 
 export async function getUserById(id: string): Promise<User | null> {
   // If local auth is enabled, use it
@@ -32,16 +32,14 @@ export async function getUserById(id: string): Promise<User | null> {
   // }
 
   try {
-    return await queryOne<User>("SELECT * FROM users WHERE id = $1", [id]);
+    return await queryOne<User>("SELECT * FROM users WHERE id = $1", [id])
   } catch (error) {
-    console.error("Error fetching user:", error);
-    return null;
+    console.error("Error fetching user:", error)
+    return null
   }
 }
 
-export async function getUserByUsername(
-  username: string
-): Promise<User | null> {
+export async function getUserByUsername(username: string): Promise<User | null> {
   // If local auth is enabled, use it
   // if (localAuth.isEnabled()) {
   //   const users = localAuth.getAllUsers();
@@ -49,41 +47,36 @@ export async function getUserByUsername(
   // }
 
   try {
-    return await queryOne<User>("SELECT * FROM users WHERE username = $1", [
-      username,
-    ]);
+    return await queryOne<User>("SELECT * FROM users WHERE username = $1", [username])
   } catch (error) {
-    console.error("Error fetching user by username:", error);
-    return null;
+    console.error("Error fetching user by username:", error)
+    return null
   }
 }
 
-export async function updateUser(
-  id: string,
-  userData: Partial<User>
-): Promise<User | null> {
+export async function updateUser(id: string, userData: Partial<User>): Promise<User | null> {
   try {
     // Build dynamic update query
-    const updates: string[] = [];
-    const values: any[] = [];
-    let paramIndex = 1;
+    const updates: string[] = []
+    const values: any[] = []
+    let paramIndex = 1
 
     // Add each field to the update query
     Object.entries(userData).forEach(([key, value]) => {
       if (value !== undefined) {
-        updates.push(`${key} = $${paramIndex}`);
-        values.push(value);
-        paramIndex++;
+        updates.push(`${key} = $${paramIndex}`)
+        values.push(value)
+        paramIndex++
       }
-    });
+    })
 
     // Add updated_at timestamp
-    updates.push(`updated_at = $${paramIndex}`);
-    values.push(new Date().toISOString());
-    paramIndex++;
+    updates.push(`updated_at = $${paramIndex}`)
+    values.push(new Date().toISOString())
+    paramIndex++
 
     // Add the user ID as the last parameter
-    values.push(id);
+    values.push(id)
 
     // Construct the final query
     const sql = `
@@ -91,12 +84,12 @@ export async function updateUser(
       SET ${updates.join(", ")} 
       WHERE id = $${paramIndex}
       RETURNING *
-    `;
+    `
 
-    return await queryOne<User>(sql, values);
+    return await queryOne<User>(sql, values)
   } catch (error) {
-    console.error("Error updating user:", error);
-    return null;
+    console.error("Error updating user:", error)
+    return null
   }
 }
 
@@ -107,11 +100,11 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
   // }
 
   try {
-    const user = await getUserById(userId);
-    return user?.role === "admin";
+    const user = await getUserById(userId)
+    return user?.role === "admin"
   } catch (error) {
-    console.error("Error checking if user is admin:", error);
-    return false;
+    console.error("Error checking if user is admin:", error)
+    return false
   }
 }
 
@@ -122,13 +115,13 @@ export async function setUserAsAdmin(userId: string): Promise<boolean> {
       UPDATE users
       SET role = 'admin', updated_at = $1
       WHERE id = $2
-    `;
+    `
 
-    await query(sql, [new Date().toISOString(), userId]);
-    return true;
+    await query(sql, [new Date().toISOString(), userId])
+    return true
   } catch (error) {
-    console.error("Error setting user as admin:", error);
-    return false;
+    console.error("Error setting user as admin:", error)
+    return false
   }
 }
 
@@ -139,23 +132,23 @@ export async function removeAdminRole(userId: string): Promise<boolean> {
       UPDATE users
       SET role = 'user', updated_at = $1
       WHERE id = $2
-    `;
+    `
 
-    await query(sql, [new Date().toISOString(), userId]);
-    return true;
+    await query(sql, [new Date().toISOString(), userId])
+    return true
   } catch (error) {
-    console.error("Error removing admin role:", error);
-    return false;
+    console.error("Error removing admin role:", error)
+    return false
   }
 }
 
 // New function to get all admin users
 export async function getAllAdminUsers(): Promise<User[]> {
   try {
-    return await query<User>("SELECT * FROM users WHERE role = $1", ["admin"]);
+    return await query<User>("SELECT * FROM users WHERE role = $1", ["admin"])
   } catch (error) {
-    console.error("Error fetching admin users:", error);
-    return [];
+    console.error("Error fetching admin users:", error)
+    return []
   }
 }
 
@@ -200,11 +193,11 @@ export async function getTopContributors(limit = 5): Promise<Contributor[]> {
       FROM user_stats
       ORDER BY (post_count * 2 + comment_count + total_likes) DESC
       LIMIT $1
-    `;
+    `
 
-    return await query<Contributor>(sql, [limit]);
+    return await query<Contributor>(sql, [limit])
   } catch (error) {
-    console.error("Error fetching top contributors:", error);
-    return [];
+    console.error("Error fetching top contributors:", error)
+    return []
   }
 }

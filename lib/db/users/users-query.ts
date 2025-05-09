@@ -1,5 +1,5 @@
-import { queryOne, query } from "../postgres";
-import type { User } from "./users-modify";
+import { queryOne, query } from "../postgres"
+import type { User } from "./users-modify"
 
 export async function getUserById(id: string): Promise<User | null> {
   return queryOne<User>(
@@ -14,8 +14,8 @@ export async function getUserById(id: string): Promise<User | null> {
       updated_at as "updatedAt"
     FROM users 
     WHERE id = $1`,
-    [id]
-  );
+    [id],
+  )
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
@@ -31,8 +31,8 @@ export async function getUserByEmail(email: string): Promise<User | null> {
       updated_at as "updatedAt"
     FROM users 
     WHERE email = $1`,
-    [email]
-  );
+    [email],
+  )
 }
 
 export async function getUsersByRole(role: string): Promise<User[]> {
@@ -49,6 +49,6 @@ export async function getUsersByRole(role: string): Promise<User[]> {
     FROM users 
     WHERE role = $1
     ORDER BY created_at DESC`,
-    [role]
-  );
+    [role],
+  )
 }

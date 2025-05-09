@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import { useEffect, useState, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
-import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
-import { cn } from "@/lib/utils";
+import { useEffect, useState, useMemo } from "react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import remarkBreaks from "remark-breaks"
+import rehypeRaw from "rehype-raw"
+import rehypeSanitize from "rehype-sanitize"
+import { cn } from "@/lib/utils"
 
 interface MarkdownProps {
-  content: string;
-  className?: string;
-  preview?: boolean;
-  maxPreviewLength?: number;
+  content: string
+  className?: string
+  preview?: boolean
+  maxPreviewLength?: number
 }
 
 // Memoized regex patterns for better performance
@@ -20,30 +20,25 @@ const MARKDOWN_PATTERNS = {
   headings: /#+\s/g,
   bold: /\*\*/g,
   italic: /\*/g,
-  links: /\[([^\]]+)\]\([^)]+\)/g,
-  images: /!\[([^\]]+)\]\([^)]+\)/g,
+  links: /\[([^\]]+)\]$$[^)]+$$/g,
+  images: /!\[([^\]]+)\]$$[^)]+$$/g,
   inlineCode: /`([^`]+)`/g,
   codeBlocks: /```[\s\S]*?```/g,
   blockquotes: />\s/g,
   listItems: /- /g,
   numberedList: /\d+\. /g,
-} as const;
+} as const
 
-export function Markdown({
-  content,
-  className,
-  preview = false,
-  maxPreviewLength = 200,
-}: MarkdownProps) {
-  const [mounted, setMounted] = useState(false);
+export function Markdown({ content, className, preview = false, maxPreviewLength = 200 }: MarkdownProps) {
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   // Memoize the stripped content for preview mode
   const strippedContent = useMemo(() => {
-    if (!preview) return null;
+    if (!preview) return null
 
     return content
       .replace(MARKDOWN_PATTERNS.headings, "")
@@ -56,32 +51,25 @@ export function Markdown({
       .replace(MARKDOWN_PATTERNS.blockquotes, "")
       .replace(MARKDOWN_PATTERNS.listItems, "")
       .replace(MARKDOWN_PATTERNS.numberedList, "")
-      .trim();
-  }, [content, preview]);
+      .trim()
+  }, [content, preview])
 
   // Memoize the limited text for preview mode
   const limitedText = useMemo(() => {
-    if (!strippedContent) return null;
+    if (!strippedContent) return null
     return strippedContent.length > maxPreviewLength
       ? `${strippedContent.substring(0, maxPreviewLength)}...`
-      : strippedContent;
-  }, [strippedContent, maxPreviewLength]);
+      : strippedContent
+  }, [strippedContent, maxPreviewLength])
 
   // Show preview mode
   if (preview) {
-    return (
-      <p className={cn("text-sm line-clamp-3", className)}>{limitedText}</p>
-    );
+    return <p className={cn("text-sm line-clamp-3", className)}>{limitedText}</p>
   }
 
   // Show loading state during SSR
   if (!mounted) {
-    return (
-      <div
-        className={cn("animate-pulse bg-muted rounded-md", "h-40 w-full")}
-        aria-label="Loading content"
-      />
-    );
+    return <div className={cn("animate-pulse bg-muted rounded-md", "h-40 w-full")} aria-label="Loading content" />
   }
 
   return (
@@ -95,7 +83,7 @@ export function Markdown({
         "prose-img:rounded-lg prose-img:shadow-md",
         "prose-blockquote:border-l-4 prose-blockquote:border-primary/50",
         "prose-ul:list-disc prose-ol:list-decimal",
-        className
+        className,
       )}
     >
       <ReactMarkdown
@@ -107,31 +95,22 @@ export function Markdown({
             <code
               className={cn(
                 "font-mono text-sm",
-                inline
-                  ? "bg-muted px-1.5 py-0.5 rounded"
-                  : "block p-4 rounded-lg",
-                className
+                inline ? "bg-muted px-1.5 py-0.5 rounded" : "block p-4 rounded-lg",
+                className,
               )}
               {...props}
             >
               {children}
             </code>
           ),
-          img: ({ node, ...props }) => (
-            <img loading="lazy" className="rounded-lg shadow-md" {...props} />
-          ),
+          img: ({ node, ...props }) => <img loading="lazy" className="rounded-lg shadow-md" {...props} />,
           a: ({ node, ...props }) => (
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80"
-              {...props}
-            />
+            <a target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80" {...props} />
           ),
         }}
       >
         {content}
       </ReactMarkdown>
     </div>
-  );
+  )
 }

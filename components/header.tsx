@@ -1,41 +1,39 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
-import { LanguageToggle } from "@/components/language-toggle";
-import { SearchBar } from "@/components/search-bar";
-import { AuthStatus } from "@/components/auth-status";
-import { useTranslation } from "@/hooks/use-translation";
-import { Menu, X, GraduationCap } from "lucide-react";
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { ModeToggle } from "@/components/mode-toggle"
+import { LanguageToggle } from "@/components/language-toggle"
+import { SearchBar } from "@/components/search-bar"
+import { AuthStatus } from "@/components/auth-status"
+import { useTranslation } from "@/hooks/use-translation"
+import { Menu, X, GraduationCap } from "lucide-react"
 
 export default function Header() {
-  const { t } = useTranslation();
-  const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useTranslation()
+  const pathname = usePathname()
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+      setIsScrolled(window.scrollY > 10)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const navLinks = [
     { href: "/", label: t("home") },
     { href: "/resources", label: t("resources") },
-  ];
+  ]
 
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/80 backdrop-blur-md dark:bg-gray-900/80 shadow-sm"
-          : "bg-white dark:bg-gray-900"
+        isScrolled ? "bg-white/80 backdrop-blur-md dark:bg-gray-900/80 shadow-sm" : "bg-white dark:bg-gray-900"
       }`}
     >
       <div className="container mx-auto px-4">
@@ -51,9 +49,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
-                    pathname === link.href
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-300"
+                    pathname === link.href ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   {link.label}
@@ -93,9 +89,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
-                    pathname === link.href
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-300"
+                    pathname === link.href ? "text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -114,5 +108,5 @@ export default function Header() {
         </div>
       )}
     </header>
-  );
+  )
 }
