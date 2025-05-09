@@ -4,52 +4,11 @@ import { Users, FileText, MessageSquare, Shield } from "lucide-react";
 import { ActivityChart } from "@/components/admin/activity-chart";
 import { RecentActivity } from "@/components/admin/recent-activity";
 import { SystemStatus } from "@/components/admin/system-status";
-import { queryOne } from "@/lib/db/postgres";
-
+import { getAdminStats } from "@/lib/db/admin";
 export const dynamic = "force-dynamic";
 
-interface DashboardStats {
-  totalUsers: number;
-  totalPosts: number;
-  totalComments: number;
-  totalAdmins: number;
-}
-
-async function getDashboardStats(): Promise<DashboardStats> {
-  try {
-    // Get all stats in parallel for better performance
-    const [userCount, postCount, commentCount, adminCount] = await Promise.all([
-      // Get total users
-      queryOne<{ count: number }>(`SELECT COUNT(*) as count FROM users`),
-      // Get total posts
-      queryOne<{ count: number }>(`SELECT COUNT(*) as count FROM posts`),
-      // Get total comments
-      queryOne<{ count: number }>(`SELECT COUNT(*) as count FROM comments`),
-      // Get total admins
-      queryOne<{ count: number }>(
-        `SELECT COUNT(*) as count FROM users WHERE role = 'admin'`
-      ),
-    ]);
-
-    return {
-      totalUsers: userCount?.count || 0,
-      totalPosts: postCount?.count || 0,
-      totalComments: commentCount?.count || 0,
-      totalAdmins: adminCount?.count || 0,
-    };
-  } catch (error) {
-    console.error("Error fetching dashboard stats:", error);
-    return {
-      totalUsers: 0,
-      totalPosts: 0,
-      totalComments: 0,
-      totalAdmins: 0,
-    };
-  }
-}
-
 export default async function AdminDashboard() {
-  const stats = await getDashboardStats();
+  const stats = await getAdminStats();
 
   return (
     <div>
