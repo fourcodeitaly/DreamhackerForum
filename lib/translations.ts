@@ -50,14 +50,19 @@ export const translations = {
     accountCreated: "Your account has been created",
     errorCreatingAccount: "Error creating account",
     username: "Username",
+    likesReceived: "Likes received",
+
     // Add these new translation keys to the English section
     emailNotConfirmed: "Email not confirmed",
-    pleaseConfirmEmail: "Please check your inbox and confirm your email address before logging in.",
+    pleaseConfirmEmail:
+      "Please check your inbox and confirm your email address before logging in.",
     resendConfirmationEmail: "Resend confirmation email",
     resendingEmail: "Resending...",
     emailSent: "Email sent",
-    confirmationEmailResent: "Confirmation email has been resent to your inbox.",
-    errorResendingEmail: "Error resending confirmation email. Please try again.",
+    confirmationEmailResent:
+      "Confirmation email has been resent to your inbox.",
+    errorResendingEmail:
+      "Error resending confirmation email. Please try again.",
     loading: "Loading...",
 
     // Auth status
@@ -97,7 +102,8 @@ export const translations = {
     postTitlePlaceholderVi: "Nhập tiêu đề bằng tiếng Việt",
     postContentPlaceholderEn: "Share your experience or tips in English...",
     postContentPlaceholderZh: "用中文分享您的经验或建议...",
-    postContentPlaceholderVi: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
+    postContentPlaceholderVi:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
     translateFromEnglish: "Translate from English",
     translateFromChinese: "Translate from Chinese",
     translateFromVietnamese: "Translate from Vietnamese",
@@ -113,7 +119,8 @@ export const translations = {
     errorCreatingPost: "Error creating post",
     errorEditingPost: "Error editing post",
     postNotFound: "Post Not Found",
-    postNotFoundDescription: "The post you are looking for does not exist or has been removed.",
+    postNotFoundDescription:
+      "The post you are looking for does not exist or has been removed.",
 
     // Categories
     categories: "Categories",
@@ -245,8 +252,10 @@ export const translations = {
     removeAdmin: "Remove Admin",
     promoteToAdmin: "Promote to Admin",
     removeAdminRole: "Remove Admin Role",
-    confirmPromoteAdmin: "Are you sure you want to give admin privileges to this user?",
-    confirmRemoveAdmin: "Are you sure you want to remove admin privileges from this user?",
+    confirmPromoteAdmin:
+      "Are you sure you want to give admin privileges to this user?",
+    confirmRemoveAdmin:
+      "Are you sure you want to remove admin privileges from this user?",
     adminPrivilegesGranted: "Admin privileges granted successfully",
     adminPrivilegesRemoved: "Admin privileges removed successfully",
     cannotRemoveOwnAdmin: "Cannot remove your own admin role",
@@ -302,6 +311,7 @@ export const translations = {
     accountCreated: "您的账户已创建",
     errorCreatingAccount: "创建账户时出错",
     username: "用户名",
+    likesReceived: "收到的赞",
 
     // Auth status
     admin: "管理员",
@@ -545,6 +555,7 @@ export const translations = {
     accountCreated: "Tài khoản của bạn đã được tạo",
     errorCreatingAccount: "Lỗi khi tạo tài khoản",
     username: "Tên người dùng",
+    likesReceived: "Lượt thích nhận được",
 
     // Auth status
     admin: "Quản trị viên",
@@ -581,9 +592,12 @@ export const translations = {
     postTitlePlaceholderEn: "Nhập tiêu đề mô tả bằng tiếng Anh",
     postTitlePlaceholderZh: "Nhập tiêu đề bằng tiếng Trung",
     postTitlePlaceholderVi: "Nhập tiêu đề bằng tiếng Việt",
-    postContentPlaceholderEn: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Anh...",
-    postContentPlaceholderZh: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Trung...",
-    postContentPlaceholderVi: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
+    postContentPlaceholderEn:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Anh...",
+    postContentPlaceholderZh:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Trung...",
+    postContentPlaceholderVi:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
     translateFromEnglish: "Dịch từ tiếng Anh",
     translateFromChinese: "Dịch từ tiếng Trung",
     translateFromVietnamese: "Dịch từ tiếng Việt",
@@ -599,7 +613,8 @@ export const translations = {
     errorCreatingPost: "Lỗi khi tạo bài viết",
     errorEditingPost: "Lỗi khi chỉnh sửa bài viết",
     postNotFound: "Không tìm thấy bài viết",
-    postNotFoundDescription: "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    postNotFoundDescription:
+      "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
     loading: "Đang tải...",
 
     // Categories
@@ -732,11 +747,13 @@ export const translations = {
     removeAdmin: "Gỡ bỏ quản trị viên",
     promoteToAdmin: "Thăng cấp thành quản trị viên",
     removeAdminRole: "Gỡ bỏ vai trò quản trị viên",
-    confirmPromoteAdmin: "Bạn có chắc chắn muốn cấp quyền quản trị viên cho người dùng này không?",
-    confirmRemoveAdmin: "Bạn có chắc chắn muốn xóa quyền quản trị viên khỏi người dùng này không?",
+    confirmPromoteAdmin:
+      "Bạn có chắc chắn muốn cấp quyền quản trị viên cho người dùng này không?",
+    confirmRemoveAdmin:
+      "Bạn có chắc chắn muốn xóa quyền quản trị viên khỏi người dùng này không?",
     adminPrivilegesGranted: "Đã cấp quyền quản trị viên thành công",
     adminPrivilegesRemoved: "Đã xóa quyền quản trị viên thành công",
     cannotRemoveOwnAdmin: "Không thể xóa vai trò quản trị viên của chính bạn",
     topContributors: "Người đóng góp hàng đầu",
   },
-}
+};

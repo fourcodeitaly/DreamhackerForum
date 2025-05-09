@@ -1,51 +1,55 @@
-import { CardDescription } from "@/components/ui/card"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, FileText, MessageSquare, Shield } from "lucide-react"
-import { ActivityChart } from "@/components/admin/activity-chart"
-import { RecentActivity } from "@/components/admin/recent-activity"
-import { SystemStatus } from "@/components/admin/system-status"
+import { CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, FileText, MessageSquare, Shield } from "lucide-react";
+import { ActivityChart } from "@/components/admin/activity-chart";
+import { RecentActivity } from "@/components/admin/recent-activity";
+import { SystemStatus } from "@/components/admin/system-status";
+import { queryOne } from "@/lib/db/postgres";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
+
+interface DashboardStats {
+  totalUsers: number;
+  totalPosts: number;
+  totalComments: number;
+  totalAdmins: number;
+}
+
+async function getDashboardStats(): Promise<DashboardStats> {
+  try {
+    // Get all stats in parallel for better performance
+    const [userCount, postCount, commentCount, adminCount] = await Promise.all([
+      // Get total users
+      queryOne<{ count: number }>(`SELECT COUNT(*) as count FROM users`),
+      // Get total posts
+      queryOne<{ count: number }>(`SELECT COUNT(*) as count FROM posts`),
+      // Get total comments
+      queryOne<{ count: number }>(`SELECT COUNT(*) as count FROM comments`),
+      // Get total admins
+      queryOne<{ count: number }>(
+        `SELECT COUNT(*) as count FROM users WHERE role = 'admin'`
+      ),
+    ]);
+
+    return {
+      totalUsers: userCount?.count || 0,
+      totalPosts: postCount?.count || 0,
+      totalComments: commentCount?.count || 0,
+      totalAdmins: adminCount?.count || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    return {
+      totalUsers: 0,
+      totalPosts: 0,
+      totalComments: 0,
+      totalAdmins: 0,
+    };
+  }
+}
 
 export default async function AdminDashboard() {
-  const supabase = await createServerSupabaseClient()
-
-  // Initialize with default values
-  let stats = {
-    totalUsers: 0,
-    totalPosts: 0,
-    totalComments: 0,
-    totalAdmins: 0,
-  }
-
-  if (supabase) {
-    try {
-      // Get total users
-      const { count: userCount } = await supabase.from("users").select("*", { count: "exact", head: true })
-
-      // Get total posts
-      const { count: postCount } = await supabase.from("posts").select("*", { count: "exact", head: true })
-
-      // Get total comments
-      const { count: commentCount } = await supabase.from("comments").select("*", { count: "exact", head: true })
-
-      // Get total admins
-      const { count: adminCount } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true })
-        .eq("role", "admin")
-
-      stats = {
-        totalUsers: userCount || 0,
-        totalPosts: postCount || 0,
-        totalComments: commentCount || 0,
-        totalAdmins: adminCount || 0,
-      }
-    } catch (error) {
-      console.error("Error fetching dashboard stats:", error)
-    }
-  }
+  const stats = await getDashboardStats();
 
   return (
     <div>
@@ -74,7 +78,9 @@ export default async function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Comments</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Comments
+            </CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -106,10 +112,12 @@ export default async function AdminDashboard() {
             <CardDescription>Reported content awaiting review</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">No items currently in the moderation queue.</p>
+            <p className="text-muted-foreground">
+              No items currently in the moderation queue.
+            </p>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

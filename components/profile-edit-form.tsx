@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +14,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { createClientSupabaseClient } from "@/lib/supabase/client"
-import { Edit } from "lucide-react"
-import { toast } from "@/components/ui/use-toast"
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Edit, Upload, X } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import { updateProfile } from "@/app/actions/profile";
+import Image from "next/image";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -32,62 +41,85 @@ const profileFormSchema = z.object({
   location: z.string().max(30, {
     message: "Location must not be longer than 30 characters.",
   }),
-})
+  image: z.instanceof(File).optional(),
+});
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>
+type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 interface ProfileEditFormProps {
-  user: any
+  user: {
+    id: string;
+    fullName: string;
+    bio?: string;
+    location?: string;
+    avatarUrl?: string;
+  };
 }
 
 export function ProfileEditForm({ user }: ProfileEditFormProps) {
-  const [open, setOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const router = useRouter()
+  const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    user.avatarUrl || null
+  );
+  const router = useRouter();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user.name || "",
+      name: user.fullName || "",
       bio: user.bio || "",
       location: user.location || "",
     },
-  })
+  });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue("image", file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const removeImage = () => {
+    form.setValue("image", undefined);
+    setPreviewUrl(null);
+  };
 
   async function onSubmit(data: ProfileFormValues) {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const supabase = createClientSupabaseClient()
-      if (!supabase) throw new Error("Could not initialize Supabase client")
+      const result = await updateProfile(user.id, {
+        name: data.name,
+        bio: data.bio,
+        location: data.location,
+        image: data.image,
+      });
 
-      const { error } = await supabase
-        .from("users")
-        .update({
-          name: data.name,
-          bio: data.bio,
-          location: data.location,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id)
-
-      if (error) throw error
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
-      })
+      });
 
-      setOpen(false)
-      router.refresh()
+      setOpen(false);
+      router.refresh();
     } catch (error) {
-      console.error("Error updating profile:", error)
+      console.error("Error updating profile:", error);
       toast({
         title: "Error",
-        description: "There was an error updating your profile. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "There was an error updating your profile. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -103,11 +135,51 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
-            Make changes to your profile information here. Click save when you're done.
+            Make changes to your profile information here. Click save when
+            you're done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormItem>
+              <FormLabel>Profile Picture</FormLabel>
+              <div className="flex items-center gap-4">
+                <div className="relative h-20 w-20">
+                  {previewUrl ? (
+                    <>
+                      <Image
+                        src={previewUrl}
+                        alt="Profile preview"
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute -right-2 -top-2 rounded-full bg-destructive p-1 text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
+                      <Upload className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="cursor-pointer"
+                  />
+                  <FormDescription>
+                    Upload a profile picture. Max size: 2MB
+                  </FormDescription>
+                </div>
+              </div>
+            </FormItem>
             <FormField
               control={form.control}
               name="name"
@@ -117,7 +189,9 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                   <FormControl>
                     <Input placeholder="Your name" {...field} />
                   </FormControl>
-                  <FormDescription>This is your public display name.</FormDescription>
+                  <FormDescription>
+                    This is your public display name.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -129,9 +203,15 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                 <FormItem>
                   <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Tell us a little bit about yourself" className="resize-none" {...field} />
+                    <Textarea
+                      placeholder="Tell us a little bit about yourself"
+                      className="resize-none"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>Brief description for your profile. Max 160 characters.</FormDescription>
+                  <FormDescription>
+                    Brief description for your profile. Max 160 characters.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -159,5 +239,5 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

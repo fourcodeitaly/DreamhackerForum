@@ -1,62 +1,67 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/hooks/use-auth"
-import { useLanguage } from "@/hooks/use-language"
-import { useTranslation } from "@/hooks/use-translation"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Markdown } from "@/components/markdown"
-import { formatRelativeTime } from "@/lib/utils"
-import { MessageSquare, Eye, ExternalLink } from "lucide-react"
-import type { Post } from "@/lib/db/posts/posts-modify"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { useLanguage } from "@/hooks/use-language";
+import { useTranslation } from "@/hooks/use-translation";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Markdown } from "@/components/markdown";
+// import { formatRelativeTime } from "@/lib/utils"
+import { MessageSquare, Eye, ExternalLink } from "lucide-react";
+import type { Post } from "@/lib/db/posts/posts-modify";
 
 interface PostCardProps {
-  post: Post
-  onDelete?: () => void
+  post: Post;
+  onDelete?: () => void;
 }
 
 export function PostCard({ post, onDelete }: PostCardProps) {
-  const router = useRouter()
-  const { user } = useAuth()
-  const { language } = useLanguage()
-  const { t } = useTranslation()
-  const [isDeleting, setIsDeleting] = useState(false)
-  const isAuthor = user && post.user_id === user.id
-  const isAdmin = user && user.role === "admin"
+  const router = useRouter();
+  const { user } = useAuth();
+  const { language } = useLanguage();
+  const { t } = useTranslation();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const isAuthor = user && post.user_id === user.id;
+  const isAdmin = user && user.role === "admin";
 
   const handleEdit = () => {
-    router.push(`/posts/${post.id}/edit`)
-  }
+    router.push(`/posts/${post.id}/edit`);
+  };
 
   const handleDelete = async () => {
     if (window.confirm(t("confirm_delete_post"))) {
-      setIsDeleting(true)
+      setIsDeleting(true);
       try {
         const response = await fetch(`/api/posts/${post.id}`, {
           method: "DELETE",
-        })
+        });
 
         if (response.ok) {
           if (onDelete) {
-            onDelete()
+            onDelete();
           }
         } else {
-          console.error("Failed to delete post")
+          console.error("Failed to delete post");
         }
       } catch (error) {
-        console.error("Error deleting post:", error)
+        console.error("Error deleting post:", error);
       } finally {
-        setIsDeleting(false)
+        setIsDeleting(false);
       }
     }
-  }
+  };
 
-  const postContent = post.content?.[language] || post.content?.en || ""
-  const postTitle = post.title?.[language] || post.title?.en || ""
+  const postContent = post.content?.[language] || post.content?.en || "";
+  const postTitle = post.title?.[language] || post.title?.en || "";
 
   return (
     <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
@@ -79,16 +84,25 @@ export function PostCard({ post, onDelete }: PostCardProps) {
         <div className="flex items-center space-x-2">
           <Avatar className="h-6 w-6">
             <AvatarImage
-              src={post.author?.image_url || "https://i.redd.it/o1unzd4c5bu71.png"}
+              src={
+                post.author?.image_url || "https://i.redd.it/o1unzd4c5bu71.png"
+              }
               alt={post.author?.username || ""}
             />
-            <AvatarFallback>{post.author?.username?.[0]?.toUpperCase()}</AvatarFallback>
+            <AvatarFallback>
+              {post.author?.username?.[0]?.toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div>
-            <Link href={`/profile/${post.author?.username}`} className="text-sm font-medium hover:underline">
+            <Link
+              href={`/profile/${post.author?.username}`}
+              className="text-sm font-medium hover:underline"
+            >
               {post.author?.username}
             </Link>
-            <p className="text-xs text-muted-foreground">{formatRelativeTime(new Date(post.created_at || ""))}</p>
+            <p className="text-xs text-muted-foreground">
+              {/* {formatRelativeTime(new Date(post.created_at || ""))} */}
+            </p>
           </div>
         </div>
         {post.category && (
@@ -146,5 +160,5 @@ export function PostCard({ post, onDelete }: PostCardProps) {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

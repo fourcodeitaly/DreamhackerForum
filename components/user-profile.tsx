@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/hooks/use-auth"
-import { useTranslation } from "@/hooks/use-translation"
-import { Calendar, MapPin, Settings } from "lucide-react"
-import Link from "next/link"
-import { ProfileEditForm } from "@/components/profile-edit-form"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
+import { Calendar, MapPin, Settings } from "lucide-react";
+import Link from "next/link";
+import { ProfileEditForm } from "@/components/profile-edit-form";
 
 interface UserProfileProps {
-  user: any
+  user: any;
 }
 
 export function UserProfile({ user }: UserProfileProps) {
-  const { t } = useTranslation()
-  const { user: currentUser } = useAuth()
+  const { t } = useTranslation();
+  const { user: currentUser } = useAuth();
 
-  const isCurrentUser = currentUser?.id === user.id
+  const isCurrentUser = currentUser?.id === user.id;
 
   return (
     <Card>
@@ -26,8 +26,16 @@ export function UserProfile({ user }: UserProfileProps) {
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex flex-col items-center md:items-start">
             <Avatar className="h-24 w-24 md:h-32 md:w-32">
-              <AvatarImage src={user.image_url || "/placeholder.svg?height=128&width=128&query=user"} alt={user.name} />
-              <AvatarFallback className="text-2xl">{user.name[0]}</AvatarFallback>
+              <AvatarImage
+                src={
+                  user.image_url ||
+                  "/placeholder.svg?height=128&width=128&query=user"
+                }
+                alt={user.name}
+              />
+              <AvatarFallback className="text-2xl">
+                {user.name[0]}
+              </AvatarFallback>
             </Avatar>
 
             {isCurrentUser && (
@@ -69,7 +77,9 @@ export function UserProfile({ user }: UserProfileProps) {
 
                 <div className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4" />
-                  {t("joinedOn", { date: new Date(user.joinedAt).toLocaleDateString() })}
+                  {t("joinedOn", {
+                    date: new Date(user.joined_at).toLocaleDateString(),
+                  })}
                 </div>
               </div>
             </div>
@@ -77,20 +87,26 @@ export function UserProfile({ user }: UserProfileProps) {
             <div className="mt-6 flex flex-wrap gap-6 justify-center md:justify-start">
               <div>
                 <div className="text-2xl font-bold">{user.postsCount}</div>
-                <div className="text-sm text-muted-foreground">{t("posts")}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("posts")}
+                </div>
               </div>
               <div>
                 <div className="text-2xl font-bold">{user.commentsCount}</div>
-                <div className="text-sm text-muted-foreground">{t("comments")}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("comments")}
+                </div>
               </div>
               <div>
                 <div className="text-2xl font-bold">{user.likesReceived}</div>
-                <div className="text-sm text-muted-foreground">{t("likesReceived")}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("likesReceived")}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
