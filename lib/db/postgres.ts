@@ -8,6 +8,7 @@ let pool: Pool | null = null;
 // Initialize the pool lazily to avoid issues during build time
 function getPool(): Pool {
   if (!pool) {
+    console.log(config);
     // Use connection string if available, otherwise build from individual params
     pool = new Pool({
       // If no connection string is provided, use individual parameters
@@ -16,14 +17,14 @@ function getPool(): Pool {
       database: config.database,
       user: config.user,
       password: config.password,
-      // ssl: {
-      //   rejectUnauthorized: false,
-      //   ca: fs
-      //     .readFileSync(path.resolve("ssl/ap-northeast-1-bundle.pem"))
-      //     .toString(),
-      //   minVersion: "TLSv1.2",
-      //   ciphers: "HIGH:!aNULL:!MD5",
-      // },
+      ssl: config.isAWS
+        ? {
+            rejectUnauthorized: false,
+            ca: config.ssl,
+            minVersion: "TLSv1.2",
+            ciphers: "HIGH:!aNULL:!MD5",
+          }
+        : undefined,
       max: 10, // Reduce max connections for serverless environment
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,

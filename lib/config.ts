@@ -6,6 +6,8 @@ const localConfig = {
   database: process.env.LOCAL_POSTGRES_DB,
   user: process.env.LOCAL_POSTGRES_USER,
   password: process.env.LOCAL_POSTGRES_PASSWORD,
+  isAWS: false,
+  ssl: process.env.SSL,
 };
 
 const awsConfig = {
@@ -14,6 +16,8 @@ const awsConfig = {
   database: process.env.AWS_POSTGRES_DB,
   user: process.env.AWS_POSTGRES_USER,
   password: process.env.AWS_POSTGRES_PASSWORD,
+  ssl: process.env.SSL,
+  isAWS: true,
 };
 
-export const config = localConfig;
+export const config = isAWS === "true" ? awsConfig : localConfig;
