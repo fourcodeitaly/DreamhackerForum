@@ -30,7 +30,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/forum:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/forum:x86
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
