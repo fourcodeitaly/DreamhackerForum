@@ -17,7 +17,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { formatRelativeTime, cn } from "@/lib/utils";
 import { Heart, Loader2, MessageSquare, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import type { Comment } from "@/lib/db/comments";
+import { Comment } from "@/lib/types/comment";
 
 interface CommentSectionProps {
   postId: string;
@@ -100,44 +100,6 @@ export function CommentSection({
       setError(err instanceof Error ? err.message : "Failed to submit comment");
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleLikeComment = async (commentId: string) => {
-    if (!user) return;
-
-    try {
-      // Optimistically update UI
-      setComments((prev) =>
-        prev.map((comment) => {
-          if (comment.id === commentId) {
-            const newLikedState = !comment.liked;
-            return {
-              ...comment,
-              liked: newLikedState,
-              likes_count: newLikedState
-                ? (comment.likes_count || 0) + 1
-                : Math.max((comment.likes_count || 0) - 1, 0),
-            };
-          }
-          return comment;
-        })
-      );
-
-      const response = await fetch(`/api/comments/${commentId}/like`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to toggle like");
-      }
-    } catch (err) {
-      console.error("Error toggling comment like:", err);
-      // Revert the optimistic update if there was an error
-      fetchComments();
     }
   };
 
@@ -328,32 +290,6 @@ export function CommentSection({
                   {comment.content}
                 </p>
               </CardContent>
-              <CardFooter className="border-t bg-muted/10 py-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleLikeComment(comment.id)}
-                  disabled={!isAuthenticated}
-                  className="flex items-center gap-1 px-2 text-xs"
-                >
-                  <Heart
-                    className={cn(
-                      "h-4 w-4",
-                      comment.liked
-                        ? "fill-red-500 text-red-500"
-                        : "text-muted-foreground"
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-xs",
-                      comment.liked ? "text-red-500" : "text-muted-foreground"
-                    )}
-                  >
-                    {comment.likes_count || 0}
-                  </span>
-                </Button>
-              </CardFooter>
             </Card>
           ))}
         </div>

@@ -125,7 +125,7 @@ export function CommentSection({
       <div className="flex items-center justify-between border-b pb-4">
         <div className="flex items-center gap-3">
           <MessageSquare className="h-6 w-6 text-primary" />
-          <h2 className="text-2xl font-bold">{t("comments")}</h2>
+          <h2 className="md:text-2xl font-bold">{t("comments")}</h2>
           <span className="ml-2 rounded-full bg-secondary px-2.5 py-0.5 text-sm font-medium">
             {comments.length}
           </span>

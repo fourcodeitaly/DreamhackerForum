@@ -124,37 +124,41 @@ export function CommentList({
         depth > 0 ? "pl-4 md:pl-8 border-l border-muted/40" : ""
       }`}
     >
-      {comments.map((comment) => (
-        <div key={comment.id} className="comment-thread">
-          <CommentItem
-            comment={comment}
-            postId={postId}
-            depth={depth}
-            replyCount={comment.reply_count || 0}
-            isRepliesExpanded={!!expandedReplies[comment.id]}
-            isLoadingReplies={!!loadingReplies[comment.id]}
-            onToggleReplies={() => toggleReplies(comment.id)}
-            onNewReply={handleNewReply}
-            onCommentUpdate={onCommentUpdate}
-            onCommentDelete={onCommentDelete}
-          />
-
-          {expandedReplies[comment.id] && commentReplies[comment.id] && (
-            <div className="mt-4">
-              <CommentList
-                comments={commentReplies[comment.id]}
+      {comments.map(
+        (comment) =>
+          !comment.status ||
+          (comment.status !== "deleted" && (
+            <div key={comment.id} className="comment-thread">
+              <CommentItem
+                comment={comment}
                 postId={postId}
-                parentId={comment.id}
-                depth={depth + 1}
-                onCommentUpdate={handleReplyUpdate}
-                onCommentDelete={(commentId) =>
-                  handleReplyDelete(commentId, comment.id)
-                }
+                depth={depth}
+                replyCount={comment.reply_count || 0}
+                isRepliesExpanded={!!expandedReplies[comment.id]}
+                isLoadingReplies={!!loadingReplies[comment.id]}
+                onToggleReplies={() => toggleReplies(comment.id)}
+                onNewReply={handleNewReply}
+                onCommentUpdate={onCommentUpdate}
+                onCommentDelete={onCommentDelete}
               />
+
+              {expandedReplies[comment.id] && commentReplies[comment.id] && (
+                <div className="mt-4">
+                  <CommentList
+                    comments={commentReplies[comment.id]}
+                    postId={postId}
+                    parentId={comment.id}
+                    depth={depth + 1}
+                    onCommentUpdate={handleReplyUpdate}
+                    onCommentDelete={(commentId) =>
+                      handleReplyDelete(commentId, comment.id)
+                    }
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+          ))
+      )}
     </div>
   );
 }

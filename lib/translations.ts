@@ -18,6 +18,10 @@ export const translations = {
     dark: "Dark",
     system: "System",
     back: "Back",
+    sortByTop: "Sort by Top",
+    sortByNew: "Sort by New",
+    sortByOld: "Sort by Old",
+    sortByControversial: "Sort by Controversial",
 
     // Auth
     email: "Email",
@@ -48,12 +52,15 @@ export const translations = {
     username: "Username",
     // Add these new translation keys to the English section
     emailNotConfirmed: "Email not confirmed",
-    pleaseConfirmEmail: "Please check your inbox and confirm your email address before logging in.",
+    pleaseConfirmEmail:
+      "Please check your inbox and confirm your email address before logging in.",
     resendConfirmationEmail: "Resend confirmation email",
     resendingEmail: "Resending...",
     emailSent: "Email sent",
-    confirmationEmailResent: "Confirmation email has been resent to your inbox.",
-    errorResendingEmail: "Error resending confirmation email. Please try again.",
+    confirmationEmailResent:
+      "Confirmation email has been resent to your inbox.",
+    errorResendingEmail:
+      "Error resending confirmation email. Please try again.",
     loading: "Loading...",
 
     // Auth status
@@ -82,6 +89,7 @@ export const translations = {
     selectImage: "Select Image",
     removeImage: "Remove image",
     cancel: "Cancel",
+    edit: "Edit Post",
 
     // Post form multilingual
     editPost: "Edit Post",
@@ -92,7 +100,8 @@ export const translations = {
     postTitlePlaceholderVi: "Nhập tiêu đề bằng tiếng Việt",
     postContentPlaceholderEn: "Share your experience or tips in English...",
     postContentPlaceholderZh: "用中文分享您的经验或建议...",
-    postContentPlaceholderVi: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
+    postContentPlaceholderVi:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
     translateFromEnglish: "Translate from English",
     translateFromChinese: "Translate from Chinese",
     translateFromVietnamese: "Translate from Vietnamese",
@@ -108,7 +117,8 @@ export const translations = {
     errorCreatingPost: "Error creating post",
     errorEditingPost: "Error editing post",
     postNotFound: "Post Not Found",
-    postNotFoundDescription: "The post you are looking for does not exist or has been removed.",
+    postNotFoundDescription:
+      "The post you are looking for does not exist or has been removed.",
 
     // Categories
     categories: "Categories",
@@ -178,6 +188,11 @@ export const translations = {
     noComments: "No comments yet. Be the first to comment!",
     commenting: "Commenting...",
     replying: "Replying...",
+    submitComment: "Comment",
+    commentDeleted: "Comment deleted",
+    showReplies: "Show replies",
+    hideReplies: "Hide replies",
+    beTheFirstToComment: "Be the first to comment!",
 
     // Profile
     editProfile: "Edit Profile",
@@ -229,8 +244,10 @@ export const translations = {
     removeAdmin: "Remove Admin",
     promoteToAdmin: "Promote to Admin",
     removeAdminRole: "Remove Admin Role",
-    confirmPromoteAdmin: "Are you sure you want to give admin privileges to this user?",
-    confirmRemoveAdmin: "Are you sure you want to remove admin privileges from this user?",
+    confirmPromoteAdmin:
+      "Are you sure you want to give admin privileges to this user?",
+    confirmRemoveAdmin:
+      "Are you sure you want to remove admin privileges from this user?",
     adminPrivilegesGranted: "Admin privileges granted successfully",
     adminPrivilegesRemoved: "Admin privileges removed successfully",
     cannotRemoveOwnAdmin: "Cannot remove your own admin role",
@@ -254,6 +271,10 @@ export const translations = {
     dark: "深色",
     system: "系统",
     back: "返回",
+    sortByTop: "按热度",
+    sortByNew: "按最新",
+    sortByOld: "按最旧",
+    sortByControversial: "按争议",
 
     // Auth
     email: "电子邮箱",
@@ -309,6 +330,7 @@ export const translations = {
     selectImage: "选择图片",
     removeImage: "删除图片",
     cancel: "取消",
+    edit: "编辑帖子",
 
     // Post form multilingual
     editPost: "编辑帖子",
@@ -406,6 +428,11 @@ export const translations = {
     noComments: "暂无评论。成为第一个评论的人！",
     commenting: "评论中...",
     replying: "回复中...",
+    submitComment: "评论",
+    commentDeleted: "评论已删除",
+    showReplies: "显示回复",
+    hideReplies: "隐藏回复",
+    beTheFirstToComment: "成为第一个评论的人！",
 
     // Profile
     editProfile: "编辑资料",
@@ -481,6 +508,10 @@ export const translations = {
     dark: "Tối",
     system: "Hệ thống",
     back: "Quay lại",
+    sortByTop: "Sắp xếp theo điểm",
+    sortByNew: "Sắp xếp theo mới nhất",
+    sortByOld: "Sắp xếp theo cũ nhất",
+    sortByControversial: "Sắp xếp theo thảo luận",
 
     // Auth
     email: "Email",
@@ -536,6 +567,7 @@ export const translations = {
     selectImage: "Chọn hình ảnh",
     removeImage: "Xóa hình ảnh",
     cancel: "Hủy",
+    edit: "Chỉnh sửa bài viết",
 
     // Post form multilingual
     editPost: "Chỉnh sửa bài viết",
@@ -544,9 +576,12 @@ export const translations = {
     postTitlePlaceholderEn: "Nhập tiêu đề mô tả bằng tiếng Anh",
     postTitlePlaceholderZh: "Nhập tiêu đề bằng tiếng Trung",
     postTitlePlaceholderVi: "Nhập tiêu đề bằng tiếng Việt",
-    postContentPlaceholderEn: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Anh...",
-    postContentPlaceholderZh: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Trung...",
-    postContentPlaceholderVi: "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
+    postContentPlaceholderEn:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Anh...",
+    postContentPlaceholderZh:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Trung...",
+    postContentPlaceholderVi:
+      "Chia sẻ kinh nghiệm hoặc lời khuyên của bạn bằng tiếng Việt...",
     translateFromEnglish: "Dịch từ tiếng Anh",
     translateFromChinese: "Dịch từ tiếng Trung",
     translateFromVietnamese: "Dịch từ tiếng Việt",
@@ -562,7 +597,8 @@ export const translations = {
     errorCreatingPost: "Lỗi khi tạo bài viết",
     errorEditingPost: "Lỗi khi chỉnh sửa bài viết",
     postNotFound: "Không tìm thấy bài viết",
-    postNotFoundDescription: "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    postNotFoundDescription:
+      "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
     loading: "Đang tải...",
 
     // Categories
@@ -633,6 +669,11 @@ export const translations = {
     noComments: "Chưa có bình luận. Hãy là người đầu tiên bình luận!",
     commenting: "Đang bình luận...",
     replying: "Đang trả lời...",
+    submitComment: "Bình luận",
+    commentDeleted: "Bình luận đã bị xóa",
+    showReplies: "Hiển thị phản hồi",
+    hideReplies: "Ẩn phản hồi",
+    beTheFirstToComment: "Hãy là người đầu tiên bình luận!",
 
     // Profile
     editProfile: "Chỉnh sửa hồ sơ",
@@ -684,11 +725,13 @@ export const translations = {
     removeAdmin: "Gỡ bỏ quản trị viên",
     promoteToAdmin: "Thăng cấp thành quản trị viên",
     removeAdminRole: "Gỡ bỏ vai trò quản trị viên",
-    confirmPromoteAdmin: "Bạn có chắc chắn muốn cấp quyền quản trị viên cho người dùng này không?",
-    confirmRemoveAdmin: "Bạn có chắc chắn muốn xóa quyền quản trị viên khỏi người dùng này không?",
+    confirmPromoteAdmin:
+      "Bạn có chắc chắn muốn cấp quyền quản trị viên cho người dùng này không?",
+    confirmRemoveAdmin:
+      "Bạn có chắc chắn muốn xóa quyền quản trị viên khỏi người dùng này không?",
     adminPrivilegesGranted: "Đã cấp quyền quản trị viên thành công",
     adminPrivilegesRemoved: "Đã xóa quyền quản trị viên thành công",
     cannotRemoveOwnAdmin: "Không thể xóa vai trò quản trị viên của chính bạn",
     topContributors: "Người đóng góp hàng đầu",
   },
-}
+};

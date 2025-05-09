@@ -1,177 +1,5 @@
-"use server";
-
-import { query, queryOne, transaction } from "../db/postgres";
-
-export type MultilingualContent = {
-  en: string;
-  zh?: string;
-  vi?: string;
-  it?: string;
-  // Add more languages as needed
-};
-
-export type Post = {
-  id: string;
-  title: MultilingualContent;
-  content: MultilingualContent;
-  excerpt?: MultilingualContent;
-  user_id: string;
-  category_id?: string | null;
-  image_url?: string | null;
-  original_link?: string | null;
-  is_pinned?: boolean;
-  created_at?: string;
-  updated_at?: string;
-  tags?: string[];
-  author?: {
-    id: string;
-    name: string;
-    username: string;
-    image_url?: string;
-  };
-  category?: {
-    id: string;
-    name: MultilingualContent;
-  };
-  likes_count?: number;
-  comments_count?: number;
-  liked?: boolean;
-  saved?: boolean;
-  is_featured?: boolean;
-  view_count?: number;
-  user?: {
-    id: string;
-    name: string;
-    username: string;
-    image_url?: string;
-  };
-};
-
-export async function createPost(postData: {
-  user_id: string;
-  title: MultilingualContent;
-  content: MultilingualContent;
-  category_id?: string;
-  tags?: string[];
-  image_url?: string;
-  original_link?: string | null;
-  is_pinned?: boolean;
-}): Promise<Post | null> {
-  try {
-    const now = new Date().toISOString();
-
-    const sql = `
-      INSERT INTO posts (
-        user_id, title, content, category_id, tags, 
-        image_url, original_link, is_pinned, created_at, updated_at
-      ) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      RETURNING *
-    `;
-
-    const values = [
-      postData.user_id,
-      JSON.stringify(postData.title),
-      JSON.stringify(postData.content),
-      postData.category_id || null,
-      postData.tags || [],
-      postData.image_url || null,
-      postData.original_link || null,
-      postData.is_pinned || false,
-      now,
-      now,
-    ];
-
-    return await queryOne<Post>(sql, values);
-  } catch (error) {
-    console.error("Error creating post:", error);
-    return null;
-  }
-}
-
-export async function updatePost(
-  postId: string,
-  postData: {
-    title?: MultilingualContent;
-    content?: MultilingualContent;
-    category_id?: string;
-    tags?: string[];
-    image_url?: string;
-    original_link?: string | null;
-    is_pinned?: boolean;
-  }
-): Promise<Post | null> {
-  try {
-    // Build dynamic update query
-    const updates: string[] = [];
-    const values: any[] = [];
-    let paramIndex = 1;
-
-    // Add each field to the update query if it exists
-    if (postData.title) {
-      updates.push(`title = $${paramIndex}`);
-      values.push(JSON.stringify(postData.title));
-      paramIndex++;
-    }
-
-    if (postData.content) {
-      updates.push(`content = $${paramIndex}`);
-      values.push(JSON.stringify(postData.content));
-      paramIndex++;
-    }
-
-    if (postData.category_id !== undefined) {
-      updates.push(`category_id = $${paramIndex}`);
-      values.push(postData.category_id);
-      paramIndex++;
-    }
-
-    if (postData.tags !== undefined) {
-      updates.push(`tags = $${paramIndex}`);
-      values.push(postData.tags);
-      paramIndex++;
-    }
-
-    if (postData.image_url !== undefined) {
-      updates.push(`image_url = $${paramIndex}`);
-      values.push(postData.image_url);
-      paramIndex++;
-    }
-
-    if (postData.original_link !== undefined) {
-      updates.push(`original_link = $${paramIndex}`);
-      values.push(postData.original_link);
-      paramIndex++;
-    }
-
-    if (postData.is_pinned !== undefined) {
-      updates.push(`is_pinned = $${paramIndex}`);
-      values.push(postData.is_pinned);
-      paramIndex++;
-    }
-
-    // Add updated_at timestamp
-    updates.push(`updated_at = $${paramIndex}`);
-    values.push(new Date().toISOString());
-    paramIndex++;
-
-    // Add the post ID as the last parameter
-    values.push(postId);
-
-    // Construct the final query
-    const sql = `
-      UPDATE posts 
-      SET ${updates.join(", ")} 
-      WHERE id = $${paramIndex}
-      RETURNING *
-    `;
-
-    return await queryOne<Post>(sql, values);
-  } catch (error) {
-    console.error("Error updating post:", error);
-    return null;
-  }
-}
+import { query, queryOne } from "../postgres";
+import { Post, PostType } from "./posts-modify";
 
 export async function getPostById(
   postId: string,
@@ -180,24 +8,24 @@ export async function getPostById(
   try {
     // Get the post with user and category information
     const sql = `
-      SELECT 
-        p.*,
-        json_build_object(
-          'id', u.id,
-          'name', u.name,
-          'username', u.username,
-          'image_url', u.image_url
-        ) as user,
-        json_build_object(
-          'id', c.id,
-          'name', c.name
-        ) as category,
-        (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
-      FROM posts p
-      LEFT JOIN users u ON p.user_id = u.id
-      LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.id = $1
-    `;
+        SELECT 
+          p.*,
+          json_build_object(
+            'id', u.id,
+            'name', u.name,
+            'username', u.username,
+            'image_url', u.image_url
+          ) as author,
+          json_build_object(
+            'id', c.id,
+            'name', c.name
+          ) as category,
+          (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.id = $1
+      `;
 
     const post = await queryOne<Post>(sql, [postId]);
 
@@ -255,76 +83,6 @@ export async function getPostById(
   }
 }
 
-export async function deletePost(postId: string): Promise<boolean> {
-  try {
-    // Use a transaction to delete the post and related data
-    return await transaction(async (client) => {
-      // Delete comments first (due to foreign key constraints)
-      await client.query("DELETE FROM comments WHERE post_id = $1", [postId]);
-
-      // Delete post likes
-      await client.query("DELETE FROM post_likes WHERE post_id = $1", [postId]);
-
-      // Delete saved posts
-      await client.query("DELETE FROM saved_posts WHERE post_id = $1", [
-        postId,
-      ]);
-
-      // Delete post tags
-      await client.query("DELETE FROM post_tags WHERE post_id = $1", [postId]);
-
-      // Finally delete the post
-      const result = await client.query("DELETE FROM posts WHERE id = $1", [
-        postId,
-      ]);
-
-      return result.rowCount && result.rowCount > 0;
-    });
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    return false;
-  }
-}
-import { env } from "./postgres";
-
-// Type definitions
-export type PostType = {
-  id: number;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-  username: string;
-  category_id: number;
-  category_name: string;
-  likes: number;
-  views: number;
-  tags: string[];
-  language: string;
-  translations?: Record<string, { title: string; content: string }>;
-};
-
-// Fallback to mock data if database connection fails in development
-const MOCK_POSTS: PostType[] = [
-  {
-    id: 1,
-    title: "Getting Started with Study Abroad",
-    content:
-      "This is a guide to help you get started with your study abroad journey.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    user_id: "1",
-    username: "admin",
-    category_id: 1,
-    category_name: "General",
-    likes: 10,
-    views: 100,
-    tags: ["guide", "getting-started"],
-    language: "en",
-  },
-];
-
 /**
  * Get all posts with pagination
  */
@@ -338,28 +96,23 @@ export async function getPostsByLanguage(
   try {
     const offset = (page - 1) * limit;
     const sql = `
-      SELECT 
-        p.id, p.title, p.content, p.created_at, p.updated_at, 
-        p.user_id, u.username, p.category_id, c.name as category_name,
-        p.likes, p.views, p.tags, p.language,
-        (SELECT jsonb_object_agg(pt.language, jsonb_build_object('title', pt.title, 'content', pt.content))
-         FROM post_translations pt
-         WHERE pt.post_id = p.id) as translations
-      FROM posts p
-      JOIN users u ON p.user_id = u.id
-      JOIN categories c ON p.category_id = c.id
-      WHERE p.language = $1
-      ORDER BY p.${sortBy} ${sortOrder}
-      LIMIT $2 OFFSET $3
-    `;
+        SELECT 
+          p.id, p.title, p.content, p.created_at, p.updated_at, 
+          p.user_id, u.username, p.category_id, c.name as category_name,
+          p.likes, p.views, p.tags, p.language,
+          (SELECT jsonb_object_agg(pt.language, jsonb_build_object('title', pt.title, 'content', pt.content))
+           FROM post_translations pt
+           WHERE pt.post_id = p.id) as translations
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        JOIN categories c ON p.category_id = c.id
+        WHERE p.language = $1
+        ORDER BY p.${sortBy} ${sortOrder}
+        LIMIT $2 OFFSET $3
+      `;
     return await query<PostType>(sql, [language, limit, offset]);
   } catch (error) {
     console.error("Error getting posts:", error);
-    // Return mock data in development, throw in production
-    if (env.isDevelopment) {
-      console.warn("Using mock data for posts");
-      return MOCK_POSTS;
-    }
     throw error;
   }
 }
@@ -390,23 +143,23 @@ export async function getPosts(
 
     // Build the query for posts with comment count
     let sql = `
-      SELECT 
-        p.*,
-        json_build_object(
-          'id', u.id,
-          'name', u.name,
-          'username', u.username,
-          'image_url', u.image_url
-        ) as user,
-        json_build_object(
-          'id', c.id,
-          'name', c.name
-        ) as category,
-        (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
-      FROM posts p
-      LEFT JOIN users u ON p.user_id = u.id
-      LEFT JOIN categories c ON p.category_id = c.id
-    `;
+        SELECT 
+          p.*,
+          json_build_object(
+            'id', u.id,
+            'name', u.name,
+            'username', u.username,
+            'image_url', u.image_url
+          ) as user,
+          json_build_object(
+            'id', c.id,
+            'name', c.name
+          ) as category,
+          (SELECT COUNT(*) FROM comments WHERE post_id = p.id AND (status IS NULL OR status != 'deleted')) as comments_count
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+      `;
 
     const params = [];
 
@@ -418,7 +171,7 @@ export async function getPosts(
 
     // Add order and pagination
     sql += ` ORDER BY p.is_pinned DESC, p.created_at DESC
-             LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+               LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
 
     params.push(limit, offset);
 
@@ -434,11 +187,11 @@ export async function getPosts(
 
     // Get tags for all posts
     const tagsSql = `
-      SELECT pt.post_id, t.name
-      FROM post_tags pt
-      JOIN tags t ON pt.tag_id = t.id
-      WHERE pt.post_id = ANY($1::uuid[])
-    `;
+        SELECT pt.post_id, t.name
+        FROM post_tags pt
+        JOIN tags t ON pt.tag_id = t.id
+        WHERE pt.post_id = ANY($1::uuid[])
+      `;
     const tagsResults = await query<{ post_id: string; name: string }>(
       tagsSql,
       [postIds]
@@ -455,11 +208,11 @@ export async function getPosts(
 
     // Get like counts for all posts
     const likesSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM post_likes
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
+        SELECT post_id, COUNT(*) as count
+        FROM post_likes
+        WHERE post_id = ANY($1::uuid[])
+        GROUP BY post_id
+      `;
     const likesResults = await query<{ post_id: string; count: string }>(
       likesSql,
       [postIds]
@@ -478,10 +231,10 @@ export async function getPosts(
     if (userId) {
       // Get liked posts
       const likedSql = `
-        SELECT post_id
-        FROM post_likes
-        WHERE user_id = $1 AND post_id = ANY($2::uuid[])
-      `;
+          SELECT post_id
+          FROM post_likes
+          WHERE user_id = $1 AND post_id = ANY($2::uuid[])
+        `;
       const likedResults = await query<{ post_id: string }>(likedSql, [
         userId,
         postIds,
@@ -490,10 +243,10 @@ export async function getPosts(
 
       // Get saved posts
       const savedSql = `
-        SELECT post_id
-        FROM saved_posts
-        WHERE user_id = $1 AND post_id = ANY($2::uuid[])
-      `;
+          SELECT post_id
+          FROM saved_posts
+          WHERE user_id = $1 AND post_id = ANY($2::uuid[])
+        `;
       const savedResults = await query<{ post_id: string }>(savedSql, [
         userId,
         postIds,
@@ -533,25 +286,25 @@ export async function getUserPosts(
 
     // Get posts by user
     const sql = `
-      SELECT 
-        p.*,
-        json_build_object(
-          'id', u.id,
-          'name', u.name,
-          'username', u.username,
-          'image_url', u.image_url
-        ) as user,
-        json_build_object(
-          'id', c.id,
-          'name', c.name
-        ) as category
-      FROM posts p
-      LEFT JOIN users u ON p.user_id = u.id
-      LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.user_id = $1
-      ORDER BY p.created_at DESC
-      LIMIT $2 OFFSET $3
-    `;
+        SELECT 
+          p.*,
+          json_build_object(
+            'id', u.id,
+            'name', u.name,
+            'username', u.username,
+            'image_url', u.image_url
+          ) as user,
+          json_build_object(
+            'id', c.id,
+            'name', c.name
+          ) as category
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.user_id = $1
+        ORDER BY p.created_at DESC
+        LIMIT $2 OFFSET $3
+      `;
 
     const posts = await query<Post>(sql, [userId, limit, offset]);
 
@@ -564,11 +317,11 @@ export async function getUserPosts(
 
     // Get tags for all posts
     const tagsSql = `
-      SELECT pt.post_id, t.name
-      FROM post_tags pt
-      JOIN tags t ON pt.tag_id = t.id
-      WHERE pt.post_id = ANY($1::uuid[])
-    `;
+        SELECT pt.post_id, t.name
+        FROM post_tags pt
+        JOIN tags t ON pt.tag_id = t.id
+        WHERE pt.post_id = ANY($1::uuid[])
+      `;
     const tagsResults = await query<{ post_id: string; name: string }>(
       tagsSql,
       [postIds]
@@ -585,11 +338,11 @@ export async function getUserPosts(
 
     // Get like counts for all posts
     const likesSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM post_likes
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
+        SELECT post_id, COUNT(*) as count
+        FROM post_likes
+        WHERE post_id = ANY($1::uuid[])
+        GROUP BY post_id
+      `;
     const likesResults = await query<{ post_id: string; count: string }>(
       likesSql,
       [postIds]
@@ -603,11 +356,11 @@ export async function getUserPosts(
 
     // Get comment counts for all posts
     const commentsSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM comments
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
+        SELECT post_id, COUNT(*) as count
+        FROM comments
+        WHERE post_id = ANY($1::uuid[])
+        GROUP BY post_id
+      `;
     const commentsResults = await query<{ post_id: string; count: string }>(
       commentsSql,
       [postIds]
@@ -651,12 +404,12 @@ export async function getSavedPosts(
 
     // Get saved post IDs with pagination
     const savedPostsSql = `
-      SELECT post_id
-      FROM saved_posts
-      WHERE user_id = $1
-      ORDER BY created_at DESC
-      LIMIT $2 OFFSET $3
-    `;
+        SELECT post_id
+        FROM saved_posts
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+        LIMIT $2 OFFSET $3
+      `;
     const savedPosts = await query<{ post_id: string }>(savedPostsSql, [
       userId,
       limit,
@@ -671,33 +424,33 @@ export async function getSavedPosts(
 
     // Get the actual posts
     const sql = `
-      SELECT 
-        p.*,
-        json_build_object(
-          'id', u.id,
-          'name', u.name,
-          'username', u.username,
-          'image_url', u.image_url
-        ) as user,
-        json_build_object(
-          'id', c.id,
-          'name', c.name
-        ) as category
-      FROM posts p
-      LEFT JOIN users u ON p.user_id = u.id
-      LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.id = ANY($1::uuid[])
-    `;
+        SELECT 
+          p.*,
+          json_build_object(
+            'id', u.id,
+            'name', u.name,
+            'username', u.username,
+            'image_url', u.image_url
+          ) as user,
+          json_build_object(
+            'id', c.id,
+            'name', c.name
+          ) as category
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.id = ANY($1::uuid[])
+      `;
 
     const posts = await query<Post>(sql, [savedPostIds]);
 
     // Get tags for all posts
     const tagsSql = `
-      SELECT pt.post_id, t.name
-      FROM post_tags pt
-      JOIN tags t ON pt.tag_id = t.id
-      WHERE pt.post_id = ANY($1::uuid[])
-    `;
+        SELECT pt.post_id, t.name
+        FROM post_tags pt
+        JOIN tags t ON pt.tag_id = t.id
+        WHERE pt.post_id = ANY($1::uuid[])
+      `;
     const tagsResults = await query<{ post_id: string; name: string }>(
       tagsSql,
       [savedPostIds]
@@ -714,11 +467,11 @@ export async function getSavedPosts(
 
     // Get like counts for all posts
     const likesSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM post_likes
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
+        SELECT post_id, COUNT(*) as count
+        FROM post_likes
+        WHERE post_id = ANY($1::uuid[])
+        GROUP BY post_id
+      `;
     const likesResults = await query<{ post_id: string; count: string }>(
       likesSql,
       [savedPostIds]
@@ -732,11 +485,11 @@ export async function getSavedPosts(
 
     // Get comment counts for all posts
     const commentsSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM comments
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
+        SELECT post_id, COUNT(*) as count
+        FROM comments
+        WHERE post_id = ANY($1::uuid[])
+        GROUP BY post_id
+      `;
     const commentsResults = await query<{ post_id: string; count: string }>(
       commentsSql,
       [savedPostIds]
@@ -750,10 +503,10 @@ export async function getSavedPosts(
 
     // Get liked posts
     const likedSql = `
-      SELECT post_id
-      FROM post_likes
-      WHERE user_id = $1 AND post_id = ANY($2::uuid[])
-    `;
+        SELECT post_id
+        FROM post_likes
+        WHERE user_id = $1 AND post_id = ANY($2::uuid[])
+      `;
     const likedResults = await query<{ post_id: string }>(likedSql, [
       userId,
       savedPostIds,
@@ -796,20 +549,20 @@ export async function getPostsByTag(
 
     // Count total posts with this tag
     const countSql = `
-      SELECT COUNT(*) as count 
-      FROM post_tags 
-      WHERE tag_id = $1
-    `;
+        SELECT COUNT(*) as count 
+        FROM post_tags 
+        WHERE tag_id = $1
+      `;
     const countResult = await queryOne<{ count: string }>(countSql, [tag.id]);
     const total = Number.parseInt(countResult?.count || "0");
 
     // Get post IDs with this tag
     const postTagsSql = `
-      SELECT post_id
-      FROM post_tags
-      WHERE tag_id = $1
-      LIMIT $2 OFFSET $3
-    `;
+        SELECT post_id
+        FROM post_tags
+        WHERE tag_id = $1
+        LIMIT $2 OFFSET $3
+      `;
     const postTags = await query<{ post_id: string }>(postTagsSql, [
       tag.id,
       limit,
@@ -824,33 +577,33 @@ export async function getPostsByTag(
 
     // Get the actual posts
     const sql = `
-      SELECT 
-        p.*,
-        json_build_object(
-          'id', u.id,
-          'name', u.name,
-          'username', u.username,
-          'image_url', u.image_url
-        ) as user,
-        json_build_object(
-          'id', c.id,
-          'name', c.name
-        ) as category
-      FROM posts p
-      LEFT JOIN users u ON p.user_id = u.id
-      LEFT JOIN categories c ON p.category_id = c.id
-      WHERE p.id = ANY($1::uuid[])
-    `;
+        SELECT 
+          p.*,
+          json_build_object(
+            'id', u.id,
+            'name', u.name,
+            'username', u.username,
+            'image_url', u.image_url
+          ) as user,
+          json_build_object(
+            'id', c.id,
+            'name', c.name
+          ) as category
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.id = ANY($1::uuid[])
+      `;
 
     const posts = await query<Post>(sql, [postIds]);
 
     // Get tags for all posts
     const tagsSql = `
-      SELECT pt.post_id, t.name
-      FROM post_tags pt
-      JOIN tags t ON pt.tag_id = t.id
-      WHERE pt.post_id = ANY($1::uuid[])
-    `;
+        SELECT pt.post_id, t.name
+        FROM post_tags pt
+        JOIN tags t ON pt.tag_id = t.id
+        WHERE pt.post_id = ANY($1::uuid[])
+      `;
     const tagsResults = await query<{ post_id: string; name: string }>(
       tagsSql,
       [postIds]
@@ -867,11 +620,11 @@ export async function getPostsByTag(
 
     // Get like counts for all posts
     const likesSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM post_likes
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
+        SELECT post_id, COUNT(*) as count
+        FROM post_likes
+        WHERE post_id = ANY($1::uuid[])
+        GROUP BY post_id
+      `;
     const likesResults = await query<{ post_id: string; count: string }>(
       likesSql,
       [postIds]
@@ -885,11 +638,11 @@ export async function getPostsByTag(
 
     // Get comment counts for all posts
     const commentsSql = `
-      SELECT post_id, COUNT(*) as count
-      FROM comments
-      WHERE post_id = ANY($1::uuid[])
-      GROUP BY post_id
-    `;
+        SELECT post_id, COUNT(*) as count
+        FROM comments
+        WHERE post_id = ANY($1::uuid[])
+        GROUP BY post_id
+      `;
     const commentsResults = await query<{ post_id: string; count: string }>(
       commentsSql,
       [postIds]
@@ -908,10 +661,10 @@ export async function getPostsByTag(
     if (userId) {
       // Get liked posts
       const likedSql = `
-        SELECT post_id
-        FROM post_likes
-        WHERE user_id = $1 AND post_id = ANY($2::uuid[])
-      `;
+          SELECT post_id
+          FROM post_likes
+          WHERE user_id = $1 AND post_id = ANY($2::uuid[])
+        `;
       const likedResults = await query<{ post_id: string }>(likedSql, [
         userId,
         postIds,
@@ -920,10 +673,10 @@ export async function getPostsByTag(
 
       // Get saved posts
       const savedSql = `
-        SELECT post_id
-        FROM saved_posts
-        WHERE user_id = $1 AND post_id = ANY($2::uuid[])
-      `;
+          SELECT post_id
+          FROM saved_posts
+          WHERE user_id = $1 AND post_id = ANY($2::uuid[])
+        `;
       const savedResults = await query<{ post_id: string }>(savedSql, [
         userId,
         postIds,
@@ -958,34 +711,6 @@ export async function getRelatedPosts(
     if (categoryId) {
       // First try to get posts from the same category
       const categorySql = `
-        SELECT 
-          p.*,
-          json_build_object(
-            'id', u.id,
-            'name', u.name,
-            'username', u.username,
-            'image_url', u.image_url
-          ) as user,
-          json_build_object(
-            'id', c.id,
-            'name', c.name
-          ) as category
-        FROM posts p
-        LEFT JOIN users u ON p.user_id = u.id
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.category_id = $1
-        AND p.id != $2
-        ORDER BY p.created_at DESC
-        LIMIT 3
-      `;
-      relatedPosts = await query<Post>(categorySql, [categoryId, postId]);
-
-      // If we don't have enough posts from the same category, fetch some recent posts
-      if (relatedPosts.length < 3) {
-        const neededPosts = 3 - relatedPosts.length;
-        const existingIds = [postId, ...relatedPosts.map((p) => p.id)];
-
-        const recentSql = `
           SELECT 
             p.*,
             json_build_object(
@@ -1001,10 +726,38 @@ export async function getRelatedPosts(
           FROM posts p
           LEFT JOIN users u ON p.user_id = u.id
           LEFT JOIN categories c ON p.category_id = c.id
-          WHERE p.id != ALL($1::uuid[])
+          WHERE p.category_id = $1
+          AND p.id != $2
           ORDER BY p.created_at DESC
-          LIMIT $2
+          LIMIT 3
         `;
+      relatedPosts = await query<Post>(categorySql, [categoryId, postId]);
+
+      // If we don't have enough posts from the same category, fetch some recent posts
+      if (relatedPosts.length < 3) {
+        const neededPosts = 3 - relatedPosts.length;
+        const existingIds = [postId, ...relatedPosts.map((p) => p.id)];
+
+        const recentSql = `
+            SELECT 
+              p.*,
+              json_build_object(
+                'id', u.id,
+                'name', u.name,
+                'username', u.username,
+                'image_url', u.image_url
+              ) as user,
+              json_build_object(
+                'id', c.id,
+                'name', c.name
+              ) as category
+            FROM posts p
+            LEFT JOIN users u ON p.user_id = u.id
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.id != ALL($1::uuid[])
+            ORDER BY p.created_at DESC
+            LIMIT $2
+          `;
         const recentPosts = await query<Post>(recentSql, [
           existingIds,
           neededPosts,
@@ -1014,25 +767,25 @@ export async function getRelatedPosts(
     } else {
       // If no category, just get recent posts
       const recentSql = `
-        SELECT 
-          p.*,
-          json_build_object(
-            'id', u.id,
-            'name', u.name,
-            'username', u.username,
-            'image_url', u.image_url
-          ) as user,
-          json_build_object(
-            'id', c.id,
-            'name', c.name
-          ) as category
-        FROM posts p
-        LEFT JOIN users u ON p.user_id = u.id
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.id != $1
-        ORDER BY p.created_at DESC
-        LIMIT 3
-      `;
+          SELECT 
+            p.*,
+            json_build_object(
+              'id', u.id,
+              'name', u.name,
+              'username', u.username,
+              'image_url', u.image_url
+            ) as user,
+            json_build_object(
+              'id', c.id,
+              'name', c.name
+            ) as category
+          FROM posts p
+          LEFT JOIN users u ON p.user_id = u.id
+          LEFT JOIN categories c ON p.category_id = c.id
+          WHERE p.id != $1
+          ORDER BY p.created_at DESC
+          LIMIT 3
+        `;
       relatedPosts = await query<Post>(recentSql, [postId]);
     }
 
@@ -1040,11 +793,11 @@ export async function getRelatedPosts(
     if (relatedPosts.length > 0) {
       const postIds = relatedPosts.map((post) => post.id);
       const tagsSql = `
-        SELECT pt.post_id, t.name
-        FROM post_tags pt
-        JOIN tags t ON pt.tag_id = t.id
-        WHERE pt.post_id = ANY($1::uuid[])
-      `;
+          SELECT pt.post_id, t.name
+          FROM post_tags pt
+          JOIN tags t ON pt.tag_id = t.id
+          WHERE pt.post_id = ANY($1::uuid[])
+        `;
       const tagsResults = await query<{ post_id: string; name: string }>(
         tagsSql,
         [postIds]

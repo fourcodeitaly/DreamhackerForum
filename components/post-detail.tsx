@@ -27,7 +27,7 @@ import { formatRelativeTime } from "@/lib/utils";
 import { PostLanguageSwitcher } from "@/components/post-language-switcher";
 import { normalizePostData } from "@/lib/data-utils";
 import { Markdown } from "@/components/markdown"; // Import the Markdown component
-import { Post } from "@/lib/db/posts";
+import { Post } from "@/lib/db/posts/posts-modify";
 
 interface PostDetailProps {
   post: Post;
@@ -85,14 +85,14 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
     // Legacy format or fallback
     if (currentLanguage === "zh") {
       return post.content
-        ? post.content
+        ? (post.content as string)
             .split("\n")
             .map((paragraph: string) => `[中文] ${paragraph}`)
             .join("\n")
         : "";
     } else if (currentLanguage === "vi") {
       return post.content
-        ? post.content
+        ? (post.content as string)
             .split("\n")
             .map((paragraph: string) => `[Tiếng Việt] ${paragraph}`)
             .join("\n")
@@ -154,21 +154,21 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const author = post.author || {
     name: "Unknown Author",
     username: "unknown",
-    image: null,
+    image_url: null,
   };
 
   // Get the creation date safely
-  const creationDate = post.createdAt || post.created_at;
+  const creationDate = post.created_at;
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="p-6">
+    <Card className="overflow-hidden p-0 border-0 md:border shadow-none">
+      <CardHeader className="p-0 md:p-6">
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
                 src={
-                  author.image ||
+                  author.image_url ||
                   "/placeholder.svg?height=40&width=40&query=user"
                 }
                 alt={author.name}
@@ -185,13 +185,13 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
                 {author.name || "Unknown Author"}
               </Link>
               <p className="text-sm text-muted-foreground">
-                {formatRelativeTime(creationDate)}
+                {formatRelativeTime(creationDate || new Date())}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            {post.isPinned && <Badge variant="outline">{t("pinned")}</Badge>}
+            {post.is_pinned && <Badge variant="outline">{t("pinned")}</Badge>}
             {isAdmin && (
               <Link href={`/posts/${post.id}/edit`}>
                 <Button variant="outline" size="sm" className="ml-2">
@@ -237,12 +237,13 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="p-6 pt-0">
-        {post.image && (
+      <CardContent className="p-0 md:p-6">
+        {post.image_url && (
           <div className="mb-6">
             <img
               src={
-                post.image || "/placeholder.svg?height=400&width=800&query=post"
+                post.image_url ||
+                "/placeholder.svg?height=400&width=800&query=post"
               }
               alt={getLocalizedTitle()}
               className="rounded-md w-full max-h-96 object-cover"
@@ -256,67 +257,67 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-6 flex items-center justify-between border-t">
-        <div className="flex space-x-6">
+      <CardFooter className="p-0 pt-4 md:p-6 flex items-center justify-between border-t">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center space-x-2"
+          onClick={handleLike}
+        >
+          <Heart
+            className={cn(
+              "h-5 w-5",
+              liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
+            )}
+          />
+          <span
+            className={cn(liked ? "text-red-500" : "text-muted-foreground")}
+          >
+            {likesCount} {t("likes")}
+          </span>
+        </Button>
+
+        <Link href="#comments">
           <Button
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2"
-            onClick={handleLike}
           >
-            <Heart
-              className={cn(
-                "h-5 w-5",
-                liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
-              )}
-            />
-            <span
-              className={cn(liked ? "text-red-500" : "text-muted-foreground")}
-            >
-              {likesCount} {t("likes")}
+            <MessageCircle className="h-5 w-5 text-muted-foreground" />
+            <span className="text-muted-foreground">
+              {post.comments_count || 0} {t("comments")}
             </span>
           </Button>
+        </Link>
 
-          <Link href="#comments">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center space-x-2"
-            >
-              <MessageCircle className="h-5 w-5 text-muted-foreground" />
-              <span className="text-muted-foreground">
-                {post.comments_count || 0} {t("comments")}
-              </span>
-            </Button>
-          </Link>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center space-x-2"
+          onClick={handleShare}
+        >
+          <Share2 className="h-5 w-5 text-muted-foreground" />
+          <span className="text-muted-foreground hidden md:block">
+            {t("share")}
+          </span>
+        </Button>
 
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center space-x-2"
-            onClick={handleShare}
-          >
-            <Share2 className="h-5 w-5 text-muted-foreground" />
-            <span className="text-muted-foreground">{t("share")}</span>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center space-x-2"
-            onClick={handleSave}
-          >
-            <Bookmark
-              className={cn(
-                "h-5 w-5",
-                saved ? "fill-current" : "text-muted-foreground"
-              )}
-            />
-            <span className="text-muted-foreground">{t("save")}</span>
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center space-x-2"
+          onClick={handleSave}
+        >
+          <Bookmark
+            className={cn(
+              "h-5 w-5",
+              saved ? "fill-current" : "text-muted-foreground"
+            )}
+          />
+          <span className="text-muted-foreground hidden md:block">
+            {t("save")}
+          </span>
+        </Button>
       </CardFooter>
     </Card>
   );

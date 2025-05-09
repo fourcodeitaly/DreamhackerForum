@@ -7,11 +7,12 @@ import { TopContributors } from "@/components/top-contributors";
 import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/skeletons";
 import { ServerEnvChecker } from "@/components/server-env-checker";
-import type { Post } from "@/lib/db/posts";
-import { getPosts } from "@/lib/db/posts";
+import type { Post } from "@/lib/db/posts/posts-modify";
+import { getPosts } from "@/lib/db/posts/post-get";
+import { Contributor, getTopContributors } from "@/lib/db/users";
 export const dynamic = "force-dynamic";
 
-export default async function Home({
+export default async function Posts({
   searchParams,
 }: {
   searchParams: { page?: string };
@@ -25,11 +26,19 @@ export default async function Home({
   // Fetch posts on the server
   let initialPosts: Post[] = [];
   let totalPosts = 0;
+  let featuredPosts: Post[] = [];
+  let topContributors: Contributor[] = [];
 
   try {
     const { posts, total } = await getPosts(pageNumber, postsPerPage);
+    featuredPosts = posts
+      .filter((post) => post.is_pinned || post.image_url)
+      .slice(0, 3);
+
     initialPosts = posts;
     totalPosts = total;
+
+    topContributors = await getTopContributors();
   } catch (error) {
     console.error("Error fetching posts in Home page:", error);
     // Continue with empty posts array
@@ -40,7 +49,9 @@ export default async function Home({
       {/* Only show in development */}
       {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
 
-      <div className="mb-8">{/* <FeaturedPosts /> */}</div>
+      <div className="mb-8">
+        <FeaturedPosts posts={featuredPosts} />
+      </div>
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left sidebar */}
         <div className="lg:w-1/5">
@@ -58,7 +69,7 @@ export default async function Home({
           </div>
           <Suspense fallback={<PostListSkeleton />}>
             <PostList
-              initialPosts={initialPosts}
+              posts={initialPosts}
               totalPosts={totalPosts}
               currentPage={pageNumber}
             />
@@ -67,7 +78,7 @@ export default async function Home({
 
         {/* Right sidebar */}
         <div className="lg:w-1/5">
-          <TopContributors />
+          <TopContributors topContributors={topContributors} />
         </div>
       </div>
     </div>

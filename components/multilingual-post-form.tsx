@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -15,145 +15,163 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { useTranslation } from "@/hooks/use-translation"
-import { useRouter } from "next/navigation"
-import { Loader2, Upload, X, Languages, LinkIcon } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MarkdownEditor } from "@/components/markdown-editor" // Use Markdown Editor
-import { translateText } from "@/lib/translation-service"
-import { useToast } from "@/components/ui/use-toast"
-import { useAuth } from "@/hooks/use-auth"
-import { createPostAction, updatePostAction } from "@/app/actions"
-import type { Post } from "@/lib/db/posts"
+} from "@/components/ui/select";
+import { useTranslation } from "@/hooks/use-translation";
+import { useRouter } from "next/navigation";
+import { Loader2, Upload, X, Languages, LinkIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MarkdownEditor } from "@/components/markdown-editor"; // Use Markdown Editor
+import { translateText } from "@/lib/translation-service";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { createPostAction, updatePostAction } from "@/app/actions";
+import type { Post } from "@/lib/db/posts/posts-modify";
 
 interface MultilingualPostFormProps {
-  initialData?: Post
-  isEditing?: boolean
+  initialData?: Post;
+  isEditing?: boolean;
 }
 
-export function MultilingualPostForm({ initialData, isEditing = false }: MultilingualPostFormProps) {
-  const { t } = useTranslation()
-  const router = useRouter()
-  const { toast } = useToast()
-  const { user } = useAuth()
+export function MultilingualPostForm({
+  initialData,
+  isEditing = false,
+}: MultilingualPostFormProps) {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { toast } = useToast();
+  const { user } = useAuth();
 
   // Initialize with empty content or existing content if editing
   const [title, setTitle] = useState({
     en: initialData?.title?.en || "",
     zh: initialData?.title?.zh || "",
     vi: initialData?.title?.vi || "",
-  })
+  });
 
   const [content, setContent] = useState({
     en: initialData?.content?.en || "",
     zh: initialData?.content?.zh || "",
     vi: initialData?.content?.vi || "",
-  })
+  });
 
-  const [category, setCategory] = useState(initialData?.category_id || "")
-  const [tags, setTags] = useState<string[]>(initialData?.tags || [])
-  const [currentTag, setCurrentTag] = useState("")
-  const [image, setImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image_url || null)
-  const [originalLink, setOriginalLink] = useState<string>(initialData?.original_link || "") // Added original link
-  const [isLoading, setIsLoading] = useState(false)
-  const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">("en")
-  const [isTranslating, setIsTranslating] = useState(false)
+  const [category, setCategory] = useState(initialData?.category_id || "");
+  // const [tags, setTags] = useState<string[]>(initialData?.tags || []);
+  const [currentTag, setCurrentTag] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    initialData?.image_url || null
+  );
+  const [originalLink, setOriginalLink] = useState<string>(
+    initialData?.original_link || ""
+  ); // Added original link
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">(
+    "en"
+  );
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      setImage(file)
+      const file = e.target.files[0];
+      setImage(file);
 
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const handleRemoveImage = () => {
-    setImage(null)
-    setImagePreview(null)
-  }
+    setImage(null);
+    setImagePreview(null);
+  };
 
-  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && currentTag.trim()) {
-      e.preventDefault()
-      if (!tags.includes(currentTag.trim())) {
-        setTags([...tags, currentTag.trim()])
-      }
-      setCurrentTag("")
-    }
-  }
+  // const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === "Enter" && currentTag.trim()) {
+  //     e.preventDefault();
+  //     if (!tags.includes(currentTag.trim())) {
+  //       setTags([...tags, currentTag.trim()]);
+  //     }
+  //     setCurrentTag("");
+  //   }
+  // };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove))
-  }
+  // const handleRemoveTag = (tagToRemove: string) => {
+  //   setTags(tags.filter((tag) => tag !== tagToRemove));
+  // };
 
   const handleTitleChange = (lang: "en" | "zh" | "vi", value: string) => {
-    setTitle({ ...title, [lang]: value })
-  }
+    setTitle({ ...title, [lang]: value });
+  };
 
   const handleContentChange = (lang: "en" | "zh" | "vi", value: string) => {
-    setContent({ ...content, [lang]: value })
-  }
+    setContent({ ...content, [lang]: value });
+  };
 
-  const handleTranslate = async (sourceLang: "en" | "zh" | "vi", targetLang: "en" | "zh" | "vi") => {
+  const handleTranslate = async (
+    sourceLang: "en" | "zh" | "vi",
+    targetLang: "en" | "zh" | "vi"
+  ) => {
     if (!title[sourceLang] && !content[sourceLang]) {
       toast({
         title: t("translationError"),
         description: t("noContentToTranslate"),
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsTranslating(true)
+    setIsTranslating(true);
     try {
       // Translate title
       if (title[sourceLang]) {
-        const translatedTitle = await translateText(title[sourceLang], targetLang)
-        setTitle((prev) => ({ ...prev, [targetLang]: translatedTitle }))
+        const translatedTitle = await translateText(
+          title[sourceLang],
+          targetLang
+        );
+        setTitle((prev) => ({ ...prev, [targetLang]: translatedTitle }));
       }
 
       // Translate content
       if (content[sourceLang]) {
-        const translatedContent = await translateText(content[sourceLang], targetLang)
-        setContent((prev) => ({ ...prev, [targetLang]: translatedContent }))
+        const translatedContent = await translateText(
+          content[sourceLang],
+          targetLang
+        );
+        setContent((prev) => ({ ...prev, [targetLang]: translatedContent }));
       }
 
       toast({
         title: t("translationComplete"),
         description: t("contentTranslated"),
-      })
+      });
     } catch (error) {
       toast({
         title: t("translationError"),
         description: t("errorTranslatingContent"),
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsTranslating(false)
+      setIsTranslating(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!user) {
       toast({
         title: t("error"),
         description: t("mustBeLoggedIn"),
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     // Validate that at least English content is provided
     if (!title.en || !content.en) {
@@ -161,9 +179,9 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
         title: t("validationError"),
         description: t("englishContentRequired"),
         variant: "destructive",
-      })
-      setIsLoading(false)
-      return
+      });
+      setIsLoading(false);
+      return;
     }
 
     // Validate URL format if original link is provided
@@ -172,18 +190,22 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
         title: t("validationError"),
         description: t("invalidUrlFormat"),
         variant: "destructive",
-      })
-      setIsLoading(false)
-      return
+      });
+      setIsLoading(false);
+      return;
     }
 
     try {
       // Generate excerpt from content (strip markdown formatting)
       const excerpt = {
         en: content.en.substring(0, 150).replace(/[#*_~`[\]()]/g, ""),
-        zh: content.zh ? content.zh.substring(0, 150).replace(/[#*_~`[\]()]/g, "") : undefined,
-        vi: content.vi ? content.vi.substring(0, 150).replace(/[#*_~`[\]()]/g, "") : undefined,
-      }
+        zh: content.zh
+          ? content.zh.substring(0, 150).replace(/[#*_~`[\]()]/g, "")
+          : undefined,
+        vi: content.vi
+          ? content.vi.substring(0, 150).replace(/[#*_~`[\]()]/g, "")
+          : undefined,
+      };
 
       if (isEditing && initialData) {
         // Update existing post
@@ -191,26 +213,26 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
           title,
           content,
           categoryId: category,
-          tags,
+          // tags,
           imageUrl: imagePreview,
           originalLink: originalLink || undefined, // Include original link
         }).catch((error) => {
-          console.error("Error updating post:", error)
-          return { success: false, message: "Error updating post" }
-        })
+          console.error("Error updating post:", error);
+          return { success: false, message: "Error updating post" };
+        });
 
         if (result.success) {
           toast({
             title: t("success"),
             description: t("postUpdated"),
-          })
-          router.push(`/posts/${result.post.id}`)
+          });
+          router.push(`/posts/${initialData.id}`);
         } else {
           toast({
             title: t("error"),
             description: result.message || t("errorUpdatingPost"),
             variant: "destructive",
-          })
+          });
         }
       } else {
         // Create new post
@@ -219,50 +241,50 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
           title,
           content,
           categoryId: category,
-          tags,
-          imageUrl: imagePreview,
+          // tags,
+          imageUrl: imagePreview || undefined,
           originalLink: originalLink || undefined, // Include original link
         }).catch((error) => {
-          console.error("Error creating post:", error)
-          return { success: false, message: "Error creating post" }
-        })
+          console.error("Error creating post:", error);
+          return { success: false, message: "Error creating post" };
+        });
 
         if (result.success) {
           toast({
             title: t("success"),
             description: t("postCreated"),
-          })
-          router.push(`/posts/${result.post.id}`)
+          });
+          router.push(`/posts/${initialData?.id}`);
         } else {
           toast({
             title: t("error"),
             description: result.message || t("errorCreatingPost"),
             variant: "destructive",
-          })
+          });
         }
       }
     } catch (error) {
-      console.error("Error submitting post:", error)
+      console.error("Error submitting post:", error);
       toast({
         title: t("error"),
         description: isEditing ? t("errorEditingPost") : t("errorCreatingPost"),
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Validate URL format
   const isValidUrl = (urlString: string): boolean => {
     try {
-      if (!urlString) return true
-      new URL(urlString)
-      return true
+      if (!urlString) return true;
+      new URL(urlString);
+      return true;
     } catch (e) {
-      return false
+      return false;
     }
-  }
+  };
 
   // Category groups for the select dropdown
   const categoryGroups = [
@@ -286,10 +308,16 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
         { value: "school-introduction", label: t("schoolIntroduction") },
         { value: "major-and-ranking", label: t("majorAndRanking") },
         { value: "business-application-faq", label: t("applicationFAQ") },
-        { value: "business-recommendation-letter", label: t("recommendationLetter") },
+        {
+          value: "business-recommendation-letter",
+          label: t("recommendationLetter"),
+        },
         { value: "ps-resume", label: t("psResume") },
         { value: "business-interview", label: t("businessInterview") },
-        { value: "business-application-summary", label: t("applicationSummary") },
+        {
+          value: "business-application-summary",
+          label: t("applicationSummary"),
+        },
       ],
     },
     {
@@ -298,7 +326,10 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
         { value: "business-school-intro", label: t("businessSchoolIntro") },
         { value: "phd-ranking", label: t("ranking") },
         { value: "phd-application-faq", label: t("applicationFAQ") },
-        { value: "phd-recommendation-letter", label: t("recommendationLetter") },
+        {
+          value: "phd-recommendation-letter",
+          label: t("recommendationLetter"),
+        },
         { value: "phd-application-summary", label: t("applicationSummary") },
         { value: "phd-study-experience", label: t("phdStudyExperience") },
         { value: "phd-interview", label: t("phdInterview") },
@@ -315,7 +346,7 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
         { value: "cultural-adjustment", label: t("culturalAdjustment") },
       ],
     },
-  ]
+  ];
 
   return (
     <Card>
@@ -346,11 +377,20 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
             <div className="flex items-center justify-between">
               <Label htmlFor="title">{t("title")}</Label>
               <div className="text-sm text-muted-foreground">
-                {activeLanguage === "en" ? "English" : activeLanguage === "zh" ? "中文" : "Tiếng Việt"}
+                {activeLanguage === "en"
+                  ? "English"
+                  : activeLanguage === "zh"
+                  ? "中文"
+                  : "Tiếng Việt"}
               </div>
             </div>
 
-            <Tabs value={activeLanguage} onValueChange={(value) => setActiveLanguage(value as "en" | "zh" | "vi")}>
+            <Tabs
+              value={activeLanguage}
+              onValueChange={(value) =>
+                setActiveLanguage(value as "en" | "zh" | "vi")
+              }
+            >
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="en">English</TabsTrigger>
                 <TabsTrigger value="zh">中文</TabsTrigger>
@@ -473,11 +513,20 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
             <div className="flex items-center justify-between">
               <Label htmlFor="content">{t("content")}</Label>
               <div className="text-sm text-muted-foreground">
-                {activeLanguage === "en" ? "English" : activeLanguage === "zh" ? "中文" : "Tiếng Việt"}
+                {activeLanguage === "en"
+                  ? "English"
+                  : activeLanguage === "zh"
+                  ? "中文"
+                  : "Tiếng Việt"}
               </div>
             </div>
 
-            <Tabs value={activeLanguage} onValueChange={(value) => setActiveLanguage(value as "en" | "zh" | "vi")}>
+            <Tabs
+              value={activeLanguage}
+              onValueChange={(value) =>
+                setActiveLanguage(value as "en" | "zh" | "vi")
+              }
+            >
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="en">English</TabsTrigger>
                 <TabsTrigger value="zh">中文</TabsTrigger>
@@ -574,11 +623,15 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
             </Tabs>
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="tags">{t("tags")}</Label>
             <div className="flex flex-wrap gap-2 mb-2">
               {tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                <Badge
+                  key={tag}
+                  variant="secondary"
+                  className="flex items-center gap-1"
+                >
                   {tag}
                   <Button
                     type="button"
@@ -600,8 +653,10 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
               placeholder={t("addTagsPlaceholder")}
               onKeyDown={handleAddTag}
             />
-            <p className="text-xs text-muted-foreground">{t("pressEnterToAddTag")}</p>
-          </div>
+            <p className="text-xs text-muted-foreground">
+              {t("pressEnterToAddTag")}
+            </p>
+          </div> */}
 
           <div className="space-y-2">
             <Label htmlFor="image">{t("image")}</Label>
@@ -626,22 +681,36 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
             ) : (
               <div className="border-2 border-dashed rounded-md p-6 text-center">
                 <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                <p className="mt-2 text-sm text-muted-foreground">{t("dragAndDropImage")}</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("dragAndDropImage")}
+                </p>
                 <Button
                   type="button"
                   variant="outline"
                   className="mt-4"
-                  onClick={() => document.getElementById("image-upload")?.click()}
+                  onClick={() =>
+                    document.getElementById("image-upload")?.click()
+                  }
                 >
                   {t("selectImage")}
                 </Button>
-                <Input id="image-upload" type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                <Input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
               </div>
             )}
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => router.back()}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+            >
               {t("cancel")}
             </Button>
             <Button type="submit" disabled={isLoading}>
@@ -660,5 +729,5 @@ export function MultilingualPostForm({ initialData, isEditing = false }: Multili
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

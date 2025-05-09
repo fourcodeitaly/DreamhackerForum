@@ -1,28 +1,34 @@
-import { Suspense } from "react"
-import { PostList } from "@/components/post-list"
-import { SortFilter } from "@/components/sort-filter"
-import { BackButton } from "@/components/back-button"
-import { PostListSkeleton } from "@/components/skeletons"
-import { getPostsByCategory, getCategory, getCategoryPostCount } from "@/lib/data-utils-supabase"
+import { Suspense } from "react";
+import { PostList } from "@/components/post-list";
+import { SortFilter } from "@/components/sort-filter";
+import { BackButton } from "@/components/back-button";
+import { PostListSkeleton } from "@/components/skeletons";
+import {
+  getCategory,
+  getPostsByCategory,
+} from "@/lib/db/category/category-get";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
 interface CategoryPageProps {
-  params: { id: string }
-  searchParams: { page?: string }
+  params: { id: string };
+  searchParams: { page?: string };
 }
 
-export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-  const { id } = params
-  const page = searchParams.page ? Number.parseInt(searchParams.page) : 1
-  const postsPerPage = 10
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: CategoryPageProps) {
+  const { id } = await params;
+  const sParams = await searchParams;
+  const page = sParams.page ? Number.parseInt(sParams.page) : 1;
+  const postsPerPage = 10;
 
   // Fetch category and posts
-  const category = await getCategory(id)
-  const posts = await getPostsByCategory(id, page, postsPerPage)
-  const totalPosts = await getCategoryPostCount(id)
+  const category = await getCategory(id);
+  const { posts, total } = await getPostsByCategory(id, page, postsPerPage);
 
-  const categoryName = category?.name?.en || "Category"
+  const categoryName = category?.name?.en || "Category";
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -36,8 +42,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <SortFilter />
       </div>
       <Suspense fallback={<PostListSkeleton />}>
-        <PostList initialPosts={posts} totalPosts={totalPosts} currentPage={page} />
+        <PostList posts={posts} totalPosts={total} currentPage={page} />
       </Suspense>
     </div>
-  )
+  );
 }

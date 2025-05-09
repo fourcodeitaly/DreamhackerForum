@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (localAuth.isEnabled()) {
           // For local development, we can set a default user
           const currentUser = localAuth.getCurrentUser();
-          setUser(currentUser);
+          setUser(currentUser as User);
           setIsLoading(false);
           return;
         }
@@ -181,14 +181,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (credentials: { email: string; password: string }) => {
     // Check if local auth is enabled
-    if (localAuth.isEnabled()) {
-      const result = localAuth.signIn(credentials.email, credentials.password);
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
-      setUser(result.user);
-      return result;
-    }
+    // if (localAuth.isEnabled()) {
+    //   const result = localAuth.signIn(credentials.email, credentials.password);
+    //   if (result.error) {
+    //     throw new Error(result.error.message);
+    //   }
+    //   setUser(result.user);
+    //   return result;
+    // }
 
     const supabase = createClientSupabaseClient();
 
@@ -287,11 +287,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     // Check if local auth is enabled
-    if (localAuth.isEnabled()) {
-      localAuth.signOut();
-      setUser(null);
-      return;
-    }
+    // if (localAuth.isEnabled()) {
+    //   localAuth.signOut();
+    //   setUser(null);
+    //   return;
+    // }
 
     const supabase = createClientSupabaseClient();
 

@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Markdown } from "@/components/markdown";
 import { formatRelativeTime } from "@/lib/utils";
 import { MessageSquare, Eye, ExternalLink } from "lucide-react";
-import { Post } from "@/lib/db/posts";
+import { Post } from "@/lib/db/posts/posts-modify";
 
 interface PostCardProps {
   post: Post;
@@ -67,17 +67,17 @@ export function PostCard({ post, onDelete }: PostCardProps) {
     <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between">
-          <Link href={`/posts/${post.id}`} className="hover:underline">
-            <h2 className="text-xl font-bold">{postTitle}</h2>
+          <Link href={`/posts/${post.id}`}>
+            <h2 className="text-xl font-bold hover:underline">{postTitle}</h2>
           </Link>
           {(isAuthor || isAdmin) && (
             <div className="flex space-x-2">
               {/* <Button variant="outline" size="sm" onClick={handleEdit}>
-                {t("edit")}
-              </Button>
-              <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
-                {isDeleting ? t("deleting") : t("delete")}
-              </Button> */}
+              {t("edit")}
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? t("deleting") : t("delete")}
+            </Button> */}
             </div>
           )}
         </div>
@@ -117,21 +117,23 @@ export function PostCard({ post, onDelete }: PostCardProps) {
       </CardHeader>
       <CardContent>
         {/* {post.image_url && (
-          <Link href={`/posts/${post.id}`}>
-            <div className="mb-4 overflow-hidden rounded-md">
-              <Image
-                src={post.image_url || "/placeholder.svg"}
-                alt={postTitle}
-                width={400}
-                height={200}
-                className="w-full h-48 object-cover transition-transform hover:scale-105"
-              />
-            </div>
-          </Link>
-        )} */}
-        <div className="text-sm text-muted-foreground line-clamp-3">
-          <Markdown content={postContent} preview={true} />
-        </div>
+        <Link href={`/posts/${post.id}`}>
+          <div className="mb-4 overflow-hidden rounded-md">
+            <Image
+              src={post.image_url || "/placeholder.svg"}
+              alt={postTitle}
+              width={400}
+              height={200}
+              className="w-full h-48 object-cover transition-transform hover:scale-105"
+            />
+          </div>
+        </Link>
+      )} */}
+        <Link href={`/posts/${post.id}`}>
+          <div className="text-sm text-muted-foreground line-clamp-3">
+            <Markdown content={postContent} preview={true} />
+          </div>
+        </Link>
         {post.original_link && (
           <div className="mt-2 flex items-center text-xs text-muted-foreground">
             <a

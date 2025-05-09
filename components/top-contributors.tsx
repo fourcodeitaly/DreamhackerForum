@@ -19,83 +19,14 @@ interface Contributor {
   total_likes: number;
 }
 
-export function TopContributors() {
+export function TopContributors({
+  topContributors,
+}: {
+  topContributors: Contributor[];
+}) {
   const { t } = useTranslation();
-  const [contributors, setContributors] = useState<Contributor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchTopContributors() {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const response = await fetch("/api/users/top-contributors");
-        if (!response.ok) {
-          throw new Error("Failed to fetch top contributors");
-        }
-        const contributors = await response.json();
-
-        setContributors(contributors);
-      } catch (err) {
-        console.error("Error fetching top contributors:", err);
-        setError(
-          err instanceof Error ? err.message : "Failed to load top contributors"
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchTopContributors();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
-            {t("topContributors", { count: 5 })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-full" />
-                <div className="space-y-1">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
-            {t("topContributors", { count: 5 })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-4 text-muted-foreground">
-            <p>Failed to load contributors</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (contributors.length === 0) {
+  if (topContributors.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -123,7 +54,7 @@ export function TopContributors() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {contributors.map((user, index) => (
+          {topContributors.map((user, index) => (
             <Link
               key={user.id}
               href={`/profile/${user.username}`}

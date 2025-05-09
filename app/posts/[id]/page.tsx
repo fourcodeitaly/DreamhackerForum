@@ -5,7 +5,8 @@ import { CommentSection } from "@/components/comments/comment-section";
 import { RelatedPosts } from "@/components/related-posts";
 import { BackButton } from "@/components/back-button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPostById, getRelatedPosts } from "@/lib/db/posts";
+import { getPostById, getRelatedPosts } from "@/lib/db/posts/post-get";
+import { getCommentsByPostId } from "@/lib/db/comments";
 
 interface PostPageProps {
   params: {

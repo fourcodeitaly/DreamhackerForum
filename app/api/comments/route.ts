@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { getUserFromSession } from "@/lib/auth-utils";
-import { getCommentsByPostId, createComment } from "@/lib/db/comments";
+import {
+  getCommentsByPostId,
+  createComment,
+  commentSort,
+} from "@/lib/db/comments";
+import { CommentSortType } from "@/lib/types/comment";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -21,63 +26,22 @@ export async function GET(request: Request) {
     // Get comments using the new PostgreSQL function
     const comments = await getCommentsByPostId(postId, user?.id);
 
-    // Filter by parent_id for nested comments
-    let filteredComments = comments;
-    if (parentId) {
-      filteredComments = comments.filter(
-        (comment) => comment.parent_id === parentId
-      );
-    } else {
-      filteredComments = comments.filter((comment) => !comment.parent_id);
-    }
-
-    // Apply sorting
-    switch (sort) {
-      case "new":
-        filteredComments.sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        break;
-      case "old":
-        filteredComments.sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        );
-        break;
-      case "top":
-      default:
-        filteredComments.sort(
-          (a, b) => (b.likes_count || 0) - (a.likes_count || 0)
-        );
-        break;
-    }
-
-    // Apply pagination
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedComments = filteredComments.slice(startIndex, endIndex);
-
-    // Calculate reply counts
-    const replyCounts = comments.reduce((acc, comment) => {
-      if (comment.parent_id) {
-        acc[comment.parent_id] = (acc[comment.parent_id] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>);
-
-    // Process comments
-    const processedComments = paginatedComments.map((comment) => ({
-      ...comment,
-      reply_count: replyCounts[comment.id] || 0,
-    }));
+    const { comments: processedComments, pagination } = await commentSort(
+      comments,
+      postId,
+      user,
+      parentId,
+      sort as CommentSortType,
+      page,
+      limit
+    );
 
     return NextResponse.json({
       comments: processedComments,
       pagination: {
         page,
         limit,
-        hasMore: filteredComments.length > endIndex,
+        hasMore: pagination.hasMore,
       },
     });
   } catch (error) {
@@ -100,7 +64,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { post_id, parent_id, content } = await request.json();
+    const { post_id, parent_id, content, is_markdown } = await request.json();
 
     if (!post_id || !content) {
       return NextResponse.json(
@@ -115,6 +79,12 @@ export async function POST(request: Request) {
       user_id: user.id,
       parent_id: parent_id || undefined,
       content,
+      upvotes: 0,
+      downvotes: 0,
+      status: "active",
+      is_markdown: is_markdown || false,
+      is_edited: false,
+      edited_at: null,
     });
 
     if (!comment) {

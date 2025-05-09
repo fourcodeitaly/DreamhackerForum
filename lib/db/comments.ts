@@ -1,20 +1,79 @@
 import { query, queryOne, transaction } from "../db/postgres";
 import type { User } from "./users";
+import type {
+  Comment,
+  CommentSortType,
+  CommentVoteType,
+} from "@/lib/types/comment";
 
-export type Comment = {
-  id: string;
-  post_id: string;
-  user_id: string;
-  parent_id?: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  upvotes: number;
-  downvotes: number;
-  // Joined fields
-  author?: User;
-  vote_score?: number;
-  user_vote?: number;
+export const commentSort = async (
+  comments: Comment[],
+  postId: string,
+  user?: User,
+  parentId?: string | null,
+  sort: CommentSortType = "top",
+  page: number = 1,
+  limit: number = 10
+) => {
+  // Filter by parent_id for nested comments
+  let filteredComments = comments;
+  if (parentId) {
+    filteredComments = comments.filter(
+      (comment) => comment.parent_id === parentId
+    );
+  } else {
+    filteredComments = comments.filter((comment) => !comment.parent_id);
+  }
+
+  // Apply sorting
+  switch (sort) {
+    case "new":
+      filteredComments.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      break;
+    case "old":
+      filteredComments.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+      break;
+    case "top":
+    default:
+      filteredComments.sort(
+        (a, b) => (b.vote_score || 0) - (a.vote_score || 0)
+      );
+      break;
+  }
+
+  // Apply pagination
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedComments = filteredComments.slice(startIndex, endIndex);
+
+  // Calculate reply counts
+  const replyCounts = comments.reduce((acc, comment) => {
+    if (comment.parent_id) {
+      acc[comment.parent_id] = (acc[comment.parent_id] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Process comments
+  const processedComments = paginatedComments.map((comment) => ({
+    ...comment,
+    reply_count: replyCounts[comment.id] || 0,
+  }));
+
+  return {
+    comments: processedComments,
+    pagination: {
+      page,
+      limit,
+      hasMore: filteredComments.length > endIndex,
+    },
+  };
 };
 
 export async function getCommentsByPostId(
@@ -41,6 +100,7 @@ export async function getCommentsByPostId(
       LEFT JOIN users u ON c.user_id = u.id
       LEFT JOIN comment_votes cv ON c.id = cv.comment_id AND cv.user_id = $2
       WHERE c.post_id = $1
+      AND (c.status IS NULL OR c.status != 'deleted')
       ORDER BY c.created_at DESC
     `;
 
@@ -128,14 +188,14 @@ export async function getCommentById(
     const voteScore = (comment.upvotes || 0) - (comment.downvotes || 0);
 
     // Get user vote if logged in
-    let userVote = 0;
+    let userVote: CommentVoteType = 0;
     if (userId) {
       const voteSql = `
         SELECT vote_type
         FROM comment_votes
         WHERE comment_id = $1 AND user_id = $2
       `;
-      const vote = await queryOne<{ vote_type: number }>(voteSql, [
+      const vote = await queryOne<{ vote_type: CommentVoteType }>(voteSql, [
         commentId,
         userId,
       ]);
@@ -219,7 +279,7 @@ export async function updateComment(
       FROM comment_votes
       WHERE comment_id = $1 AND user_id = $2
     `;
-    const vote = await queryOne<{ vote_type: number }>(voteSql, [
+    const vote = await queryOne<{ vote_type: CommentVoteType }>(voteSql, [
       commentId,
       userId,
     ]);
