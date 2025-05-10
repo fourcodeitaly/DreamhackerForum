@@ -38,7 +38,7 @@ export async function updateProfile(userId: string, data: ProfileUpdateData) {
     const result = await queryOne(
       `UPDATE users 
        SET 
-        full_name = $1,
+        name = $1,
         bio = $2,
         location = $3,
         image_url = COALESCE($4, image_url),

@@ -52,19 +52,19 @@ export function UserProfile({ user }: UserProfileProps) {
           </div>
 
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-2xl font-bold">{user.name}</h1>
-            <p className="text-muted-foreground">@{user.username}</p>
+            <h1 className="text-2xl font-bold mb-2">{user.name}</h1>
+            <p className="text-muted-foreground mb-4">@{user.username}</p>
 
-            <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
+            {/* <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
               {user.badges &&
                 user.badges.map((badge: any) => (
                   <Badge key={badge.id} variant="outline" className="px-2 py-1">
                     {badge.name}
                   </Badge>
                 ))}
-            </div>
+            </div> */}
 
-            <div className="mt-6 space-y-2">
+            <div className="mt-2 space-y-2">
               {user.bio && <p>{user.bio}</p>}
 
               <div className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground">

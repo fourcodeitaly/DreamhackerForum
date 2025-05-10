@@ -206,12 +206,12 @@ export async function getUserById(id: string): Promise<User | null> {
     `SELECT 
       id,
       email,
-      full_name as "fullName",
+      name,
       username,
-      avatar_url as "avatarUrl",
+      image_url,
       role,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      joined_at as created_at,
+      updated_at
     FROM users 
     WHERE id = $1`,
     [id]
@@ -223,12 +223,12 @@ export async function getUserByEmail(email: string): Promise<User | null> {
     `SELECT 
       id,
       email,
-      full_name as "fullName",
+      name,
       username,
-      avatar_url as "avatarUrl",
+      image_url,
       role,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      joined_at as created_at,
+      updated_at
     FROM users 
     WHERE email = $1`,
     [email]
