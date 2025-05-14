@@ -260,6 +260,17 @@ export const translations = {
     adminPrivilegesRemoved: "Admin privileges removed successfully",
     cannotRemoveOwnAdmin: "Cannot remove your own admin role",
     topContributors: "Top Contributors",
+
+    // Add these to the English translations section
+    translateTitleFromEnglish: "Translate title from English",
+    translateTitleFromChinese: "Translate title from Chinese",
+    translateTitleFromVietnamese: "Translate title from Vietnamese",
+    translateContentFromEnglish: "Translate content from English",
+    translateContentFromChinese: "Translate content from Chinese",
+    translateContentFromVietnamese: "Translate content from Vietnamese",
+    noTitleToTranslate: "No title to translate",
+    titleTranslated: "Title has been translated",
+    errorTranslatingTitle: "Error translating title",
   },
 
   // Chinese (Simplified) translations
@@ -504,6 +515,17 @@ export const translations = {
     adminPrivilegesRemoved: "管理员权限移除成功",
     cannotRemoveOwnAdmin: "无法移除自己的管理员角色",
     topContributors: "热门贡献者",
+
+    // Add these to the Chinese translations section
+    translateTitleFromEnglish: "从英文翻译标题",
+    translateTitleFromChinese: "从中文翻译标题",
+    translateTitleFromVietnamese: "从越南语翻译标题",
+    translateContentFromEnglish: "从英文翻译内容",
+    translateContentFromChinese: "从中文翻译内容",
+    translateContentFromVietnamese: "从越南语翻译内容",
+    noTitleToTranslate: "没有标题可翻译",
+    titleTranslated: "标题已翻译",
+    errorTranslatingTitle: "翻译标题时出错",
   },
 
   // Vietnamese translations
@@ -622,7 +644,7 @@ export const translations = {
     allPosts: "Tất cả bài viết",
 
     // MBA Categories
-    mbaPrograms: "Chương trình MBA",
+    mbaPrograms: "MBA",
     mbaSchoolInformation: "Thông tin trường",
     mbaRankings: "Bảng xếp hạng MBA",
     mbaApplicationFAQ: "Câu hỏi thường gặp về MBA",
@@ -634,7 +656,7 @@ export const translations = {
     mbaApplicationSummary: "Tóm tắt ứng dụng",
 
     // Business School Categories
-    masterPrograms: "Chương trình Thạc sĩ",
+    masterPrograms: "Thạc sĩ",
     masterSchoolIntroduction: "Giới thiệu trường",
     masterMajorRanking: "Chuyên ngành và xếp hạng",
     masterPsResume: "PS/Hồ sơ",
@@ -644,7 +666,7 @@ export const translations = {
     masterApplicationFAQ: "Câu hỏi thường gặp",
 
     // PhD Categories
-    phdPrograms: "Chương trình Tiến sĩ",
+    phdPrograms: "Tiến sĩ",
     phdBusinessSchoolIntro: "Giới thiệu Trường Kinh tế",
     phdRanking: "Xếp hạng",
     phdStudyExperience: "Kinh nghiệm học Tiến sĩ",
@@ -755,5 +777,16 @@ export const translations = {
     adminPrivilegesRemoved: "Đã xóa quyền quản trị viên thành công",
     cannotRemoveOwnAdmin: "Không thể xóa vai trò quản trị viên của chính bạn",
     topContributors: "Người đóng góp hàng đầu",
+
+    // Add these to the Vietnamese translations section
+    translateTitleFromEnglish: "Dịch tiêu đề từ tiếng Anh",
+    translateTitleFromChinese: "Dịch tiêu đề từ tiếng Trung",
+    translateTitleFromVietnamese: "Dịch tiêu đề từ tiếng Việt",
+    translateContentFromEnglish: "Dịch nội dung từ tiếng Anh",
+    translateContentFromChinese: "Dịch nội dung từ tiếng Trung",
+    translateContentFromVietnamese: "Dịch nội dung từ tiếng Việt",
+    noTitleToTranslate: "Không có tiêu đề để dịch",
+    titleTranslated: "Tiêu đề đã được dịch",
+    errorTranslatingTitle: "Lỗi khi dịch tiêu đề",
   },
 };

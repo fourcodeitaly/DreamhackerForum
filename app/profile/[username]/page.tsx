@@ -5,6 +5,7 @@ import { UserActivity } from "@/components/user/user-activity";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notFound } from "next/navigation";
 import { getUserByUsername, getUserStats } from "@/lib/db/users-get";
+import { getSavedPosts } from "@/lib/db/posts/post-get";
 
 export default async function ProfilePage({
   params,
@@ -21,6 +22,7 @@ export default async function ProfilePage({
 
   // Get user stats and badges in parallel
   const stats = await getUserStats(user.id);
+  const savedPosts = await getSavedPosts(user.id);
 
   // Prepare user data with additional stats
   const userData = {
@@ -48,7 +50,7 @@ export default async function ProfilePage({
             />
           </TabsContent>
           <TabsContent value="saved">
-            <UserSavedPosts username={username} />
+            <UserSavedPosts savedPosts={savedPosts} />
           </TabsContent>
           <TabsContent value="activity">
             <UserActivity userId={user.id} />

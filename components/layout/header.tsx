@@ -10,12 +10,14 @@ import { SearchBar } from "@/components/layout/search-bar";
 import { useTranslation } from "@/hooks/use-translation";
 import { Menu, X, GraduationCap } from "lucide-react";
 import { AuthStatus } from "../auth/auth-status";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Header() {
   const { t } = useTranslation();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +30,7 @@ export default function Header() {
   const navLinks = [
     { href: "/", label: t("home") },
     { href: "/resources", label: t("resources") },
+    { href: "/posts?page=1&nullPosts=true", label: t("nullPosts") },
   ];
 
   return (
@@ -46,19 +49,24 @@ export default function Header() {
               <span className="text-xl font-bold">Dreamhacker</span>
             </Link>
             <nav className="ml-8 hidden md:flex space-x-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
-                    pathname === link.href
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-300"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                if (!isAdmin && link.href === "/posts?page=1&nullPosts=true") {
+                  return null;
+                }
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
+                      pathname === link.href
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 dark:text-gray-300"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
@@ -88,20 +96,25 @@ export default function Header() {
           <div className="container mx-auto px-4 py-4 space-y-4">
             <SearchBar className="w-full" />
             <nav className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
-                    pathname === link.href
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-300"
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                if (!isAdmin && link.href === "/posts?page=1&nullPosts=true") {
+                  return null;
+                }
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
+                      pathname === link.href
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 dark:text-gray-300"
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
             <div className="flex items-center justify-between pt-4 border-t dark:border-gray-800">
               <div className="flex space-x-2">

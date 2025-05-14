@@ -31,8 +31,6 @@ export async function translateText(
 
     const targetLanguageName = languageMap[targetLanguage] || targetLanguage;
 
-    console.log("Translating ", text.slice(0, 100), " to ", targetLanguageName);
-
     // Create a prompt for translation
     const prompt = `Translate the following text to ${targetLanguageName}: "${text}"`;
 

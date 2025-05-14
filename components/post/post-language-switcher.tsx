@@ -1,30 +1,33 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { useLanguage } from "@/hooks/use-language"
-import { useTranslation } from "@/hooks/use-translation"
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/hooks/use-language";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface PostLanguageSwitcherProps {
-  onLanguageChange?: (language: string) => void
-  currentLanguage?: string
+  onLanguageChange?: (language: string) => void;
+  currentLanguage?: string;
 }
 
-export function PostLanguageSwitcher({ onLanguageChange, currentLanguage }: PostLanguageSwitcherProps) {
-  const { language } = useLanguage()
-  const { t } = useTranslation()
+export function PostLanguageSwitcher({
+  onLanguageChange,
+  currentLanguage,
+}: PostLanguageSwitcherProps) {
+  const { language } = useLanguage();
+  const { t } = useTranslation();
 
   // Use provided currentLanguage or fall back to the global language setting
-  const activeLang = currentLanguage || language
+  const activeLang = currentLanguage || language;
 
   const handleLanguageChange = (newLanguage: "en" | "zh" | "vi") => {
     // Only call the onLanguageChange prop without changing the global language
     if (onLanguageChange) {
-      onLanguageChange(newLanguage)
+      onLanguageChange(newLanguage);
     }
-  }
+  };
 
   return (
-    <div className="flex space-x-2 mb-4">
+    <div className="flex space-x-2">
       <Button
         variant={activeLang === "en" ? "default" : "outline"}
         size="sm"
@@ -47,5 +50,5 @@ export function PostLanguageSwitcher({ onLanguageChange, currentLanguage }: Post
         Tiếng Việt
       </Button>
     </div>
-  )
+  );
 }

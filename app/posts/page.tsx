@@ -8,19 +8,23 @@ import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/layout/skeletons";
 import { ServerEnvChecker } from "@/components/layout/server-env-checker";
 import type { Post } from "@/lib/db/posts/posts-modify";
-import { getPosts } from "@/lib/db/posts/post-get";
+import {
+  getNullTitlePosts,
+  getPinnedPosts,
+  getPosts,
+} from "@/lib/db/posts/post-get";
 import { type Contributor, getTopContributors } from "@/lib/db/users-get";
 export const dynamic = "force-dynamic";
 
 export default async function Posts({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; nullPosts?: string };
 }) {
   // Get current page from query parameters
-  const { page } = await searchParams;
+  const { page, nullPosts } = await searchParams;
   const pageNumber = page ? Number.parseInt(page) : 1;
-  // const page = searchParams.page ? Number.parseInt(searchParams.page) : 1;
+
   const postsPerPage = 10;
 
   // Fetch posts on the server
@@ -30,18 +34,24 @@ export default async function Posts({
   let topContributors: Contributor[] = [];
 
   try {
-    const { posts, total } = await getPosts(pageNumber, postsPerPage);
-    featuredPosts = posts
-      .filter((post) => post.is_pinned || post.image_url)
-      .slice(0, 3);
+    if (nullPosts) {
+      const { posts, total } = await getNullTitlePosts(
+        pageNumber,
+        postsPerPage
+      );
+      initialPosts = posts || [];
+      totalPosts = total;
+    } else {
+      const { posts, total } = await getPosts(pageNumber, postsPerPage);
 
-    initialPosts = posts;
-    totalPosts = total;
+      initialPosts = posts;
+      totalPosts = total;
+    }
 
+    featuredPosts = await getPinnedPosts(3);
     topContributors = await getTopContributors();
   } catch (error) {
     console.error("Error fetching posts in Home page:", error);
-    // Continue with empty posts array
   }
 
   return (
@@ -67,14 +77,16 @@ export default async function Posts({
           <div className="mb-6">
             <SortFilter />
           </div>
-          <Suspense fallback={<PostListSkeleton />}>
-            <PostList
-              posts={initialPosts}
-              totalPosts={totalPosts}
-              currentPage={pageNumber}
-              pathname="/posts"
-            />
-          </Suspense>
+          <div className="flex flex-col gap-4">
+            <Suspense fallback={<PostListSkeleton />}>
+              <PostList
+                posts={initialPosts}
+                totalPosts={totalPosts}
+                currentPage={pageNumber}
+                pathname={nullPosts ? "/posts?nullPosts=true&" : "/posts"}
+              />
+            </Suspense>
+          </div>
         </div>
 
         {/* Right sidebar */}

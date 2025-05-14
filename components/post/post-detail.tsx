@@ -40,7 +40,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const [post, setPost] = useState<Post>(rawPost);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<boolean>(false);
   const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">(
     "en"
   );
@@ -78,7 +78,18 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const getLocalizedContent = () => {
     // Check if post has multilingual content structure
     if (post.content && typeof post.content === "object") {
-      return post.content[currentLanguage] || post.content.en || "";
+      let content = post.content[currentLanguage] || post.content.en || "";
+
+      // Remove first line if it starts with #
+      content = content
+        .split("\n")
+        .filter((line, index) => {
+          // Keep all lines except the first one that starts with #
+          return index !== 0 || !line.trim().startsWith("#");
+        })
+        .join("\n");
+
+      return content;
     }
 
     // Legacy format or fallback
@@ -86,6 +97,9 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       return post.content
         ? (post.content as string)
             .split("\n")
+            .filter(
+              (line, index) => index !== 0 || !line.trim().startsWith("#")
+            )
             .map((paragraph: string) => `[中文] ${paragraph}`)
             .join("\n")
         : "";
@@ -93,6 +107,9 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       return post.content
         ? (post.content as string)
             .split("\n")
+            .filter(
+              (line, index) => index !== 0 || !line.trim().startsWith("#")
+            )
             .map((paragraph: string) => `[Tiếng Việt] ${paragraph}`)
             .join("\n")
         : "";
@@ -103,7 +120,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const getLocalizedTitle = () => {
     // Check if post has multilingual title structure
     if (post.title && typeof post.title === "object") {
-      return post.title[currentLanguage] || post.title.en || "";
+      return post.title[currentLanguage] || "";
     }
 
     // Legacy format or fallback
@@ -126,9 +143,29 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
     setLiked(!liked);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!user) return;
-    setSaved(!saved);
+    setSaved((prev) => !prev);
+
+    try {
+      const response = await fetch(`/api/posts/${post.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          action: saved ? "unsave" : "save",
+        }),
+      });
+
+      if (!response.ok) {
+        setSaved((prev) => !prev);
+        throw new Error("Failed to update saved status");
+      }
+    } catch (error) {
+      console.error("Error saving post:", error);
+    }
   };
 
   const handleShare = () => {
@@ -158,7 +195,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
   return (
     <Card className="overflow-hidden p-0 border-0 md:border shadow-none">
-      <CardHeader className="p-0 md:p-6">
+      <CardHeader className="p-0 md:p-6 pb-0 md:pb-0">
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
@@ -188,6 +225,24 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
           <div className="flex items-center gap-2">
             {post.is_pinned && <Badge variant="outline">{t("pinned")}</Badge>}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-2"
+              onClick={handleSave}
+            >
+              <Bookmark
+                className={cn(
+                  "h-5 w-5",
+                  saved
+                    ? "fill-current text-yellow-500"
+                    : "text-muted-foreground"
+                )}
+              />
+              <span className="text-muted-foreground hidden md:block">
+                {t("save")}
+              </span>
+            </Button>
             {isAdmin && (
               <Link href={`/posts/${post.id}/edit`}>
                 <Button variant="outline" size="sm" className="ml-2">
@@ -295,23 +350,6 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
           <Share2 className="h-5 w-5 text-muted-foreground" />
           <span className="text-muted-foreground hidden md:block">
             {t("share")}
-          </span>
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex items-center space-x-2"
-          onClick={handleSave}
-        >
-          <Bookmark
-            className={cn(
-              "h-5 w-5",
-              saved ? "fill-current" : "text-muted-foreground"
-            )}
-          />
-          <span className="text-muted-foreground hidden md:block">
-            {t("save")}
           </span>
         </Button>
       </CardFooter>

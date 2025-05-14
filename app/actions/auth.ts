@@ -83,6 +83,40 @@ export async function registerUser(userData: {
     });
 
     if (error) throw error;
+
+    // If signup was successful and we have a user, create the user in PostgreSQL
+    if (data.user) {
+      const now = new Date().toISOString();
+      const { error: dbError } = await queryOne(
+        `INSERT INTO users (
+          id,
+          email,
+          name,
+          username,
+          role,
+          joined_at,
+          updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *`,
+        [
+          data.user.id,
+          userData.email,
+          userData.name,
+          userData.username,
+          "user", // Default role
+          now,
+          now,
+        ]
+      );
+
+      if (dbError) {
+        console.error("Error creating user in database:", dbError);
+        // You might want to handle this error appropriately
+        // For example, you could delete the Supabase auth user if DB insert fails
+        return { data: null, error: "Failed to create user in database" };
+      }
+    }
+
     return { data, error: null };
   } catch (error) {
     console.error("Registration error:", error);

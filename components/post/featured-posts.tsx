@@ -49,7 +49,8 @@ export function FeaturedPosts({ posts }: { posts: Post[] }) {
               <div className="relative h-80 w-full">
                 <img
                   src={
-                    post.image_url || "/placeholder.svg?height=600&width=1200"
+                    post.image_url ||
+                    "https://www.harvard.edu/wp-content/uploads/2023/11/110823_Features_KS_713-scaled.jpg"
                   }
                   alt={post.title?.en || ""}
                   className="h-full w-full object-cover"

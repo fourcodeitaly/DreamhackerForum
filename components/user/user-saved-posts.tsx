@@ -4,27 +4,17 @@ import { useState } from "react";
 import { PostCard } from "@/components/post/post-card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/use-translation";
+import type { Post } from "@/lib/db/posts/posts-modify";
 
 interface UserSavedPostsProps {
-  username: string;
+  savedPosts: Post[];
 }
 
-export function UserSavedPosts({ username }: UserSavedPostsProps) {
+export function UserSavedPosts({ savedPosts }: UserSavedPostsProps) {
   const { t } = useTranslation();
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>(savedPosts);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-
-  // useEffect(() => {
-  //   // Simulate fetching posts with pagination
-  //   const fetchPosts = () => {
-  //     const newPosts = getMockUserSavedPosts(username, page, 5)
-  //     setPosts((prev) => [...prev, ...newPosts])
-  //     setHasMore(newPosts.length === 5)
-  //   }
-
-  //   fetchPosts()
-  // }, [username, page])
+  const [hasMore, setHasMore] = useState(false);
 
   return (
     <div className="space-y-6">

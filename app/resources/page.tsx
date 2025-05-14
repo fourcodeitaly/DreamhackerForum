@@ -1,9 +1,16 @@
-import { ResourceList } from "@/components/resource-list"
-import { ResourceCategories } from "@/components/resource-categories"
+import { ResourceList } from "@/components/resource-list";
+import { ResourceCategories } from "@/components/resource-categories";
+import { getMockResources } from "@/mocks/mock-data";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
 export default function ResourcesPage() {
+  const data = getMockResources();
+
+  if (!data) {
+    return <div>No data</div>;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Resources</h1>
@@ -12,9 +19,9 @@ export default function ResourcesPage() {
           <ResourceCategories />
         </div>
         <div className="md:w-3/4">
-          <ResourceList />
+          <ResourceList resources={data} />
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -29,7 +29,7 @@ export function UserProfile({ user }: UserProfileProps) {
               <AvatarImage
                 src={
                   user.image_url ||
-                  "/placeholder.svg?height=128&width=128&query=user"
+                  "https://i.pinimg.com/280x280_RS/5e/b4/db/5eb4dbcf9466c57fd8e566a6088bf626.jpg"
                 }
                 alt={user.name}
               />

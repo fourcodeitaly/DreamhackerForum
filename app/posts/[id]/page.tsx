@@ -6,6 +6,7 @@ import { BackButton } from "@/components/layout/back-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPostById, getRelatedPosts } from "@/lib/db/posts/post-get";
 import { CommentSection } from "@/components/comments/comment-section";
+
 interface PostPageProps {
   params: {
     id: string;
