@@ -1,6 +1,9 @@
 # Use the official Node.js image
 FROM node:22-alpine
 
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 # Set working directory
 WORKDIR /app
 
