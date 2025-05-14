@@ -1,7 +1,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "../types/database.types";
 import { localAuth } from "../auth/local-auth";
-
+import { config } from "../config";
 let clientSupabaseClient: ReturnType<
   typeof createBrowserClient<Database>
 > | null = null;
@@ -15,8 +15,8 @@ export const createClientSupabaseClient = () => {
 
   if (clientSupabaseClient) return clientSupabaseClient;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = config.supabaseUrl;
+  const supabaseAnonKey = config.supabaseAnonKey;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error("Missing Supabase environment variables for client client");
