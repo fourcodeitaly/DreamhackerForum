@@ -1,5 +1,7 @@
 // Translations for the application
 
+import { RecentActivity } from "@/components/admin/recent-activity";
+
 export const translations = {
   // English translations
   en: {
@@ -22,6 +24,10 @@ export const translations = {
     sortByNew: "Sort by New",
     sortByOld: "Sort by Old",
     sortByControversial: "Sort by Controversial",
+    trendingTopics: "Trending Topics",
+    recentDiscussions: "Recent Discussions",
+    activeUsers: "Active Users",
+    recentActivity: "Recent Activity",
 
     // Auth
     email: "Email",
@@ -549,6 +555,10 @@ export const translations = {
     sortByNew: "Sắp xếp theo mới nhất",
     sortByOld: "Sắp xếp theo cũ nhất",
     sortByControversial: "Sắp xếp theo thảo luận",
+    trendingTopics: "Chủ đề nổi bật",
+    recentDiscussions: "Thảo luận gần đây",
+    activeUsers: "Người dùng nổi bật",
+    recentActivity: "Hoạt động gần đây",
 
     // Auth
     email: "Email",

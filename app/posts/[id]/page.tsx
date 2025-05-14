@@ -6,6 +6,9 @@ import { BackButton } from "@/components/layout/back-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPostById, getRelatedPosts } from "@/lib/db/posts/post-get";
 import { CommentSection } from "@/components/comments/comment-section";
+import { PostsSidebar } from "@/components/layout/posts-sidebar";
+import { TopContributors } from "@/components/user/top-contributors";
+import { getTopContributors } from "@/lib/db/users-get";
 
 interface PostPageProps {
   params: {
@@ -17,10 +20,11 @@ export default async function PostPage({ params }: PostPageProps) {
   try {
     const { id } = await params;
 
-    // Get the post and related posts
-    const [post, relatedPosts] = await Promise.all([
+    // Get the post, related posts, and top contributors
+    const [post, relatedPosts, topContributors] = await Promise.all([
       getPostById(id),
       getRelatedPosts(id),
+      getTopContributors(),
     ]);
 
     if (!post) {
@@ -28,25 +32,40 @@ export default async function PostPage({ params }: PostPageProps) {
     }
 
     return (
-      <div className="container max-w-4xl py-4 md:py-8">
-        {/* <div className="mb-6">
-          <BackButton />
-        </div> */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Sidebar - Sticky */}
+          <div className="lg:w-1/4">
+            <div className="sticky top-20">
+              <PostsSidebar />
+            </div>
+          </div>
 
-        <Suspense fallback={<Skeleton className="h-48" />}>
-          <PostDetail post={post} />
-        </Suspense>
+          {/* Main content */}
+          <div className="lg:w-2/4">
+            <Suspense fallback={<Skeleton className="h-48" />}>
+              <PostDetail post={post} />
+            </Suspense>
 
-        <div className="mt-8">
-          <Suspense fallback={<Skeleton className="h-48" />}>
-            <CommentSection postId={id} />
-          </Suspense>
-        </div>
+            <div className="mt-8">
+              <Suspense fallback={<Skeleton className="h-48" />}>
+                <CommentSection postId={id} />
+              </Suspense>
+            </div>
 
-        <div className="mt-12">
-          <Suspense fallback={<Skeleton className="h-48" />}>
-            <RelatedPosts posts={relatedPosts} />
-          </Suspense>
+            <div className="mt-12">
+              <Suspense fallback={<Skeleton className="h-48" />}>
+                <RelatedPosts posts={relatedPosts} />
+              </Suspense>
+            </div>
+          </div>
+
+          {/* Right sidebar - Sticky */}
+          <div className="lg:w-1/4">
+            <div className="sticky top-20">
+              <TopContributors topContributors={topContributors} />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -54,7 +73,7 @@ export default async function PostPage({ params }: PostPageProps) {
     console.error("Error in PostPage:", error);
 
     return (
-      <div className="container max-w-4xl py-8">
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <BackButton />
         </div>

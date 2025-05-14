@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect root path to posts page
   if (request.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/posts", request.url));
+    return NextResponse.redirect(new URL("/posts?page=1", request.url));
   }
 
   // Admin-only routes
