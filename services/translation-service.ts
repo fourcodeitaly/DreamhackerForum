@@ -1,24 +1,23 @@
 import { Groq } from "groq-sdk";
 import { config } from "../lib/config";
 
-// Initialize OpenAI client with Groq API configuration
-let client: Groq;
-
 export async function translateText(
   text: string,
   targetLanguage: string
 ): Promise<string> {
   if (!text) return "";
 
-  if (config.groqApiKey) {
-    client = new Groq({
-      apiKey: config.groqApiKey,
-    });
+  if (!config.groqApiKey) {
+    throw new Error("No API key found");
   }
 
+  const client = new Groq({
+    apiKey: config.groqApiKey,
+  });
+
   if (!client) {
-    console.error("No API key found");
-    throw new Error("No API key found");
+    console.error("Client not initialized");
+    throw new Error("Client not initialized");
   }
 
   try {
