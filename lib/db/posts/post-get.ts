@@ -91,12 +91,12 @@ export async function getPostById(
     // }
 
     // // Check if user has saved the post
-    // let saved = false;
-    // if (userId) {
-    //   const savedSql = `SELECT 1 FROM saved_posts WHERE post_id = $1 AND user_id = $2`;
-    //   const savedResult = await queryOne(savedSql, [postId, userId]);
-    //   saved = !!savedResult;
-    // }
+    let saved = false;
+    if (userId) {
+      const savedSql = `SELECT 1 FROM saved_posts WHERE post_id = $1 AND user_id = $2`;
+      const savedResult = await queryOne(savedSql, [postId, userId]);
+      saved = !!savedResult;
+    }
 
     // Return the post with additional data
     return {
@@ -105,7 +105,7 @@ export async function getPostById(
       // likes_count: likesCount,
       // comments_count: commentsCount,
       // liked,
-      // saved,
+      saved,
     };
   } catch (error) {
     console.error("Error in getPostById:", error);

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import { notFound } from "next/navigation";
 import { PostDetail } from "@/components/post/post-detail";
 import { RelatedPosts } from "@/components/post/related-posts";
@@ -9,6 +9,7 @@ import { CommentSection } from "@/components/comments/comment-section";
 import { PostsSidebar } from "@/components/layout/posts-sidebar";
 import { TopContributors } from "@/components/user/top-contributors";
 import { getTopContributors } from "@/lib/db/users-get";
+import { getUserFromSession } from "@/utils/auth-utils";
 
 interface PostPageProps {
   params: {
@@ -19,10 +20,11 @@ interface PostPageProps {
 export default async function PostPage({ params }: PostPageProps) {
   try {
     const { id } = await params;
+    const user = await getUserFromSession();
 
     // Get the post, related posts, and top contributors
     const [post, relatedPosts, topContributors] = await Promise.all([
-      getPostById(id),
+      getPostById(id, user?.id),
       getRelatedPosts(id),
       getTopContributors(),
     ]);
@@ -36,7 +38,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar - Sticky */}
           <div className="lg:w-1/4">
-            <div className="sticky top-20">
+            <div className="sticky top-4">
               <PostsSidebar />
             </div>
           </div>
@@ -62,7 +64,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
           {/* Right sidebar - Sticky */}
           <div className="lg:w-1/4">
-            <div className="sticky top-20">
+            <div className="sticky top-4">
               <TopContributors topContributors={topContributors} />
             </div>
           </div>
