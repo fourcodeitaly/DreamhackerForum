@@ -28,26 +28,26 @@ export function PostLanguageSwitcher({
 
   return (
     <div className="flex space-x-2">
-      <Button
-        variant={activeLang === "en" ? "default" : "outline"}
-        size="sm"
-        onClick={() => handleLanguageChange("en")}
-      >
-        English
-      </Button>
-      <Button
+      {/* <Button
         variant={activeLang === "zh" ? "default" : "outline"}
         size="sm"
         onClick={() => handleLanguageChange("zh")}
       >
         中文
-      </Button>
+      </Button> */}
       <Button
         variant={activeLang === "vi" ? "default" : "outline"}
         size="sm"
         onClick={() => handleLanguageChange("vi")}
       >
         Tiếng Việt
+      </Button>
+      <Button
+        variant={activeLang === "en" ? "default" : "outline"}
+        size="sm"
+        onClick={() => handleLanguageChange("en")}
+      >
+        English
       </Button>
     </div>
   );

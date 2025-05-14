@@ -11,6 +11,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { Menu, X, GraduationCap } from "lucide-react";
 import { AuthStatus } from "../auth/auth-status";
 import { useAuth } from "@/hooks/use-auth";
+import { CategoryNavigation } from "./category-navigation";
 
 export default function Header() {
   const { t } = useTranslation();
@@ -27,11 +28,11 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: "/", label: t("home") },
-    { href: "/resources", label: t("resources") },
-    { href: "/posts?page=1&nullPosts=true", label: t("nullPosts") },
-  ];
+  // const navLinks = [
+  //   { href: "/", label: t("home") },
+  //   { href: "/resources", label: t("resources") },
+  //   { href: "/posts?page=1&nullPosts=true", label: t("nullPosts") },
+  // ];
 
   return (
     <header
@@ -49,7 +50,7 @@ export default function Header() {
               <span className="text-xl font-bold">Dreamhacker</span>
             </Link>
             <nav className="ml-8 hidden md:flex space-x-6">
-              {navLinks.map((link) => {
+              {/* {navLinks.map((link) => {
                 if (!isAdmin && link.href === "/posts?page=1&nullPosts=true") {
                   return null;
                 }
@@ -66,7 +67,8 @@ export default function Header() {
                     {link.label}
                   </Link>
                 );
-              })}
+              })} */}
+              <CategoryNavigation />
             </nav>
           </div>
 
@@ -96,7 +98,7 @@ export default function Header() {
           <div className="container mx-auto px-4 py-4 space-y-4">
             <SearchBar className="w-full" />
             <nav className="flex flex-col space-y-4">
-              {navLinks.map((link) => {
+              {/* {navLinks.map((link) => {
                 if (!isAdmin && link.href === "/posts?page=1&nullPosts=true") {
                   return null;
                 }
@@ -114,7 +116,7 @@ export default function Header() {
                     {link.label}
                   </Link>
                 );
-              })}
+              })} */}
             </nav>
             <div className="flex items-center justify-between pt-4 border-t dark:border-gray-800">
               <div className="flex space-x-2">

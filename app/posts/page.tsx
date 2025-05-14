@@ -1,58 +1,43 @@
 import { PostList } from "@/components/post/post-list";
 import { SortFilter } from "@/components/sort-filter";
-import { CategorySidebar } from "@/components/layout/category-sidebar";
 import { SearchBar } from "@/components/layout/search-bar";
 import { FeaturedPosts } from "@/components/post/featured-posts";
 import { TopContributors } from "@/components/user/top-contributors";
 import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/layout/skeletons";
 import { ServerEnvChecker } from "@/components/layout/server-env-checker";
-import type { Post } from "@/lib/db/posts/posts-modify";
-import {
-  getNullTitlePosts,
-  getPinnedPosts,
-  getPosts,
-} from "@/lib/db/posts/post-get";
-import { type Contributor, getTopContributors } from "@/lib/db/users-get";
+import { getPinnedPosts, getPosts } from "@/lib/db/posts/post-get";
+import { getTopContributors } from "@/lib/db/users-get";
+import { getCategory } from "@/lib/db/category/category-get";
+
 export const dynamic = "force-dynamic";
 
 export default async function Posts({
   searchParams,
 }: {
-  searchParams: { page?: string; nullPosts?: string };
+  searchParams: { page?: string; nullPosts?: string; category?: string };
 }) {
   // Get current page from query parameters
-  const { page, nullPosts } = await searchParams;
+  const { page, nullPosts, category } = await searchParams;
   const pageNumber = page ? Number.parseInt(page) : 1;
-
+  const categoryId = category !== "undefined" ? category : undefined;
   const postsPerPage = 10;
 
-  // Fetch posts on the server
-  let initialPosts: Post[] = [];
-  let totalPosts = 0;
-  let featuredPosts: Post[] = [];
-  let topContributors: Contributor[] = [];
+  // Fetch category if categoryId is provided
+  const categoryData = categoryId ? await getCategory(categoryId) : null;
+  const categoryName = categoryData?.name?.en || "All Posts";
 
-  try {
-    if (nullPosts) {
-      const { posts, total } = await getNullTitlePosts(
-        pageNumber,
-        postsPerPage
-      );
-      initialPosts = posts || [];
-      totalPosts = total;
-    } else {
-      const { posts, total } = await getPosts(pageNumber, postsPerPage);
+  // Fetch posts based on whether we're looking for null titles or not
+  const result = await getPosts(pageNumber, postsPerPage, false, categoryId);
 
-      initialPosts = posts;
-      totalPosts = total;
-    }
+  const initialPosts = result.posts ?? [];
+  const totalPosts = result.total;
 
-    featuredPosts = await getPinnedPosts(3);
-    topContributors = await getTopContributors();
-  } catch (error) {
-    console.error("Error fetching posts in Home page:", error);
-  }
+  // Fetch featured posts
+  const featuredPosts = await getPinnedPosts();
+
+  // Fetch top contributors (category-specific if category is provided)
+  const topContributors = await getTopContributors();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,16 +48,13 @@ export default async function Posts({
         <FeaturedPosts posts={featuredPosts} />
       </div>
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left sidebar */}
-        <div className="lg:w-1/5">
-          <CategorySidebar />
-        </div>
-
         {/* Main content */}
-        <div className="lg:w-3/5">
+        <div className="lg:w-4/5">
           <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <h1 className="text-3xl font-bold">Recent Discussions</h1>
-            <SearchBar />
+            <h1 className="text-3xl font-bold">
+              {categoryId ? categoryName : "All Categories"}
+            </h1>
+            {/* <SearchBar /> */}
           </div>
           <div className="mb-6">
             <SortFilter />
@@ -83,7 +65,7 @@ export default async function Posts({
                 posts={initialPosts}
                 totalPosts={totalPosts}
                 currentPage={pageNumber}
-                pathname={nullPosts ? "/posts?nullPosts=true&" : "/posts"}
+                pathname={`/posts?category=${categoryId}`}
               />
             </Suspense>
           </div>

@@ -10,6 +10,7 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { NotificationProvider } from "@/components/providers/notification-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { CategoryNavigation } from "@/components/layout/category-navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,6 +51,9 @@ export default function RootLayout({
               <NotificationProvider>
                 <div className="flex min-h-screen flex-col">
                   <Header />
+                  <div className="pt-4 md:hidden border-t dark:border-gray-800">
+                    <CategoryNavigation />
+                  </div>
                   <main className="flex-1">{children}</main>
                   <Footer />
                   <Toaster />

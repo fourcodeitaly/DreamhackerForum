@@ -4,7 +4,12 @@ import { getMockResources } from "@/mocks/mock-data";
 
 export const dynamic = "force-dynamic";
 
-export default function ResourcesPage() {
+export default async function ResourcesPage({
+  searchParams,
+}: {
+  searchParams: { category?: string };
+}) {
+  const { category } = await searchParams;
   const data = getMockResources();
 
   if (!data) {

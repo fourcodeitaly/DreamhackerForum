@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/hooks/use-translation";
@@ -23,6 +23,8 @@ export function CategorySidebar({
   const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams.get("category");
 
   // Define category groups
   const categoryGroups = [
@@ -110,18 +112,18 @@ export function CategorySidebar({
           </Button>
         )}
 
-        {/* <Link href="/" className="block">
+        <Link href="/posts" className="block">
           <div
             className={cn(
               "rounded-md text-md font-bold transition-colors",
-              pathname === "/"
+              !currentCategory
                 ? "bg-primary text-primary-foreground"
                 : "hover:bg-muted"
             )}
           >
             {t("allPosts")}
           </div>
-        </Link> */}
+        </Link>
 
         <Accordion type="multiple" className="w-full">
           {categoryGroups.map((group) => (
@@ -138,13 +140,13 @@ export function CategorySidebar({
                   {group.categories.map((category) => (
                     <Link
                       key={category.id}
-                      href={`/categories/${category.id}`}
+                      href={`/posts?category=${category.id}`}
                       className="block"
                     >
                       <div
                         className={cn(
                           "px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                          pathname === `/categories/${category.id}`
+                          currentCategory === category.id
                             ? "bg-primary text-primary-foreground"
                             : "hover:bg-muted"
                         )}
