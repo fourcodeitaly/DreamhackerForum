@@ -34,7 +34,7 @@ export default async function PostPage({ params }: PostPageProps) {
     }
 
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 md:py-8 pb-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar - Sticky */}
           <div className="lg:w-1/4">

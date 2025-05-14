@@ -117,6 +117,7 @@ export default function Header() {
                   </Link>
                 );
               })} */}
+              <CategoryNavigation />
             </nav>
             <div className="flex items-center justify-between pt-4 border-t dark:border-gray-800">
               <div className="flex space-x-2">
