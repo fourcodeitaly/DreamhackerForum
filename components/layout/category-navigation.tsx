@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslation } from "@/hooks/use-translation";
-import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/utils/utils";
 import {
   NavigationMenu,
@@ -13,13 +11,10 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { Suspense } from "react";
 
 export function CategoryNavigation() {
   const { t } = useTranslation();
-  const { isAdmin } = useAuth();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const currentCategory = searchParams.get("category");
 
   // Define category groups
   const categoryGroups = [
@@ -100,42 +95,41 @@ export function CategoryNavigation() {
   ];
 
   return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        {categoryGroups.map((group) => (
-          <NavigationMenuItem key={group.id}>
-            <NavigationMenuTrigger>{group.name}</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                {group.categories.map((category) => {
-                  const href = category.id.includes("resources")
-                    ? `/resources?category=${category.id}`
-                    : `/posts?category=${category.id}`;
-                  return (
-                    <li key={category.id}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href={href}
-                          className={cn(
-                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                            currentCategory === category.id
-                              ? "bg-accent text-accent-foreground"
-                              : ""
-                          )}
-                        >
-                          <div className="text-sm font-medium leading-none">
-                            {category.name}
-                          </div>
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        ))}
-      </NavigationMenuList>
-    </NavigationMenu>
+    <Suspense>
+      <NavigationMenu>
+        <NavigationMenuList>
+          {categoryGroups.map((group) => (
+            <NavigationMenuItem key={group.id}>
+              <NavigationMenuTrigger>{group.name}</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                  {group.categories.map((category) => {
+                    const href = category.id.includes("resources")
+                      ? `/resources?category=${category.id}`
+                      : `/posts?category=${category.id}`;
+                    return (
+                      <li key={category.id}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href={href}
+                            className={cn(
+                              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            )}
+                          >
+                            <div className="text-sm font-medium leading-none">
+                              {category.name}
+                            </div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+    </Suspense>
   );
 }

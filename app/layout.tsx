@@ -11,6 +11,7 @@ import { NotificationProvider } from "@/components/providers/notification-provid
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { CategoryNavigation } from "@/components/layout/category-navigation";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
