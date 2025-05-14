@@ -38,7 +38,7 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar - Sticky */}
           <div className="lg:w-1/4">
-            <div className="sticky top-4">
+            <div className="sticky top-20">
               <PostsSidebar />
             </div>
           </div>
@@ -64,7 +64,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
           {/* Right sidebar - Sticky */}
           <div className="lg:w-1/4">
-            <div className="sticky top-4">
+            <div className="sticky top-20">
               <TopContributors topContributors={topContributors} />
             </div>
           </div>
