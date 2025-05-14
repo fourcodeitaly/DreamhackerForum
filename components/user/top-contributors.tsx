@@ -86,9 +86,6 @@ export function TopContributors({
               </div>
               <div>
                 <div className="font-medium">{user.name || user.username}</div>
-                <div className="text-xs text-muted-foreground">
-                  @{user.username}
-                </div>
                 <div className="flex items-center space-x-2 mt-1">
                   <div className="flex items-center text-xs">
                     <MessageSquare className="mr-1 h-3 w-3" />

@@ -100,7 +100,9 @@ export function CategoryNavigation() {
         <NavigationMenuList>
           {categoryGroups.map((group) => (
             <NavigationMenuItem key={group.id}>
-              <NavigationMenuTrigger>{group.name}</NavigationMenuTrigger>
+              <NavigationMenuTrigger className="bg-transparent">
+                {group.name.split(")")[1]}
+              </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                   {group.categories.map((category) => {
@@ -117,7 +119,7 @@ export function CategoryNavigation() {
                             )}
                           >
                             <div className="text-sm font-medium leading-none">
-                              {category.name}
+                              {category.name.split(")")[1]}
                             </div>
                           </Link>
                         </NavigationMenuLink>
