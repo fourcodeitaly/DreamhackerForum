@@ -23,6 +23,12 @@ export type User = {
   role?: UserRole;
   joined_at: string;
   updated_at: string;
+  followers_count: number;
+  following_count: number;
+  isFollowed?: boolean;
+  postsCount: number;
+  commentsCount: number;
+  likesReceived: number;
 };
 
 interface UserStats {

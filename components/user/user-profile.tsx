@@ -9,9 +9,11 @@ import { useTranslation } from "@/hooks/use-translation";
 import { Calendar, MapPin, Settings } from "lucide-react";
 import Link from "next/link";
 import { ProfileEditForm } from "@/components/user/profile-edit-form";
+import { FollowButton } from "@/components/ui/follow-button";
+import { User } from "@/lib/db/users-get";
 
 interface UserProfileProps {
-  user: any;
+  user: User;
 }
 
 export function UserProfile({ user }: UserProfileProps) {
@@ -38,22 +40,32 @@ export function UserProfile({ user }: UserProfileProps) {
               </AvatarFallback>
             </Avatar>
 
-            {isCurrentUser && (
+            {isCurrentUser ? (
               <div className="mt-4 flex space-x-2">
                 <ProfileEditForm user={user} />
-                <Button variant="outline" size="sm" asChild>
+                {/* <Button variant="outline" size="sm" asChild>
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     {t("settings")}
                   </Link>
-                </Button>
+                </Button> */}
+              </div>
+            ) : (
+              <div className="mt-4">
+                <FollowButton
+                  id={user.id}
+                  type="user"
+                  initialFollowed={user.isFollowed ?? false}
+                />
               </div>
             )}
           </div>
 
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-2xl font-bold mb-2">{user.name}</h1>
-            <p className="text-muted-foreground mb-4">@{user.username}</p>
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+              <h1 className="text-2xl font-bold">{user.name}</h1>
+              <p className="text-muted-foreground">@{user.username}</p>
+            </div>
 
             {/* <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
               {user.badges &&
@@ -101,6 +113,18 @@ export function UserProfile({ user }: UserProfileProps) {
                 <div className="text-2xl font-bold">{user.likesReceived}</div>
                 <div className="text-sm text-muted-foreground">
                   {t("likesReceived")}
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{user.followers_count}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("followers")}
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{user.following_count}</div>
+                <div className="text-sm text-muted-foreground">
+                  {t("following")}
                 </div>
               </div>
             </div>

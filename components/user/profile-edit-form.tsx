@@ -30,6 +30,7 @@ import { Edit, Upload, X } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { updateProfile } from "@/app/actions/profile";
 import Image from "next/image";
+import { User } from "@/lib/db/users-get";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -47,27 +48,21 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 interface ProfileEditFormProps {
-  user: {
-    id: string;
-    fullName: string;
-    bio?: string;
-    location?: string;
-    avatarUrl?: string;
-  };
+  user: User;
 }
 
 export function ProfileEditForm({ user }: ProfileEditFormProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    user.avatarUrl || null
+    user.image_url || null
   );
   const router = useRouter();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user.fullName || "",
+      name: user.name || "",
       bio: user.bio || "",
       location: user.location || "",
     },
@@ -88,6 +83,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
   };
 
   async function onSubmit(data: ProfileFormValues) {
+    return;
     setIsSubmitting(true);
     try {
       const result = await updateProfile(user.id, {

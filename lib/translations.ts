@@ -225,6 +225,12 @@ export const translations = {
     noPostsYet: "No posts yet",
     noSavedPostsYet: "No saved posts yet",
     joinedOn: "Joined on {date}",
+    followers: "Followers",
+    following: "Following",
+    follow: "Follow",
+    unfollow: "Unfollow",
+    errorFollowing: "Error following user",
+    errorUnfollowing: "Error unfollowing user",
 
     // Resources
     resourceCategories: "Categories",
@@ -753,6 +759,12 @@ export const translations = {
     noPostsYet: "Chưa có bài viết",
     noSavedPostsYet: "Chưa có bài viết đã lưu",
     joinedOn: "Tham gia vào {date}",
+    followers: "Người theo dõi",
+    following: "Đang theo dõi",
+    follow: "Theo dõi",
+    unfollow: "Bỏ theo dõi",
+    errorFollowing: "Lỗi khi theo dõi người dùng",
+    errorUnfollowing: "Lỗi khi bỏ theo dõi người dùng",
 
     // Resources
     resourceCategories: "Danh mục",
