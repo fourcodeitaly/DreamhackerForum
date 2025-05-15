@@ -7,7 +7,7 @@ import { AdminCheck } from "@/components/admin/admin-check";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { Trash2 } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,15 +79,22 @@ export default function PostEditor({ post }: { post: Post | null }) {
           <h1 className="text-3xl font-bold">{t("editPost")}</h1>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={isDeleting}
-                className="flex items-center gap-2"
-              >
-                <Trash2 className="h-4 w-4" />
-                {t("delete")}
-              </Button>
+              {isDeleting ? (
+                <Button variant="destructive" size="sm" disabled>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("deleting")}
+                </Button>
+              ) : (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={isDeleting}
+                  className="flex items-center gap-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {t("delete")}
+                </Button>
+              )}
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -102,7 +109,14 @@ export default function PostEditor({ post }: { post: Post | null }) {
                   onClick={handleDelete}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  {isDeleting ? t("deleting") : t("delete")}
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t("deleting")}
+                    </>
+                  ) : (
+                    t("delete")
+                  )}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
