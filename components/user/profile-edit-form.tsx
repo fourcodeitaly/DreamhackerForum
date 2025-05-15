@@ -31,7 +31,7 @@ import { toast } from "@/components/ui/use-toast";
 import { updateProfile } from "@/app/actions/profile";
 import Image from "next/image";
 import { User } from "@/lib/db/users-get";
-
+import { useTranslation } from "@/hooks/use-translation";
 const profileFormSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -58,6 +58,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
     user.image_url || null
   );
   const router = useRouter();
+  const { t } = useTranslation();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -106,14 +107,14 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
       router.refresh();
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "There was an error updating your profile. Please try again.",
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error",
+      //   description:
+      //     error instanceof Error
+      //       ? error.message
+      //       : "There was an error updating your profile. Please try again.",
+      //   variant: "destructive",
+      // });
     } finally {
       setIsSubmitting(false);
     }
@@ -124,21 +125,18 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Edit className="mr-2 h-4 w-4" />
-          Edit Profile
+          {t("editProfile")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile information here. Click save when
-            you're done.
-          </DialogDescription>
+          <DialogTitle>{t("editProfile")}</DialogTitle>
+          <DialogDescription>{t("editProfileDescription")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormItem>
-              <FormLabel>Profile Picture</FormLabel>
+              <FormLabel>{t("profilePicture")}</FormLabel>
               <div className="flex items-center gap-4">
                 <div className="relative h-20 w-20">
                   {previewUrl ? (
@@ -171,7 +169,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                     className="cursor-pointer"
                   />
                   <FormDescription>
-                    Upload a profile picture. Max size: 2MB
+                    {t("profilePictureDescription")}
                   </FormDescription>
                 </div>
               </div>
@@ -181,13 +179,11 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
                     <Input placeholder="Your name" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
+                  <FormDescription>{t("nameDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -197,17 +193,15 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
               name="bio"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bio</FormLabel>
+                  <FormLabel>{t("bio")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Tell us a little bit about yourself"
+                      placeholder={t("bioPlaceholder")}
                       className="resize-none"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Brief description for your profile. Max 160 characters.
-                  </FormDescription>
+                  <FormDescription>{t("bioDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -217,18 +211,18 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
+                  <FormLabel>{t("location")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your location" {...field} />
+                    <Input placeholder={t("locationPlaceholder")} {...field} />
                   </FormControl>
-                  <FormDescription>Where you are based.</FormDescription>
+                  <FormDescription>{t("locationDescription")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save changes"}
+                {isSubmitting ? t("saving") : t("saveChanges")}
               </Button>
             </DialogFooter>
           </form>
