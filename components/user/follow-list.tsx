@@ -20,20 +20,29 @@ interface FollowListProps {
   userId: string;
   initialFollowers: User[];
   initialFollowing: User[];
-  followersCount: number;
-  followingCount: number;
+  followersCountProp: number;
+  followingCountProp: number;
 }
 
 export function FollowList({
   userId,
   initialFollowers,
   initialFollowing,
-  followersCount,
-  followingCount,
+  followersCountProp,
+  followingCountProp,
 }: FollowListProps) {
   const { t } = useTranslation();
   const { user: currentUser } = useAuth();
-  const [followers, setFollowers] = useState(initialFollowers);
+  const [followingCount, setFollowingCount] = useState(followingCountProp);
+  const [followersCount, setFollowersCount] = useState(followersCountProp);
+  const [followers, setFollowers] = useState(
+    initialFollowers.map((user) => ({
+      ...user,
+      isFollowed: initialFollowing.some(
+        (following) => following.id === user.id
+      ),
+    }))
+  );
   const [following, setFollowing] = useState(
     initialFollowing.map((user) => ({
       ...user,
@@ -45,11 +54,15 @@ export function FollowList({
     // Update followers list if the current user is in it
     setFollowers((prev) =>
       prev.map((user) =>
-        user.id === currentUser?.id
-          ? { ...user, isFollowed: !isFollowed }
-          : user
+        user.id === userId ? { ...user, isFollowed: !isFollowed } : user
       )
     );
+
+    if (isFollowed) {
+      setFollowingCount((prev) => prev + 1);
+    } else {
+      setFollowingCount((prev) => prev - 1);
+    }
 
     // Update following list if the target user is in it
     setFollowing((prev) =>

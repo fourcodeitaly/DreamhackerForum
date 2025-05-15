@@ -83,8 +83,8 @@ export default async function ProfilePage({
               userId={user.id}
               initialFollowers={followers}
               initialFollowing={following}
-              followersCount={followers.length}
-              followingCount={following.length}
+              followersCountProp={followers.length}
+              followingCountProp={following.length}
             />
           </TabsContent>
         </Tabs>
