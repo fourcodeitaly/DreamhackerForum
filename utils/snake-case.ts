@@ -5,7 +5,8 @@ export function toSnakeCase(str: string): string {
     .replace(/^_/, "");
 }
 
-export function toCamelCase(str: string): string {
+export function toCamelCase(str?: string): string {
+  if (!str) return "";
   return str.replace(/([-_][a-z])/g, (group) =>
     group.toUpperCase().replace("-", "").replace("_", "")
   );

@@ -227,10 +227,10 @@ export function MultilingualPostForm({
     setIsLoading(true);
 
     // Validate that at least English content is provided
-    if (!title.en || !content.en) {
+    if (!title.vi || !content.vi) {
       toast({
         title: t("validationError"),
-        description: t("englishContentRequired"),
+        description: t("vietnameseContentRequired"),
         variant: "destructive",
       });
       setIsLoading(false);
@@ -297,17 +297,14 @@ export function MultilingualPostForm({
           // tags,
           imageUrl: imagePreview || undefined,
           originalLink: originalLink || undefined, // Include original link
-        }).catch((error) => {
-          console.error("Error creating post:", error);
-          return { success: false, message: "Error creating post" };
         });
 
-        if (result.success) {
+        if (result.success && result.post) {
           toast({
             title: t("success"),
             description: t("postCreated"),
           });
-          router.push(`/posts/${initialData?.id}`);
+          router.push(`/posts/${result.post.id}`);
         } else {
           toast({
             title: t("error"),
@@ -721,7 +718,7 @@ export function MultilingualPostForm({
             </p>
           </div> */}
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="image">{t("image")}</Label>
             {imagePreview ? (
               <div className="relative">
@@ -766,7 +763,7 @@ export function MultilingualPostForm({
                 />
               </div>
             )}
-          </div>
+          </div> */}
 
           <div className="flex justify-end space-x-2">
             <Button

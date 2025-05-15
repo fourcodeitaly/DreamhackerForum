@@ -78,10 +78,10 @@ export async function createPost(postData: {
 
     const sql = `
       INSERT INTO posts (
-        user_id, title, content, category_id, tags, 
+        user_id, title, content, category_id,
         image_url, original_link, is_pinned, created_at, updated_at
       ) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `;
 
@@ -90,7 +90,6 @@ export async function createPost(postData: {
       JSON.stringify(postData.title),
       JSON.stringify(postData.content),
       postData.category_id || null,
-      postData.tags || [],
       postData.image_url || null,
       postData.original_link || null,
       postData.is_pinned || false,
