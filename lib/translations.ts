@@ -133,6 +133,12 @@ export const translations = {
     // Categories
     categories: "Categories",
     allPosts: "All Posts",
+    deletePost: "Delete Post",
+    deletePostConfirmation: "Are you sure you want to delete this post?",
+    delete: "Delete",
+    deleting: "Deleting...",
+    errorDeletingPost: "Error deleting post",
+    postDeleted: "Post deleted",
 
     // MBA Categories
     mbaPrograms: "(MBA) MBA",
@@ -655,6 +661,12 @@ export const translations = {
     // Categories
     categories: "Danh mục",
     allPosts: "Tất cả bài viết",
+    deletePost: "Xóa bài viết",
+    deletePostConfirmation: "Bạn có chắc chắn muốn xóa bài viết này không?",
+    delete: "Xóa",
+    deleting: "Đang xóa...",
+    errorDeletingPost: "Lỗi khi xóa bài viết",
+    postDeleted: "Bài viết đã được xóa",
 
     // MBA Categories
     mbaPrograms: "(MBA) MBA",

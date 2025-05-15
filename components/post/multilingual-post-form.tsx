@@ -65,7 +65,7 @@ export function MultilingualPostForm({
   ); // Added original link
   const [isLoading, setIsLoading] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">(
-    "en"
+    "vi"
   );
   const [isTranslatingTitle, setIsTranslatingTitle] = useState(false);
   const [isTranslatingContent, setIsTranslatingContent] = useState(false);
@@ -452,9 +452,9 @@ export function MultilingualPostForm({
               }
             >
               <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
                 <TabsTrigger value="en">English</TabsTrigger>
                 <TabsTrigger value="zh">中文</TabsTrigger>
-                <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
               </TabsList>
 
               <div className="mt-2 flex justify-end space-x-2">
@@ -522,7 +522,14 @@ export function MultilingualPostForm({
                   </Button>
                 )}
               </div>
-
+              <TabsContent value="vi" className="mt-2">
+                <Input
+                  id="title-vi"
+                  value={title.vi}
+                  onChange={(e) => handleTitleChange("vi", e.target.value)}
+                  placeholder={t("postTitlePlaceholderVi")}
+                />
+              </TabsContent>
               <TabsContent value="en" className="mt-2">
                 <Input
                   id="title-en"
@@ -538,14 +545,6 @@ export function MultilingualPostForm({
                   value={title.zh}
                   onChange={(e) => handleTitleChange("zh", e.target.value)}
                   placeholder={t("postTitlePlaceholderZh")}
-                />
-              </TabsContent>
-              <TabsContent value="vi" className="mt-2">
-                <Input
-                  id="title-vi"
-                  value={title.vi}
-                  onChange={(e) => handleTitleChange("vi", e.target.value)}
-                  placeholder={t("postTitlePlaceholderVi")}
                 />
               </TabsContent>
             </Tabs>
@@ -588,9 +587,9 @@ export function MultilingualPostForm({
               }
             >
               <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
                 <TabsTrigger value="en">English</TabsTrigger>
                 <TabsTrigger value="zh">中文</TabsTrigger>
-                <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
               </TabsList>
 
               <div className="mt-2 flex justify-end space-x-2">
@@ -658,7 +657,13 @@ export function MultilingualPostForm({
                   </Button>
                 )}
               </div>
-
+              <TabsContent value="vi" className="mt-2">
+                <MarkdownEditor
+                  value={content.vi}
+                  onChange={(value) => handleContentChange("vi", value)}
+                  placeholder={t("postContentPlaceholderVi")}
+                />
+              </TabsContent>
               <TabsContent value="en" className="mt-2">
                 <MarkdownEditor
                   value={content.en}
@@ -671,13 +676,6 @@ export function MultilingualPostForm({
                   value={content.zh}
                   onChange={(value) => handleContentChange("zh", value)}
                   placeholder={t("postContentPlaceholderZh")}
-                />
-              </TabsContent>
-              <TabsContent value="vi" className="mt-2">
-                <MarkdownEditor
-                  value={content.vi}
-                  onChange={(value) => handleContentChange("vi", value)}
-                  placeholder={t("postContentPlaceholderVi")}
                 />
               </TabsContent>
             </Tabs>

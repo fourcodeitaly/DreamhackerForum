@@ -203,8 +203,8 @@ export async function deletePost(postId: string): Promise<boolean> {
         postId,
       ]);
 
-      // Delete post tags
-      await client.query("DELETE FROM post_tags WHERE post_id = $1", [postId]);
+      // // Delete post tags
+      // await client.query("DELETE FROM post_tags WHERE post_id = $1", [postId]);
 
       // Finally delete the post
       const result = await client.query("DELETE FROM posts WHERE id = $1", [
