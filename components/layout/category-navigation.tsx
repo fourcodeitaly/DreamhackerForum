@@ -22,7 +22,7 @@ export function CategoryNavigation() {
       id: "mba",
       name: t("mbaPrograms"),
       categories: [
-        { id: "mba", name: t("mbaPrograms") },
+        { id: "mba", name: t("allMbaPrograms") },
         { id: "mba-school-information", name: t("mbaSchoolInformation") },
         { id: "mba-rankings", name: t("mbaRankings") },
         { id: "mba-application-faq", name: t("mbaApplicationFAQ") },
@@ -38,7 +38,7 @@ export function CategoryNavigation() {
       id: "master",
       name: t("masterPrograms"),
       categories: [
-        { id: "master", name: t("masterPrograms") },
+        { id: "master", name: t("allMasterPrograms") },
         {
           id: "master-school-introduction",
           name: t("masterSchoolIntroduction"),
@@ -61,7 +61,7 @@ export function CategoryNavigation() {
       id: "phd",
       name: t("phdPrograms"),
       categories: [
-        { id: "phd", name: t("phdPrograms") },
+        { id: "phd", name: t("allPhdPrograms") },
         { id: "phd-business-school-intro", name: t("phdBusinessSchoolIntro") },
         { id: "phd-ranking", name: t("phdRanking") },
         { id: "phd-application-faq", name: t("phdApplicationFAQ") },

@@ -141,6 +141,7 @@ export const translations = {
     postDeleted: "Post deleted",
 
     // MBA Categories
+    allMbaPrograms: "(MBA) All MBA",
     mbaPrograms: "(MBA) MBA",
     mbaSchoolInformation: "(MBA) School Information",
     mbaRankings: "(MBA) Rankings",
@@ -153,6 +154,7 @@ export const translations = {
     mbaApplicationSummary: "(MBA) Application Summary",
 
     // Business School Categories
+    allMasterPrograms: "(Master) All Master",
     masterPrograms: "(Master) Master",
     masterSchoolIntroduction: "(Master) School Introduction",
     masterMajorRanking: "(Master) Major and Ranking",
@@ -163,6 +165,7 @@ export const translations = {
     masterApplicationFAQ: "(Master) Application FAQ",
 
     // PhD Categories
+    allPhdPrograms: "(PhD) All PhD",
     phdPrograms: "(PhD) PhD",
     phdBusinessSchoolIntro: "(PhD) Business School Intro",
     phdRanking: "(PhD) Ranking",
@@ -722,6 +725,7 @@ export const translations = {
     postDeleted: "Bài viết đã được xóa",
 
     // MBA Categories
+    allMbaPrograms: "(MBA) Tổng hợp MBA",
     mbaPrograms: "(MBA) MBA",
     mbaSchoolInformation: "(MBA) Thông tin trường",
     mbaRankings: "(MBA) Bảng xếp hạng",
@@ -734,24 +738,26 @@ export const translations = {
     mbaApplicationSummary: "(MBA) Tóm tắt ứng tuyển",
 
     // Business School Categories
-    masterPrograms: "(Thạc sĩ) Thạc sĩ",
-    masterSchoolIntroduction: "(Thạc sĩ) Giới thiệu trường",
-    masterMajorRanking: "(Thạc sĩ) Chuyên ngành và xếp hạng",
-    masterPsResume: "(Thạc sĩ) PS/Hồ sơ",
-    masterBusinessInterview: "(Thạc sĩ) Phỏng vấn kinh doanh",
-    masterApplicationSummary: "(Thạc sĩ) Tóm tắt ứng tuyển",
-    masterRecommendationLetter: "(Thạc sĩ) Thư giới thiệu",
-    masterApplicationFAQ: "(Thạc sĩ) Câu hỏi thường gặp",
+    allMasterPrograms: "(Master) Tổng hợp Master",
+    masterPrograms: "(Master) Master",
+    masterSchoolIntroduction: "(Master) Giới thiệu trường",
+    masterMajorRanking: "(Master) Chuyên ngành và xếp hạng",
+    masterPsResume: "(Master) PS/Hồ sơ",
+    masterBusinessInterview: "(Master) Phỏng vấn kinh doanh",
+    masterApplicationSummary: "(Master) Tóm tắt ứng tuyển",
+    masterRecommendationLetter: "(Master) Thư giới thiệu",
+    masterApplicationFAQ: "(Master) Câu hỏi thường gặp",
 
     // PhD Categories
-    phdPrograms: "(Tiến sĩ) Tiến sĩ",
-    phdBusinessSchoolIntro: "(Tiến sĩ) Giới thiệu Trường Kinh tế",
-    phdRanking: "(Tiến sĩ) Xếp hạng",
-    phdStudyExperience: "(Tiến sĩ) Kinh nghiệm học tập",
-    phdInterview: "(Tiến sĩ) Phỏng vấn",
-    phdApplicationSummary: "(Tiến sĩ) Tóm tắt ứng tuyển",
-    phdRecommendationLetter: "(Tiến sĩ) Thư giới thiệu",
-    phdApplicationFAQ: "(Tiến sĩ) Câu hỏi thường gặp",
+    allPhdPrograms: "(Phd) Tổng hợp PhD",
+    phdPrograms: "(Phd) PhD",
+    phdBusinessSchoolIntro: "(Phd) Giới thiệu trường kinh tế",
+    phdRanking: "(Phd) Xếp hạng",
+    phdStudyExperience: "(Phd) Kinh nghiệm học tập",
+    phdInterview: "(Phd) Phỏng vấn",
+    phdApplicationSummary: "(Phd) Tóm tắt ứng tuyển",
+    phdRecommendationLetter: "(Phd) Thư giới thiệu",
+    phdApplicationFAQ: "(Phd) Câu hỏi thường gặp",
 
     // Study Abroad Categories
     studyAbroad: "(Du học) Du học",

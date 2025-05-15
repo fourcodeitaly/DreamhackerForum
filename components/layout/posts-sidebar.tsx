@@ -32,7 +32,7 @@ export function PostsSidebar() {
       categories: [
         {
           id: "mba",
-          name: t("mbaPrograms"),
+          name: t("allMbaPrograms"),
           count: 156,
         },
         {
@@ -68,7 +68,7 @@ export function PostsSidebar() {
       categories: [
         {
           id: "master",
-          name: t("masterPrograms"),
+          name: t("allMasterPrograms"),
           count: 156,
         },
         {
@@ -110,7 +110,7 @@ export function PostsSidebar() {
       categories: [
         {
           id: "phd",
-          name: t("phdPrograms"),
+          name: t("allPhdPrograms"),
           count: 156,
         },
         {
