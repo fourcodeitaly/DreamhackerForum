@@ -13,8 +13,11 @@ import {
   getPinnedPosts,
   getPosts,
 } from "@/lib/db/posts/post-get";
-import { type Contributor, getTopContributors } from "@/lib/db/users-get";
+import { getTopContributors } from "@/lib/db/users-get";
 import { getCategory } from "@/lib/db/category/category-get";
+import { PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { getServerUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +50,9 @@ export default async function Posts({
   // Fetch top contributors (category-specific if category is provided)
   const topContributors = await getTopContributors();
 
+  const user = await getServerUser();
+  const isAdmin = user?.role === "admin";
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Only show in development */}
@@ -60,6 +66,18 @@ export default async function Posts({
         {/* Left Sidebar - Sticky */}
         <div className="lg:w-1/4">
           <div className="sticky top-20">
+            {isAdmin && (
+              <Button
+                asChild
+                variant="default"
+                className="w-full justify-start mb-6"
+              >
+                <a href="/create-post">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create Post
+                </a>
+              </Button>
+            )}
             <PostsSidebar />
           </div>
         </div>

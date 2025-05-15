@@ -344,59 +344,69 @@ export function MultilingualPostForm({
     {
       label: t("mbaPrograms"),
       options: [
-        { value: "school-information", label: t("schoolInformation") },
+        { value: "mba-school-information", label: t("mbaSchoolInformation") },
         { value: "mba-rankings", label: t("mbaRankings") },
-        { value: "application-faq", label: t("applicationFAQ") },
-        { value: "application-strategy", label: t("applicationStrategy") },
-        { value: "resume", label: t("resume") },
-        { value: "recommendation-letter", label: t("recommendationLetter") },
-        { value: "essay-writing", label: t("essayWriting") },
+        { value: "mba-application-faq", label: t("mbaApplicationFAQ") },
+        {
+          value: "mba-application-strategy",
+          label: t("mbaApplicationStrategy"),
+        },
+        { value: "mba-resume", label: t("mbaResume") },
+        {
+          value: "mba-recommendation-letter",
+          label: t("mbaRecommendationLetter"),
+        },
+        { value: "mba-essay-writing", label: t("mbaEssayWriting") },
         { value: "mba-interviews", label: t("mbaInterviews") },
-        { value: "application-summary", label: t("applicationSummary") },
+        { value: "mba-application-summary", label: t("mbaApplicationSummary") },
       ],
     },
     {
-      label: t("businessSchool"),
+      label: t("masterPrograms"),
       options: [
-        { value: "school-introduction", label: t("schoolIntroduction") },
-        { value: "major-and-ranking", label: t("majorAndRanking") },
-        { value: "business-application-faq", label: t("applicationFAQ") },
         {
-          value: "business-recommendation-letter",
-          label: t("recommendationLetter"),
+          value: "master-school-introduction",
+          label: t("masterSchoolIntroduction"),
         },
-        { value: "ps-resume", label: t("psResume") },
-        { value: "business-interview", label: t("businessInterview") },
         {
-          value: "business-application-summary",
-          label: t("applicationSummary"),
+          value: "master-major-ranking",
+          label: t("masterMajorRanking"),
+        },
+        {
+          value: "master-business-application-faq",
+          label: t("masterApplicationFAQ"),
+        },
+        {
+          value: "master-recommendation-letter",
+          label: t("masterRecommendationLetter"),
+        },
+        { value: "master-ps-resume", label: t("masterPsResume") },
+        {
+          value: "master-business-interview",
+          label: t("masterBusinessInterview"),
+        },
+        {
+          value: "master-application-summary",
+          label: t("masterApplicationSummary"),
         },
       ],
     },
     {
       label: t("phdPrograms"),
       options: [
-        { value: "business-school-intro", label: t("businessSchoolIntro") },
-        { value: "phd-ranking", label: t("ranking") },
-        { value: "phd-application-faq", label: t("applicationFAQ") },
+        {
+          value: "phd-business-school-intro",
+          label: t("phdBusinessSchoolIntro"),
+        },
+        { value: "phd-ranking", label: t("phdRanking") },
+        { value: "phd-application-faq", label: t("phdApplicationFAQ") },
         {
           value: "phd-recommendation-letter",
-          label: t("recommendationLetter"),
+          label: t("phdRecommendationLetter"),
         },
-        { value: "phd-application-summary", label: t("applicationSummary") },
+        { value: "phd-application-summary", label: t("phdApplicationSummary") },
         { value: "phd-study-experience", label: t("phdStudyExperience") },
         { value: "phd-interview", label: t("phdInterview") },
-      ],
-    },
-    {
-      label: t("studyAbroad"),
-      options: [
-        { value: "visa-interview", label: t("visaInterview") },
-        { value: "university-interview", label: t("universityInterview") },
-        { value: "scholarship-interview", label: t("scholarshipInterview") },
-        { value: "language-test", label: t("languageTest") },
-        { value: "application-tips", label: t("applicationTips") },
-        { value: "cultural-adjustment", label: t("culturalAdjustment") },
       ],
     },
   ];

@@ -21,8 +21,8 @@ export function PostsSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get("category");
-  const notShowCategory = !pathname.includes("posts?");
   const isMobile = useIsMobile();
+  const { isAdmin } = useAuth();
 
   // Define category groups
   const categoryGroups = [
@@ -167,16 +167,6 @@ export function PostsSidebar() {
 
   return (
     <div className="space-y-6">
-      {/* Create Post Button */}
-      {/* {isAdmin && (
-        <Button asChild variant="default" className="w-full justify-start">
-          <Link href="/create-post">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            {t("createPost")}
-          </Link>
-        </Button>
-      )} */}
-
       {/* Categories */}
       {!isMobile && (
         <Card>
