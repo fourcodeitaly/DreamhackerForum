@@ -31,6 +31,11 @@ export function PostsSidebar() {
       name: t("mbaPrograms"),
       categories: [
         {
+          id: "mba",
+          name: t("mbaPrograms"),
+          count: 156,
+        },
+        {
           id: "mba-school-information",
           name: t("mbaSchoolInformation"),
           count: 156,
@@ -61,6 +66,11 @@ export function PostsSidebar() {
       id: "master",
       name: t("masterPrograms"),
       categories: [
+        {
+          id: "master",
+          name: t("masterPrograms"),
+          count: 156,
+        },
         {
           id: "master-school-introduction",
           name: t("masterSchoolIntroduction"),
@@ -99,6 +109,11 @@ export function PostsSidebar() {
       name: t("phdPrograms"),
       categories: [
         {
+          id: "phd",
+          name: t("phdPrograms"),
+          count: 156,
+        },
+        {
           id: "phd-business-school-intro",
           name: t("phdBusinessSchoolIntro"),
           count: 89,
@@ -127,25 +142,33 @@ export function PostsSidebar() {
       id: "resources",
       name: t("resources"),
       categories: [
-        { id: "visa-resources", name: t("visaResources"), count: 123 },
+        { id: "visa-resources", name: t("resourcesVisaResources"), count: 123 },
         {
           id: "interview-resources",
-          name: t("interviewResources"),
+          name: t("resourcesInterviewResources"),
           count: 134,
         },
-        { id: "language-resources", name: t("languageResources"), count: 145 },
+        {
+          id: "language-resources",
+          name: t("resourcesLanguageResources"),
+          count: 145,
+        },
         {
           id: "application-resources",
-          name: t("applicationResources"),
+          name: t("resourcesApplicationResources"),
           count: 156,
         },
-        { id: "cultural-resources", name: t("culturalResources"), count: 167 },
+        {
+          id: "cultural-resources",
+          name: t("resourcesCulturalResources"),
+          count: 167,
+        },
         {
           id: "financial-resources",
-          name: t("financialResources"),
+          name: t("resourcesFinancialResources"),
           count: 178,
         },
-        { id: "all-resources", name: t("allResources"), count: 189 },
+        { id: "all-resources", name: t("resourcesAllResources"), count: 189 },
       ],
     },
   ];
@@ -189,27 +212,28 @@ export function PostsSidebar() {
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="pl-2 space-y-1">
-                      {group.categories.map((category) => (
-                        <Link
-                          key={category.id}
-                          href={`/posts?category=${category.id}`}
-                          className="block"
-                        >
-                          <div
-                            className={cn(
-                              "px-3 py-2 rounded-md text-sm font-medium transition-colors flex justify-between items-center",
-                              currentCategory === category.id
-                                ? "bg-primary text-primary-foreground"
-                                : "hover:bg-muted"
-                            )}
-                          >
-                            <span>{category.name.split(")")[1]}</span>
-                            <Badge variant="secondary" className="ml-2">
-                              {category.count}
-                            </Badge>
-                          </div>
-                        </Link>
-                      ))}
+                      {group.categories.map((category) => {
+                        const href = category.id.includes("resources")
+                          ? `/resources?category=${category.id}`
+                          : `/posts?category=${category.id}`;
+                        return (
+                          <Link key={category.id} href={href} className="block">
+                            <div
+                              className={cn(
+                                "px-3 py-2 rounded-md text-sm font-medium transition-colors flex justify-between items-center",
+                                currentCategory === category.id
+                                  ? "bg-primary text-primary-foreground"
+                                  : "hover:bg-muted"
+                              )}
+                            >
+                              <span>{category.name.split(")")[1]}</span>
+                              <Badge variant="secondary" className="ml-2">
+                                {category.count}
+                              </Badge>
+                            </div>
+                          </Link>
+                        );
+                      })}
                     </div>
                   </AccordionContent>
                 </AccordionItem>

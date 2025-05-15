@@ -175,11 +175,26 @@ export async function getPosts(
     const offset = (page - 1) * limit;
 
     // Count total posts
-    let countSql = `SELECT COUNT(*) as count FROM posts`;
+    let countSql = `SELECT COUNT(*) as count FROM posts p`;
     const countParams = [];
 
     if (categoryId) {
-      countSql += ` WHERE category_id = $1`;
+      // Check if the category has any children
+      const hasChildren = await queryOne<{ exists: boolean }>(
+        "SELECT EXISTS(SELECT 1 FROM categories WHERE parent_id = $1) as exists",
+        [categoryId]
+      );
+
+      if (hasChildren?.exists) {
+        // If category has children, include posts from all child categories
+        countSql += `
+          LEFT JOIN categories c ON p.category_id = c.id
+          WHERE c.id = $1 OR c.parent_id = $1
+        `;
+      } else {
+        // If no children, just get posts from this category
+        countSql += ` WHERE p.category_id = $1`;
+      }
       countParams.push(categoryId);
     }
 
@@ -213,7 +228,19 @@ export async function getPosts(
 
     // Add category filter if provided
     if (categoryId) {
-      sql += ` WHERE p.category_id = $1`;
+      // Check if the category has any children
+      const hasChildren = await queryOne<{ exists: boolean }>(
+        "SELECT EXISTS(SELECT 1 FROM categories WHERE parent_id = $1) as exists",
+        [categoryId]
+      );
+
+      if (hasChildren?.exists) {
+        // If category has children, include posts from all child categories
+        sql += ` WHERE c.id = $1 OR c.parent_id = $1`;
+      } else {
+        // If no children, just get posts from this category
+        sql += ` WHERE p.category_id = $1`;
+      }
       params.push(categoryId);
     }
 
@@ -246,31 +273,31 @@ export async function getPosts(
     );
 
     // Group tags by post_id
-    const tagsByPostId: Record<string, string[]> = {};
-    tagsResults.forEach((tag) => {
-      if (!tagsByPostId[tag.post_id]) {
-        tagsByPostId[tag.post_id] = [];
-      }
-      tagsByPostId[tag.post_id].push(tag.name);
-    });
+    // const tagsByPostId: Record<string, string[]> = {};
+    // tagsResults.forEach((tag) => {
+    //   if (!tagsByPostId[tag.post_id]) {
+    //     tagsByPostId[tag.post_id] = [];
+    //   }
+    //   tagsByPostId[tag.post_id].push(tag.name);
+    // });
 
-    // Get like counts for all posts
-    const likesSql = `
-        SELECT post_id, COUNT(*) as count
-        FROM post_likes
-        WHERE post_id = ANY($1::uuid[])
-        GROUP BY post_id
-      `;
-    const likesResults = await query<{ post_id: string; count: string }>(
-      likesSql,
-      [postIds]
-    );
+    // // Get like counts for all posts
+    // const likesSql = `
+    //     SELECT post_id, COUNT(*) as count
+    //     FROM post_likes
+    //     WHERE post_id = ANY($1::uuid[])
+    //     GROUP BY post_id
+    //   `;
+    // const likesResults = await query<{ post_id: string; count: string }>(
+    //   likesSql,
+    //   [postIds]
+    // );
 
     // Create a map of like counts by post_id
-    const likesByPostId: Record<string, number> = {};
-    likesResults.forEach((like) => {
-      likesByPostId[like.post_id] = Number.parseInt(like.count);
-    });
+    // const likesByPostId: Record<string, number> = {};
+    // likesResults.forEach((like) => {
+    //   likesByPostId[like.post_id] = Number.parseInt(like.count);
+    // });
 
     // If userId is provided, check which posts the user has liked and saved
     let likedPostIds: string[] = [];
@@ -305,10 +332,10 @@ export async function getPosts(
     // Combine all data
     const enrichedPosts = posts.map((post) => ({
       ...post,
-      tags: tagsByPostId[post.id] || [],
-      likes_count: likesByPostId[post.id] || 0,
+      // tags: tagsByPostId[post.id] || [],
+      // likes_count: likesByPostId[post.id] || 0,
       comments_count: Number(post.comments_count) || 0,
-      liked: likedPostIds.includes(post.id),
+      // liked: likedPostIds.includes(post.id),
       saved: savedPostIds.includes(post.id),
     }));
 

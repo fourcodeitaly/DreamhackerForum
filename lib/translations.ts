@@ -7,7 +7,7 @@ export const translations = {
   en: {
     // General
     home: "Home",
-    resources: "Resources",
+    resources: "(Resource) Resources",
     login: "Log In",
     register: "Register",
     logout: "Log Out",
@@ -153,7 +153,7 @@ export const translations = {
     mbaApplicationSummary: "(MBA) Application Summary",
 
     // Business School Categories
-    masterPrograms: "(Master) Programs",
+    masterPrograms: "(Master) Master",
     masterSchoolIntroduction: "(Master) School Introduction",
     masterMajorRanking: "(Master) Major and Ranking",
     masterPsResume: "(Master) PS/Resume",
@@ -163,23 +163,32 @@ export const translations = {
     masterApplicationFAQ: "(Master) Application FAQ",
 
     // PhD Categories
-    phdPrograms: "(PhD) Programs",
+    phdPrograms: "(PhD) PhD",
     phdBusinessSchoolIntro: "(PhD) Business School Intro",
     phdRanking: "(PhD) Ranking",
     phdStudyExperience: "(PhD) Study Experience",
     phdInterview: "(PhD) Interview",
     phdApplicationSummary: "(PhD) Application Summary",
     phdRecommendationLetter: "(PhD) Recommendation Letter",
-    phdApplicationFAQ: "Application FAQ",
+    phdApplicationFAQ: "(PhD) Application FAQ",
 
     // Study Abroad Categories
-    studyAbroad: "Study Abroad",
-    visaInterview: "Visa Interview",
-    universityInterview: "University Interview",
-    scholarshipInterview: "Scholarship Interview",
-    languageTest: "Language Test",
-    applicationTips: "Application Tips",
-    culturalAdjustment: "Cultural Adjustment",
+    // studyAbroad: "Study Abroad",
+    // visaInterview: "Visa Interview",
+    // universityInterview: "University Interview",
+    // scholarshipInterview: "Scholarship Interview",
+    // languageTest: "Language Test",
+    // applicationTips: "Application Tips",
+    // culturalAdjustment: "Cultural Adjustment",
+
+    // Resources
+    resourcesAllResources: "(Resource) All Resources",
+    resourcesVisaResources: "(Resource) Visa Resources",
+    resourcesInterviewResources: "(Resource) Interview Resources",
+    resourcesLanguageResources: "(Resource) Language Resources",
+    resourcesApplicationResources: "(Resource) Application Resources",
+    resourcesCulturalResources: "(Resource) Cultural Resources",
+    resourcesFinancialResources: "(Resource) Financial Resources",
 
     // Post interactions
     like: "Like",
@@ -823,13 +832,13 @@ export const translations = {
     // Resources
     resourceCategories: "Danh mục",
     resources: "(Tài liệu) Tài liệu",
-    allResources: "(Tài liệu) Tất cả tài liệu",
-    visaResources: "(Tài liệu) Tài liệu visa",
-    interviewResources: "(Tài liệu) Tài liệu phỏng vấn",
-    languageResources: "(Tài liệu) Tài liệu ngôn ngữ",
-    applicationResources: "(Tài liệu) Tài liệu ứng tuyển",
-    culturalResources: "(Tài liệu) Tài liệu văn hóa",
-    financialResources: "(Tài liệu) Tài liệu tài chính",
+    resourcesAllResources: "(Tài liệu) Tất cả tài liệu",
+    resourcesVisaResources: "(Tài liệu) Tài liệu visa",
+    resourcesInterviewResources: "(Tài liệu) Tài liệu phỏng vấn",
+    resourcesLanguageResources: "(Tài liệu) Tài liệu ngôn ngữ",
+    resourcesApplicationResources: "(Tài liệu) Tài liệu ứng tuyển",
+    resourcesCulturalResources: "(Tài liệu) Tài liệu văn hóa",
+    resourcesFinancialResources: "(Tài liệu) Tài liệu tài chính",
     addedBy: "Thêm bởi",
     download: "Tải xuống",
     view: "Xem",

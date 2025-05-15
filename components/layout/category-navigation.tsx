@@ -22,6 +22,7 @@ export function CategoryNavigation() {
       id: "mba",
       name: t("mbaPrograms"),
       categories: [
+        { id: "mba", name: t("mbaPrograms") },
         { id: "mba-school-information", name: t("mbaSchoolInformation") },
         { id: "mba-rankings", name: t("mbaRankings") },
         { id: "mba-application-faq", name: t("mbaApplicationFAQ") },
@@ -37,6 +38,7 @@ export function CategoryNavigation() {
       id: "master",
       name: t("masterPrograms"),
       categories: [
+        { id: "master", name: t("masterPrograms") },
         {
           id: "master-school-introduction",
           name: t("masterSchoolIntroduction"),
@@ -59,6 +61,7 @@ export function CategoryNavigation() {
       id: "phd",
       name: t("phdPrograms"),
       categories: [
+        { id: "phd", name: t("phdPrograms") },
         { id: "phd-business-school-intro", name: t("phdBusinessSchoolIntro") },
         { id: "phd-ranking", name: t("phdRanking") },
         { id: "phd-application-faq", name: t("phdApplicationFAQ") },
@@ -72,12 +75,16 @@ export function CategoryNavigation() {
       id: "resources",
       name: t("resources"),
       categories: [
-        { id: "visa-resources", name: t("visaResources") },
-        { id: "interview-resources", name: t("interviewResources") },
-        { id: "language-resources", name: t("languageResources") },
-        { id: "application-resources", name: t("applicationResources") },
-        { id: "cultural-resources", name: t("culturalResources") },
-        { id: "financial-resources", name: t("financialResources") },
+        { id: "all-resources", name: t("resourcesAllResources") },
+        { id: "visa-resources", name: t("resourcesVisaResources") },
+        { id: "interview-resources", name: t("resourcesInterviewResources") },
+        { id: "language-resources", name: t("resourcesLanguageResources") },
+        {
+          id: "application-resources",
+          name: t("resourcesApplicationResources"),
+        },
+        { id: "cultural-resources", name: t("resourcesCulturalResources") },
+        { id: "financial-resources", name: t("resourcesFinancialResources") },
       ],
     },
     // {
