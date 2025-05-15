@@ -1,4 +1,5 @@
 import { transaction } from "../postgres";
+import { createNotification } from "../notification";
 
 export async function followUser(
   followerId: string,
@@ -15,6 +16,13 @@ export async function followUser(
       if (existingFollow.rows.length > 0) {
         return false;
       }
+
+      // Get follower's username for the notification
+      const followerResult = await client.query(
+        "SELECT username FROM users WHERE id = $1",
+        [followerId]
+      );
+      const followerUsername = followerResult.rows[0]?.username;
 
       // Create follow relationship
       await client.query(
@@ -36,6 +44,8 @@ export async function followUser(
          WHERE id = $1`,
         [followerId]
       );
+
+      // Create notification for the followed user
 
       return true;
     });

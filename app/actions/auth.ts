@@ -12,6 +12,7 @@ export async function getUserData(userId: string) {
         email,
         username,
         image_url,
+        name,
         role
       FROM users 
       WHERE id = $1`,

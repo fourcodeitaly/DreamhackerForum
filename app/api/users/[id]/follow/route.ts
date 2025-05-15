@@ -6,6 +6,7 @@ import {
   getUserFollowers,
   getUserFollowing,
 } from "@/lib/db/follows/follows-get";
+import { createNotification } from "@/lib/db/notification";
 
 export async function GET(
   request: Request,
@@ -53,6 +54,7 @@ export async function POST(
   const { id } = await params;
   try {
     const user = await getServerUser();
+
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -84,6 +86,18 @@ export async function POST(
         { error: `Failed to ${action} user` },
         { status: 500 }
       );
+    }
+
+    // Create notification for the followed user
+
+    if (action === "follow") {
+      await createNotification({
+        user_id: id,
+        type: "follow",
+        content: `${user.name} started following you`,
+        link: `/profile/${user.username}`,
+        sender_id: user.id,
+      });
     }
 
     return NextResponse.json({ success: true });
