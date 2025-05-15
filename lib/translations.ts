@@ -307,6 +307,28 @@ export const translations = {
     noTitleToTranslate: "No title to translate",
     titleTranslated: "Title has been translated",
     errorTranslatingTitle: "Error translating title",
+
+    // Notifications
+    newPost: "New Post",
+    newComment: "New Comment",
+    newReply: "New Reply",
+    newLike: "New Like",
+    newFollow: "New Follow",
+    newSave: "New Save",
+    viewAll: "View All",
+    markAllAsRead: "Mark All as Read",
+    markAsRead: "Mark as Read",
+    markAsUnread: "Mark as Unread",
+    deleteNotification: "Delete Notification",
+    deleteAllNotifications: "Delete All Notifications",
+    noNotifications: "No notifications yet",
+    noUnreadNotifications: "No unread notifications yet",
+    noReadNotifications: "No read notifications yet",
+    noDeletedNotifications: "No deleted notifications yet",
+    noNotificationsDescription:
+      "No notifications yet. Be the first to comment!",
+    noUnreadNotificationsDescription:
+      "No unread notifications yet. Be the first to comment!",
   },
 
   // // Chinese (Simplified) translations
@@ -857,5 +879,27 @@ export const translations = {
     noTitleToTranslate: "Không có tiêu đề để dịch",
     titleTranslated: "Tiêu đề đã được dịch",
     errorTranslatingTitle: "Lỗi khi dịch tiêu đề",
+
+    // Notifications
+    newPost: "Bài viết mới",
+    newComment: "Bình luận mới",
+    newReply: "Phản hồi mới",
+    newLike: "Thích mới",
+    newFollow: "Theo dõi mới",
+    newSave: "Lưu mới",
+    viewAll: "Xem tất cả",
+    markAllAsRead: "Đánh dấu tất cả là đã đọc",
+    markAsRead: "Đánh dấu là đã đọc",
+    markAsUnread: "Đánh dấu là chưa đọc",
+    deleteNotification: "Xóa thông báo",
+    deleteAllNotifications: "Xóa tất cả thông báo",
+    noNotifications: "Không có thông báo",
+    noUnreadNotifications: "Không có thông báo chưa đọc",
+    noReadNotifications: "Không có thông báo đã đọc",
+    noDeletedNotifications: "Không có thông báo đã xóa",
+    noNotificationsDescription:
+      "Không có thông báo. Hãy là người đầu tiên bình luận!",
+    noUnreadNotificationsDescription:
+      "Không có thông báo chưa đọc. Hãy là người đầu tiên bình luận!",
   },
 };

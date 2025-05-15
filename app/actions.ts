@@ -5,7 +5,8 @@ import type { MultilingualContent, Post } from "@/lib/db/posts/posts-modify";
 import { revalidatePath } from "next/cache";
 import { query, queryOne } from "@/lib/db/postgres";
 import { localAuth } from "@/lib/auth/local-auth";
-
+import { notifyFollowersNewPost } from "@/lib/db/notification";
+import { getServerUser } from "@/lib/supabase/server";
 export async function createPostAction(formData: {
   userId: string;
   title: MultilingualContent;
@@ -17,6 +18,11 @@ export async function createPostAction(formData: {
   isPinned?: boolean;
 }): Promise<{ success: boolean; post?: Post; message?: string }> {
   try {
+    const user = await getServerUser();
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
     // Create post in the database
     const post = await createPost({
       user_id: formData.userId,
@@ -32,6 +38,13 @@ export async function createPostAction(formData: {
     if (!post) {
       return { success: false, message: "Failed to create post" };
     }
+
+    // Create notifications for followers
+    await notifyFollowersNewPost(
+      post.id,
+      formData.userId,
+      `${user.username} has created a new post`
+    );
 
     revalidatePath("/");
     revalidatePath(`/posts/${post.id}`);

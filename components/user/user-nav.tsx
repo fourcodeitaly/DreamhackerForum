@@ -81,7 +81,7 @@ export function UserNav({ user }: { user: any }) {
               <span>{t("profile")}</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link href="/notifications" className="cursor-pointer">
               <Bell className="mr-2 h-4 w-4" />
               <span>{t("notifications")}</span>
@@ -91,9 +91,9 @@ export function UserNav({ user }: { user: any }) {
                 </Badge>
               )}
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem asChild>
-            <Link href="/settings" className="cursor-pointer">
+            <Link href="#" className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               <span>{t("settings")}</span>
             </Link>

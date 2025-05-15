@@ -12,6 +12,7 @@ import { Menu, X, GraduationCap } from "lucide-react";
 import { AuthStatus } from "../auth/auth-status";
 import { useAuth } from "@/hooks/use-auth";
 import { CategoryNavigation } from "./category-navigation";
+import { NotificationButton } from "@/components/notifications/notification-button";
 
 export default function Header() {
   const { t } = useTranslation();
@@ -73,9 +74,10 @@ export default function Header() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <SearchBar className="w-64" />
+            {/* <SearchBar className="w-64" /> */}
             <LanguageToggle />
             <ModeToggle />
+            <NotificationButton />
             <AuthStatus />
           </div>
 
@@ -123,6 +125,7 @@ export default function Header() {
               <div className="flex space-x-2">
                 <LanguageToggle />
                 <ModeToggle />
+                <NotificationButton />
               </div>
               <AuthStatus />
             </div>
