@@ -82,6 +82,7 @@ export default function Header() {
           </div>
 
           <div className="flex md:hidden">
+            <NotificationButton />
             <Button
               variant="ghost"
               size="icon"
@@ -125,7 +126,6 @@ export default function Header() {
               <div className="flex space-x-2">
                 <LanguageToggle />
                 <ModeToggle />
-                <NotificationButton />
               </div>
               <AuthStatus />
             </div>
