@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 export function RunningCat() {
-  const [position, setPosition] = useState(-200);
+  const [position, setPosition] = useState(-400);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -11,7 +11,7 @@ export function RunningCat() {
         if (prev >= window.innerWidth) {
           clearInterval(interval);
         }
-        return prev + 8; // Speed of the cat
+        return prev + 12; // Speed of the cat
       });
     }, 50);
 
