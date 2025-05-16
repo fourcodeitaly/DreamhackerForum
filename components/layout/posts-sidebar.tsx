@@ -238,9 +238,12 @@ export function PostsSidebar() {
                   <AccordionContent>
                     <div className="pl-2 space-y-1">
                       {group.categories.map((category) => {
-                        const href = category.id.includes("resources")
-                          ? `/resources?category=${category.id}`
-                          : `/posts?category=${category.id}`;
+                        const href =
+                          group.id === "tags"
+                            ? `/posts?tag=${category.id}`
+                            : category.id.includes("resources")
+                            ? `/resources?category=${category.id}`
+                            : `/posts?category=${category.id}`;
                         return (
                           <Link key={category.id} href={href} className="block">
                             <div
