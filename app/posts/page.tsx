@@ -12,6 +12,7 @@ import {
   getNullTitlePosts,
   getPinnedPosts,
   getPosts,
+  getPostsByTags,
 } from "@/lib/db/posts/post-get";
 import { getTopContributors } from "@/lib/db/users-get";
 import { getCategory } from "@/lib/db/category/category-get";
@@ -21,13 +22,40 @@ import { getServerUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+const categories: { id: string; name: string }[] = [
+  { id: "us", name: "United States" },
+  { id: "ca", name: "Canada" },
+  { id: "hk", name: "Hong Kong" },
+  { id: "sg", name: "Singapore" },
+  { id: "jp", name: "Japan" },
+  { id: "se", name: "Sweden" },
+  { id: "au", name: "Australia" },
+  { id: "it", name: "Italy" },
+  { id: "ch", name: "Switzerland" },
+  { id: "uk", name: "United Kingdom" },
+  { id: "fr", name: "France" },
+  { id: "nl", name: "Netherlands" },
+  { id: "dk", name: "Denmark" },
+  { id: "fi", name: "Finland" },
+  { id: "ie", name: "Ireland" },
+  { id: "cn", name: "China" },
+  { id: "de", name: "Germany" },
+  { id: "es", name: "Spain" },
+  { id: "hu", name: "Hungary" },
+];
+
 export default async function Posts({
   searchParams,
 }: {
-  searchParams: { page?: string; nullPosts?: string; category?: string };
+  searchParams: {
+    page?: string;
+    nullPosts?: string;
+    category?: string;
+    tag?: string;
+  };
 }) {
   // Get current page from query parameters
-  const { page, nullPosts, category } = await searchParams;
+  const { page, nullPosts, category, tag } = await searchParams;
   const pageNumber = page ? Number.parseInt(page) : 1;
   const categoryId = category !== "undefined" ? category : undefined;
   const postsPerPage = 10;
@@ -36,13 +64,20 @@ export default async function Posts({
   const categoryData = categoryId ? await getCategory(categoryId) : null;
   const categoryName = categoryData?.name?.en || "All Posts";
 
-  // Fetch posts based on whether we're looking for null titles or not
-  const result = nullPosts
-    ? await getNullTitlePosts(pageNumber, postsPerPage)
-    : await getPosts(pageNumber, postsPerPage, false, categoryId);
+  // Fetch posts based on parameters
+  let result;
+  if (nullPosts) {
+    result = await getNullTitlePosts(pageNumber, postsPerPage);
+  } else if (tag) {
+    result = await getPostsByTags([tag], pageNumber, postsPerPage);
+  } else {
+    result = await getPosts(pageNumber, postsPerPage, false, categoryId);
+  }
 
   const initialPosts = result.posts ?? [];
   const totalPosts = result.total;
+
+  console.log(totalPosts);
 
   // Fetch featured posts
   const featuredPosts = await getPinnedPosts();
@@ -86,7 +121,13 @@ export default async function Posts({
         <div className="lg:w-2/4">
           <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <h1 className="text-3xl font-bold">
-              {categoryId ? categoryName : "All Categories"}
+              {tag
+                ? `Posts tagged with "${
+                    categories.find((c) => c.id === tag)?.name
+                  }"`
+                : categoryId
+                ? categoryName
+                : "All Categories"}
             </h1>
             {/* <SearchBar /> */}
           </div>
@@ -99,7 +140,9 @@ export default async function Posts({
                 posts={initialPosts}
                 totalPosts={totalPosts}
                 currentPage={pageNumber}
-                pathname={`/posts?category=${categoryId}`}
+                pathname={
+                  tag ? `/posts?tag=${tag}` : `/posts?category=${categoryId}`
+                }
               />
             </Suspense>
           </div>

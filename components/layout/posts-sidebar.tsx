@@ -27,6 +27,31 @@ export function PostsSidebar() {
   // Define category groups
   const categoryGroups = [
     {
+      id: "tags",
+      name: t("tags"),
+      categories: [
+        { id: "us", name: t("usTag"), count: 10 },
+        { id: "ca", name: t("caTag"), count: 10 },
+        { id: "hk", name: t("hkTag"), count: 10 },
+        { id: "sg", name: t("sgTag"), count: 10 },
+        { id: "jp", name: t("jpTag"), count: 10 },
+        { id: "se", name: t("seTag"), count: 10 },
+        { id: "au", name: t("auTag"), count: 10 },
+        { id: "it", name: t("itTag"), count: 10 },
+        { id: "ch", name: t("chTag"), count: 10 },
+        { id: "uk", name: t("ukTag"), count: 10 },
+        { id: "fr", name: t("frTag"), count: 10 },
+        { id: "nl", name: t("nlTag"), count: 10 },
+        { id: "dk", name: t("dkTag"), count: 10 },
+        { id: "fi", name: t("fiTag"), count: 10 },
+        { id: "ie", name: t("ieTag"), count: 10 },
+        { id: "cn", name: t("cnTag"), count: 10 },
+        { id: "de", name: t("deTag"), count: 10 },
+        { id: "es", name: t("esTag"), count: 10 },
+        { id: "hu", name: t("huTag"), count: 10 },
+      ],
+    },
+    {
       id: "mba",
       name: t("mbaPrograms"),
       categories: [

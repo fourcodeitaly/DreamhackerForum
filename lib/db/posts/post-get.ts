@@ -605,176 +605,176 @@ export async function getSavedPosts(
   }
 }
 
-export async function getPostsByTag(
-  tagName: string,
-  page = 1,
-  limit = 10,
-  userId?: string
-): Promise<{ posts: Post[]; total: number }> {
-  try {
-    const offset = (page - 1) * limit;
+// export async function getPostsByTag(
+//   tagName: string,
+//   page = 1,
+//   limit = 10,
+//   userId?: string
+// ): Promise<{ posts: Post[]; total: number }> {
+//   try {
+//     const offset = (page - 1) * limit;
 
-    // First get the tag ID
-    const tagSql = `SELECT id FROM tags WHERE name = $1`;
-    const tag = await queryOne<{ id: string }>(tagSql, [tagName]);
+//     // First get the tag ID
+//     const tagSql = `SELECT id FROM tags WHERE name = $1`;
+//     const tag = await queryOne<{ id: string }>(tagSql, [tagName]);
 
-    if (!tag) {
-      return { posts: [], total: 0 };
-    }
+//     if (!tag) {
+//       return { posts: [], total: 0 };
+//     }
 
-    // Count total posts with this tag
-    const countSql = `
-        SELECT COUNT(*) as count 
-        FROM post_tags 
-        WHERE tag_id = $1
-      `;
-    const countResult = await queryOne<{ count: string }>(countSql, [tag.id]);
-    const total = Number.parseInt(countResult?.count || "0");
+//     // Count total posts with this tag
+//     const countSql = `
+//         SELECT COUNT(*) as count
+//         FROM post_tags
+//         WHERE tag_id = $1
+//       `;
+//     const countResult = await queryOne<{ count: string }>(countSql, [tag.id]);
+//     const total = Number.parseInt(countResult?.count || "0");
 
-    // Get post IDs with this tag
-    const postTagsSql = `
-        SELECT post_id
-        FROM post_tags
-        WHERE tag_id = $1
-        LIMIT $2 OFFSET $3
-      `;
-    const postTags = await query<{ post_id: string }>(postTagsSql, [
-      tag.id,
-      limit,
-      offset,
-    ]);
+//     // Get post IDs with this tag
+//     const postTagsSql = `
+//         SELECT post_id
+//         FROM post_tags
+//         WHERE tag_id = $1
+//         LIMIT $2 OFFSET $3
+//       `;
+//     const postTags = await query<{ post_id: string }>(postTagsSql, [
+//       tag.id,
+//       limit,
+//       offset,
+//     ]);
 
-    if (postTags.length === 0) {
-      return { posts: [], total };
-    }
+//     if (postTags.length === 0) {
+//       return { posts: [], total };
+//     }
 
-    const postIds = postTags.map((pt) => pt.post_id);
+//     const postIds = postTags.map((pt) => pt.post_id);
 
-    // Get the actual posts
-    const sql = `
-        SELECT 
-          p.*,
-          json_build_object(
-            'id', u.id,
-            'name', u.name,
-            'username', u.username,
-            'image_url', u.image_url
-          ) as user,
-          json_build_object(
-            'id', c.id,
-            'name', c.name
-          ) as category
-        FROM posts p
-        LEFT JOIN users u ON p.user_id = u.id
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.id = ANY($1::uuid[])
-      `;
+//     // Get the actual posts
+//     const sql = `
+//         SELECT
+//           p.*,
+//           json_build_object(
+//             'id', u.id,
+//             'name', u.name,
+//             'username', u.username,
+//             'image_url', u.image_url
+//           ) as user,
+//           json_build_object(
+//             'id', c.id,
+//             'name', c.name
+//           ) as category
+//         FROM posts p
+//         LEFT JOIN users u ON p.user_id = u.id
+//         LEFT JOIN categories c ON p.category_id = c.id
+//         WHERE p.id = ANY($1::uuid[])
+//       `;
 
-    const posts = await query<Post>(sql, [postIds]);
+//     const posts = await query<Post>(sql, [postIds]);
 
-    // Get tags for all posts
-    const tagsSql = `
-        SELECT pt.post_id, t.name
-        FROM post_tags pt
-        JOIN tags t ON pt.tag_id = t.id
-        WHERE pt.post_id = ANY($1::uuid[])
-      `;
-    const tagsResults = await query<{ post_id: string; name: string }>(
-      tagsSql,
-      [postIds]
-    );
+//     // Get tags for all posts
+//     const tagsSql = `
+//         SELECT pt.post_id, t.name
+//         FROM post_tags pt
+//         JOIN tags t ON pt.tag_id = t.id
+//         WHERE pt.post_id = ANY($1::uuid[])
+//       `;
+//     const tagsResults = await query<{ post_id: string; name: string }>(
+//       tagsSql,
+//       [postIds]
+//     );
 
-    // Group tags by post_id
-    const tagsByPostId: Record<string, string[]> = {};
-    tagsResults.forEach((tag) => {
-      if (!tagsByPostId[tag.post_id]) {
-        tagsByPostId[tag.post_id] = [];
-      }
-      tagsByPostId[tag.post_id].push(tag.name);
-    });
+//     // Group tags by post_id
+//     const tagsByPostId: Record<string, string[]> = {};
+//     tagsResults.forEach((tag) => {
+//       if (!tagsByPostId[tag.post_id]) {
+//         tagsByPostId[tag.post_id] = [];
+//       }
+//       tagsByPostId[tag.post_id].push(tag.name);
+//     });
 
-    // Get like counts for all posts
-    const likesSql = `
-        SELECT post_id, COUNT(*) as count
-        FROM post_likes
-        WHERE post_id = ANY($1::uuid[])
-        GROUP BY post_id
-      `;
-    const likesResults = await query<{ post_id: string; count: string }>(
-      likesSql,
-      [postIds]
-    );
+//     // Get like counts for all posts
+//     const likesSql = `
+//         SELECT post_id, COUNT(*) as count
+//         FROM post_likes
+//         WHERE post_id = ANY($1::uuid[])
+//         GROUP BY post_id
+//       `;
+//     const likesResults = await query<{ post_id: string; count: string }>(
+//       likesSql,
+//       [postIds]
+//     );
 
-    // Create a map of like counts by post_id
-    const likesByPostId: Record<string, number> = {};
-    likesResults.forEach((like) => {
-      likesByPostId[like.post_id] = Number.parseInt(like.count);
-    });
+//     // Create a map of like counts by post_id
+//     const likesByPostId: Record<string, number> = {};
+//     likesResults.forEach((like) => {
+//       likesByPostId[like.post_id] = Number.parseInt(like.count);
+//     });
 
-    // Get comment counts for all posts
-    const commentsSql = `
-        SELECT post_id, COUNT(*) as count
-        FROM comments
-        WHERE post_id = ANY($1::uuid[])
-        GROUP BY post_id
-      `;
-    const commentsResults = await query<{ post_id: string; count: string }>(
-      commentsSql,
-      [postIds]
-    );
+//     // Get comment counts for all posts
+//     const commentsSql = `
+//         SELECT post_id, COUNT(*) as count
+//         FROM comments
+//         WHERE post_id = ANY($1::uuid[])
+//         GROUP BY post_id
+//       `;
+//     const commentsResults = await query<{ post_id: string; count: string }>(
+//       commentsSql,
+//       [postIds]
+//     );
 
-    // Create a map of comment counts by post_id
-    const commentsByPostId: Record<string, number> = {};
-    commentsResults.forEach((comment) => {
-      commentsByPostId[comment.post_id] = Number.parseInt(comment.count);
-    });
+//     // Create a map of comment counts by post_id
+//     const commentsByPostId: Record<string, number> = {};
+//     commentsResults.forEach((comment) => {
+//       commentsByPostId[comment.post_id] = Number.parseInt(comment.count);
+//     });
 
-    // If userId is provided, check which posts the user has liked and saved
-    let likedPostIds: string[] = [];
-    let savedPostIds: string[] = [];
+//     // If userId is provided, check which posts the user has liked and saved
+//     let likedPostIds: string[] = [];
+//     let savedPostIds: string[] = [];
 
-    if (userId) {
-      // Get liked posts
-      const likedSql = `
-          SELECT post_id
-          FROM post_likes
-          WHERE user_id = $1 AND post_id = ANY($2::uuid[])
-        `;
-      const likedResults = await query<{ post_id: string }>(likedSql, [
-        userId,
-        postIds,
-      ]);
-      likedPostIds = likedResults.map((like) => like.post_id);
+//     if (userId) {
+//       // Get liked posts
+//       const likedSql = `
+//           SELECT post_id
+//           FROM post_likes
+//           WHERE user_id = $1 AND post_id = ANY($2::uuid[])
+//         `;
+//       const likedResults = await query<{ post_id: string }>(likedSql, [
+//         userId,
+//         postIds,
+//       ]);
+//       likedPostIds = likedResults.map((like) => like.post_id);
 
-      // Get saved posts
-      const savedSql = `
-          SELECT post_id
-          FROM saved_posts
-          WHERE user_id = $1 AND post_id = ANY($2::uuid[])
-        `;
-      const savedResults = await query<{ post_id: string }>(savedSql, [
-        userId,
-        postIds,
-      ]);
-      savedPostIds = savedResults.map((saved) => saved.post_id);
-    }
+//       // Get saved posts
+//       const savedSql = `
+//           SELECT post_id
+//           FROM saved_posts
+//           WHERE user_id = $1 AND post_id = ANY($2::uuid[])
+//         `;
+//       const savedResults = await query<{ post_id: string }>(savedSql, [
+//         userId,
+//         postIds,
+//       ]);
+//       savedPostIds = savedResults.map((saved) => saved.post_id);
+//     }
 
-    // Combine all data
-    const enrichedPosts = posts.map((post) => ({
-      ...post,
-      tags: tagsByPostId[post.id] || [],
-      likes_count: likesByPostId[post.id] || 0,
-      comments_count: commentsByPostId[post.id] || 0,
-      liked: likedPostIds.includes(post.id),
-      saved: savedPostIds.includes(post.id),
-    }));
+//     // Combine all data
+//     const enrichedPosts = posts.map((post) => ({
+//       ...post,
+//       tags: tagsByPostId[post.id] || [],
+//       likes_count: likesByPostId[post.id] || 0,
+//       comments_count: commentsByPostId[post.id] || 0,
+//       liked: likedPostIds.includes(post.id),
+//       saved: savedPostIds.includes(post.id),
+//     }));
 
-    return { posts: enrichedPosts, total };
-  } catch (error) {
-    console.error("Error in getPostsByTag:", error);
-    return { posts: [], total: 0 };
-  }
-}
+//     return { posts: enrichedPosts, total };
+//   } catch (error) {
+//     console.error("Error in getPostsByTag:", error);
+//     return { posts: [], total: 0 };
+//   }
+// }
 
 export async function getRelatedPosts(
   postId: string,
@@ -917,5 +917,87 @@ export async function getPostCount(categoryId?: string): Promise<number> {
   } catch (error) {
     console.error("Error counting posts:", error);
     return 0;
+  }
+}
+
+export async function getPostsByTags(
+  tags: string[],
+  page = 1,
+  limit = 10,
+  userId?: string
+): Promise<{ posts: Post[]; total: number }> {
+  try {
+    const offset = (page - 1) * limit;
+
+    // Count total posts that match ALL tags
+    const countSql = `
+    SELECT COUNT(*) AS count
+    FROM (
+      SELECT p.id
+      FROM posts p
+      JOIN post_tags pt ON p.id = pt.post_id
+      JOIN tags t ON pt.tag_id = t.id
+      WHERE t.id = ANY($1)
+      GROUP BY p.id
+      HAVING COUNT(DISTINCT t.id) = $2
+    ) sub
+    `;
+
+    const countResult = await queryOne<{ count: string }>(countSql, [
+      tags,
+      tags.length,
+    ]);
+
+    const total = Number.parseInt(countResult?.count || "0");
+
+    // Get posts that match ALL tags
+    const sql = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'username', u.username,
+          'image_url', u.image_url
+        ) as user,
+        json_build_object(
+          'id', c.id,
+          'name', c.name
+        ) as category,
+        (SELECT COUNT(*) FROM comments WHERE post_id = p.id AND (status IS NULL OR status != 'deleted')) as comments_count,
+        array_agg(DISTINCT t.id) as tags
+      FROM posts p
+      JOIN post_tags pt ON p.id = pt.post_id
+      JOIN tags t ON pt.tag_id = t.id
+      LEFT JOIN users u ON p.user_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE t.id = ANY($1)
+      GROUP BY p.id, u.id, c.id
+      HAVING COUNT(DISTINCT t.id) = $2
+      ORDER BY p.created_at DESC
+      LIMIT $3 OFFSET $4
+    `;
+
+    const posts = await query<Post>(sql, [tags, tags.length, limit, offset]);
+
+    // Add saved status for each post if userId is provided
+    if (userId) {
+      const savedPosts = await Promise.all(
+        posts.map(async (post) => {
+          const savedSql = `SELECT 1 FROM saved_posts WHERE post_id = $1 AND user_id = $2`;
+          const savedResult = await queryOne(savedSql, [post.id, userId]);
+          return {
+            ...post,
+            saved: !!savedResult,
+          };
+        })
+      );
+      return { posts: savedPosts, total };
+    }
+
+    return { posts, total };
+  } catch (error) {
+    console.error("Error in queryByTags:", error);
+    return { posts: [], total: 0 };
   }
 }

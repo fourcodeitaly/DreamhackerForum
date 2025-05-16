@@ -19,6 +19,31 @@ export function CategoryNavigation() {
   // Define category groups
   const categoryGroups = [
     {
+      id: "tags",
+      name: t("tags"),
+      categories: [
+        { id: "us", name: t("usTag") },
+        { id: "ca", name: t("caTag") },
+        { id: "hk", name: t("hkTag") },
+        { id: "sg", name: t("sgTag") },
+        { id: "jp", name: t("jpTag") },
+        { id: "se", name: t("seTag") },
+        { id: "au", name: t("auTag") },
+        { id: "it", name: t("itTag") },
+        { id: "ch", name: t("chTag") },
+        { id: "uk", name: t("ukTag") },
+        { id: "fr", name: t("frTag") },
+        { id: "nl", name: t("nlTag") },
+        { id: "dk", name: t("dkTag") },
+        { id: "fi", name: t("fiTag") },
+        { id: "ie", name: t("ieTag") },
+        { id: "cn", name: t("cnTag") },
+        { id: "de", name: t("deTag") },
+        { id: "es", name: t("esTag") },
+        { id: "hu", name: t("huTag") },
+      ],
+    },
+    {
       id: "mba",
       name: t("mbaPrograms"),
       categories: [
@@ -113,9 +138,12 @@ export function CategoryNavigation() {
               <NavigationMenuContent>
                 <ul className="grid w-full gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                   {group.categories.map((category) => {
-                    const href = category.id.includes("resources")
-                      ? `/resources?category=${category.id}`
-                      : `/posts?category=${category.id}`;
+                    const href =
+                      group.id === "tags"
+                        ? `/posts?tag=${category.id}`
+                        : category.id.includes("resources")
+                        ? `/resources?category=${category.id}`
+                        : `/posts?category=${category.id}`;
                     return (
                       <li key={category.id}>
                         <NavigationMenuLink asChild>
