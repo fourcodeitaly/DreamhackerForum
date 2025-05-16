@@ -294,29 +294,6 @@ export function PostsSidebar() {
         </CardContent>
       </Card>
 
-      {/* Active Users */}
-      <Card className="hidden md:block">
-        <CardHeader className="p-4">
-          <CardTitle className="text-lg flex items-center">
-            <Users className="h-4 w-4 mr-2" />
-            {t("activeUsers")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 pt-0">
-          <div className="space-y-2">
-            {activeUsers.map((user) => (
-              <div
-                key={user.name}
-                className="flex justify-between items-center text-sm"
-              >
-                <span className="text-muted-foreground">{user.name}</span>
-                <Badge variant="secondary">{user.posts} posts</Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Recent Activity */}
       <Card className="hidden md:block">
         <CardHeader className="p-4">

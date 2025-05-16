@@ -1,5 +1,6 @@
 "use server";
 
+import { createNotification } from "@/lib/db/notification";
 import { queryOne } from "@/lib/db/postgres";
 import type { User } from "@/lib/db/users-get";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -116,6 +117,15 @@ export async function registerUser(userData: {
         // For example, you could delete the Supabase auth user if DB insert fails
         return { data: null, error: "Failed to create user in database" };
       }
+    }
+
+    if (data.user) {
+      createNotification({
+        user_id: data.user.id,
+        sender_id: "b1663ba0-2ece-4bd7-af92-693678a4575d",
+        type: "welcome",
+        content: "Welcome to our community!",
+      });
     }
 
     return { data, error: null };

@@ -157,7 +157,7 @@ export async function getAllAdminUsers(): Promise<User[]> {
   }
 }
 
-export async function getTopContributors(limit = 5): Promise<Contributor[]> {
+export async function getTopContributors(limit = 3): Promise<Contributor[]> {
   try {
     const sql = `
       WITH user_stats AS (

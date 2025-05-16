@@ -60,7 +60,7 @@ export function FeaturedPosts({ posts }: { posts: Post[] }) {
                   <Badge className="mb-2 bg-blue-600 hover:bg-blue-700">
                     {post.category_id || t("featured")}
                   </Badge>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2">
+                  <h2 className="text-md md:text-lg font-bold mb-2">
                     {post.title?.en || ""}
                   </h2>
                   <p className="text-sm md:text-base mb-4 line-clamp-2">

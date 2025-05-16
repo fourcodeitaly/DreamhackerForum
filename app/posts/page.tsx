@@ -4,6 +4,7 @@ import { SearchBar } from "@/components/layout/search-bar";
 import { FeaturedPosts } from "@/components/post/featured-posts";
 import { TopContributors } from "@/components/user/top-contributors";
 import { PostsSidebar } from "@/components/layout/posts-sidebar";
+import { RunningCat } from "@/components/ui/running-cat";
 import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/layout/skeletons";
 import { ServerEnvChecker } from "@/components/layout/server-env-checker";
@@ -77,8 +78,6 @@ export default async function Posts({
   const initialPosts = result.posts ?? [];
   const totalPosts = result.total;
 
-  console.log(totalPosts);
-
   // Fetch featured posts
   const featuredPosts = await getPinnedPosts();
 
@@ -93,7 +92,22 @@ export default async function Posts({
       {/* Only show in development */}
       {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
 
-      <div className="mb-8">
+      {/* Poster/Banner Section */}
+      <div className="relative w-full h-[200px] mb-8 rounded-lg overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 animate-gradient">
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="relative h-full flex flex-col items-center justify-center text-white px-4">
+            <h1 className="text-2xl md:text-3xl font-bold mb-4 text-center">
+              Dreamhacker Forum
+            </h1>
+            <p className="text-lg md:text-xl text-center max-w-2xl">
+              Join our community to share experiences, ask questions, and
+              connect with fellow students
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="block md:hidden mb-8">
         <FeaturedPosts posts={featuredPosts} />
       </div>
 
@@ -127,7 +141,7 @@ export default async function Posts({
                   }"`
                 : categoryId
                 ? categoryName
-                : "All Categories"}
+                : "All Posts"}
             </h1>
             {/* <SearchBar /> */}
           </div>
@@ -150,11 +164,14 @@ export default async function Posts({
 
         {/* Right sidebar - Sticky */}
         <div className="lg:w-1/4">
-          <div className="sticky top-20">
+          <div className="sticky top-20 space-y-6 hidden md:block">
+            <FeaturedPosts posts={featuredPosts} />
             <TopContributors topContributors={topContributors} />
           </div>
         </div>
       </div>
+
+      <RunningCat />
     </div>
   );
 }
