@@ -260,14 +260,10 @@ export function CommentItem({
               <p className="italic text-muted-foreground">
                 {t("commentDeleted")}
               </p>
-            ) : comment.is_markdown ? (
+            ) : (
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 <Markdown content={comment.content} />
               </div>
-            ) : (
-              <p className="whitespace-pre-wrap text-sm break-words leading-relaxed">
-                {comment.content}
-              </p>
             )}
           </>
         )}
