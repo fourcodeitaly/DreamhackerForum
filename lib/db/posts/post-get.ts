@@ -980,7 +980,7 @@ export async function getPostsByTags(
           'name', c.name
         ) as category,
         (SELECT COUNT(*) FROM comments WHERE post_id = p.id AND (status IS NULL OR status != 'deleted')) as comments_count,
-        array_agg(DISTINCT t.id) as tags
+        array_agg(DISTINCT t.name) as tags
       FROM posts p
       JOIN post_tags pt ON p.id = pt.post_id
       JOIN tags t ON pt.tag_id = t.id
@@ -994,6 +994,31 @@ export async function getPostsByTags(
     `;
 
     const posts = await query<Post>(sql, [tags, tags.length, limit, offset]);
+
+    const postIds = posts.map((post) => post.id);
+
+    // Get tags for all posts
+    const tagsSql = `
+        SELECT pt.post_id, t.name, t.id
+        FROM post_tags pt
+        JOIN tags t ON pt.tag_id = t.id
+        WHERE pt.post_id = ANY($1::uuid[])
+      `;
+
+    const tagsResults = await query<{
+      post_id: string;
+      name: string;
+      id: string;
+    }>(tagsSql, [postIds]);
+
+    // Group tags by post_id
+    const tagsByPostId: Record<string, { name: string; id: string }[]> = {};
+    tagsResults.forEach((tag) => {
+      if (!tagsByPostId[tag.post_id]) {
+        tagsByPostId[tag.post_id] = [];
+      }
+      tagsByPostId[tag.post_id].push({ name: tag.name, id: tag.id });
+    });
 
     // Add saved status for each post if userId is provided
     if (userId) {
@@ -1009,6 +1034,14 @@ export async function getPostsByTags(
       );
       return { posts: savedPosts, total };
     }
+
+    posts.forEach((post) => {
+      post.tags = tagsByPostId[post.id] || [];
+      post.tags = post.tags.map((tag) => ({
+        id: tag.id,
+        name: tag.name,
+      }));
+    });
 
     return { posts, total };
   } catch (error) {
