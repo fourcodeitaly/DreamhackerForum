@@ -32,14 +32,46 @@ export function PostCard({ post }: PostCardProps) {
         <div className="flex items-center gap-2 text-xs text-muted-foreground justify-between">
           <div className="flex items-center gap-4">
             {post.category && (
-              <Link href={`/posts?category=${post.category_id}`}>
+              <Link href={`/posts?category=${post.category.id}`}>
                 <Badge
                   variant="outline"
-                  className="hover:bg-accent text-muted-foreground text-xs"
+                  className="hover:bg-accent text-muted-foreground text-xs whitespace-nowrap min-w-[80px]"
                 >
                   {t(toCamelCase(post.category.id))}
                 </Badge>
               </Link>
+            )}
+            {post.tags && post.tags.length > 1 ? (
+              <>
+                <Link href={`/posts?tag=${post.tags[0].id}`}>
+                  <Badge
+                    variant="outline"
+                    className="hover:bg-accent text-muted-foreground text-xs cursor-pointer line-clamp-1"
+                  >
+                    {post.tags[0].name.length > 30
+                      ? `${post.tags[0].name.slice(0, 30)}...`
+                      : post.tags[0].name}
+                  </Badge>
+                </Link>
+                <Link href={`/posts/${post.id}`}>
+                  <Badge
+                    variant="outline"
+                    className="hover:bg-accent text-muted-foreground text-xs cursor-pointer line-clamp-1"
+                  >
+                    +{post.tags.length - 1}
+                  </Badge>
+                </Link>
+              </>
+            ) : (
+              post.tags?.map((tag) => (
+                <Badge
+                  key={tag.id}
+                  variant="outline"
+                  className="hover:bg-accent text-muted-foreground text-xs cursor-pointer"
+                >
+                  {tag.name}
+                </Badge>
+              ))
             )}
             <div className="flex items-center">
               <MessageSquare className="h-3 w-3 mr-1 text-green-700" />

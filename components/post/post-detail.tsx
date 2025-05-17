@@ -262,7 +262,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
           currentLanguage={currentLanguage}
         />
 
-        <h1 className="text-3xl font-bold mb-3 pt-6">{getLocalizedTitle()}</h1>
+        <h1 className="text-2xl font-bold mb-3 pt-6">{getLocalizedTitle()}</h1>
 
         {/* Display the original link if available */}
         {post.original_link && (
@@ -278,10 +278,10 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         )}
 
         <div className="flex flex-wrap gap-2 mt-4">
-          {(post.tags || []).map((tag: string) => (
-            <Link href={`/tags/${tag}`} key={tag}>
+          {(post.tags || []).map((tag: { name: string; id: string }) => (
+            <Link href={`/posts?tag=${tag.id}`} key={tag.id}>
               <Badge variant="secondary" className="hover:bg-secondary/80">
-                {tag}
+                {tag.name}
               </Badge>
             </Link>
           ))}

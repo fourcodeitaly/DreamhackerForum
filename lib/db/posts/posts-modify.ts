@@ -1,5 +1,6 @@
 "use server";
 
+import { createActivity } from "../activities/activities-modify";
 import { queryOne, transaction } from "../postgres";
 
 export type MultilingualContent = {
@@ -20,7 +21,7 @@ export type Post = {
   is_pinned?: boolean;
   created_at?: string;
   updated_at?: string;
-  tags?: string[];
+  tags?: { name: string; id: string }[];
   author?: {
     id: string;
     name: string;
@@ -74,9 +75,10 @@ export async function createPost(postData: {
   is_pinned?: boolean;
 }): Promise<Post | null> {
   try {
-    const now = new Date().toISOString();
+    return await transaction(async (client) => {
+      const now = new Date().toISOString();
 
-    const sql = `
+      const sql = `
       INSERT INTO posts (
         user_id, title, content, category_id,
         image_url, original_link, is_pinned, created_at, updated_at
@@ -85,19 +87,40 @@ export async function createPost(postData: {
       RETURNING *
     `;
 
-    const values = [
-      postData.user_id,
-      JSON.stringify(postData.title),
-      JSON.stringify(postData.content),
-      postData.category_id || null,
-      postData.image_url || null,
-      postData.original_link || null,
-      postData.is_pinned || false,
-      now,
-      now,
-    ];
+      const values = [
+        postData.user_id,
+        JSON.stringify(postData.title),
+        JSON.stringify(postData.content),
+        postData.category_id || null,
+        postData.image_url || null,
+        postData.original_link || null,
+        postData.is_pinned || false,
+        now,
+        now,
+      ];
 
-    return await queryOne<Post>(sql, values);
+      const post = await queryOne<Post>(sql, values);
+
+      const categoryName = await queryOne<{ name: string }>(
+        "SELECT name FROM categories WHERE id = $1",
+        [postData.category_id]
+      );
+
+      if (post) {
+        await createActivity(
+          postData.user_id,
+          "post_created",
+          post.id,
+          "post",
+          postData.category_id,
+          {
+            content: `New post created in ${categoryName?.name}`,
+          }
+        );
+      }
+
+      return post;
+    });
   } catch (error) {
     console.error("Error creating post:", error);
     return null;

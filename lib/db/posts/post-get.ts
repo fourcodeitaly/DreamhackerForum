@@ -61,14 +61,14 @@ export async function getPostById(
 
     if (!post) return null;
 
-    // // Get tags for this post
-    // const tagsSql = `
-    //   SELECT t.name
-    //   FROM post_tags pt
-    //   JOIN tags t ON pt.tag_id = t.id
-    //   WHERE pt.post_id = $1
-    // `;
-    // const tags = await query<{ name: string }>(tagsSql, [postId]);
+    // Get tags for this post
+    const tagsSql = `
+      SELECT t.name, t.id
+      FROM post_tags pt
+      JOIN tags t ON pt.tag_id = t.id
+      WHERE pt.post_id = $1
+    `;
+    const tags = await query<{ name: string; id: string }>(tagsSql, [postId]);
 
     // // Get like count
     // const likesSql = `SELECT COUNT(*) as count FROM post_likes WHERE post_id = $1`;
@@ -101,7 +101,7 @@ export async function getPostById(
     // Return the post with additional data
     return {
       ...post,
-      // tags: tags.map((t) => t.name),
+      tags: tags,
       // likes_count: likesCount,
       // comments_count: commentsCount,
       // liked,
@@ -272,24 +272,26 @@ export async function getPosts(
 
     // Get tags for all posts
     const tagsSql = `
-        SELECT pt.post_id, t.name
+        SELECT pt.post_id, t.name, t.id
         FROM post_tags pt
         JOIN tags t ON pt.tag_id = t.id
         WHERE pt.post_id = ANY($1::uuid[])
       `;
-    const tagsResults = await query<{ post_id: string; name: string }>(
-      tagsSql,
-      [postIds]
-    );
+
+    const tagsResults = await query<{
+      post_id: string;
+      name: string;
+      id: string;
+    }>(tagsSql, [postIds]);
 
     // Group tags by post_id
-    // const tagsByPostId: Record<string, string[]> = {};
-    // tagsResults.forEach((tag) => {
-    //   if (!tagsByPostId[tag.post_id]) {
-    //     tagsByPostId[tag.post_id] = [];
-    //   }
-    //   tagsByPostId[tag.post_id].push(tag.name);
-    // });
+    const tagsByPostId: Record<string, { name: string; id: string }[]> = {};
+    tagsResults.forEach((tag) => {
+      if (!tagsByPostId[tag.post_id]) {
+        tagsByPostId[tag.post_id] = [];
+      }
+      tagsByPostId[tag.post_id].push({ name: tag.name, id: tag.id });
+    });
 
     // // Get like counts for all posts
     // const likesSql = `
@@ -342,7 +344,7 @@ export async function getPosts(
     // Combine all data
     const enrichedPosts = posts.map((post) => ({
       ...post,
-      // tags: tagsByPostId[post.id] || [],
+      tags: tagsByPostId[post.id] || [],
       // likes_count: likesByPostId[post.id] || 0,
       comments_count: Number(post.comments_count) || 0,
       // liked: likedPostIds.includes(post.id),
@@ -407,18 +409,19 @@ export async function getUserPosts(
         JOIN tags t ON pt.tag_id = t.id
         WHERE pt.post_id = ANY($1::uuid[])
       `;
-    const tagsResults = await query<{ post_id: string; name: string }>(
-      tagsSql,
-      [postIds]
-    );
+    const tagsResults = await query<{
+      post_id: string;
+      name: string;
+      id: string;
+    }>(tagsSql, [postIds]);
 
     // Group tags by post_id
-    const tagsByPostId: Record<string, string[]> = {};
+    const tagsByPostId: Record<string, { name: string; id: string }[]> = {};
     tagsResults.forEach((tag) => {
       if (!tagsByPostId[tag.post_id]) {
         tagsByPostId[tag.post_id] = [];
       }
-      tagsByPostId[tag.post_id].push(tag.name);
+      tagsByPostId[tag.post_id].push({ name: tag.name, id: tag.id });
     });
 
     // Get like counts for all posts
@@ -531,23 +534,24 @@ export async function getSavedPosts(
 
     // Get tags for all posts
     const tagsSql = `
-        SELECT pt.post_id, t.name
+        SELECT pt.post_id, t.name, t.id
         FROM post_tags pt
         JOIN tags t ON pt.tag_id = t.id
         WHERE pt.post_id = ANY($1::uuid[])
       `;
-    const tagsResults = await query<{ post_id: string; name: string }>(
-      tagsSql,
-      [savedPostIds]
-    );
+    const tagsResults = await query<{
+      post_id: string;
+      name: string;
+      id: string;
+    }>(tagsSql, [savedPostIds]);
 
     // Group tags by post_id
-    const tagsByPostId: Record<string, string[]> = {};
+    const tagsByPostId: Record<string, { name: string; id: string }[]> = {};
     tagsResults.forEach((tag) => {
       if (!tagsByPostId[tag.post_id]) {
         tagsByPostId[tag.post_id] = [];
       }
-      tagsByPostId[tag.post_id].push(tag.name);
+      tagsByPostId[tag.post_id].push({ name: tag.name, id: tag.id });
     });
 
     // Get like counts for all posts
@@ -878,23 +882,24 @@ export async function getRelatedPosts(
     if (relatedPosts.length > 0) {
       const postIds = relatedPosts.map((post) => post.id);
       const tagsSql = `
-          SELECT pt.post_id, t.name
+          SELECT pt.post_id, t.name, t.id
           FROM post_tags pt
           JOIN tags t ON pt.tag_id = t.id
           WHERE pt.post_id = ANY($1::uuid[])
         `;
-      const tagsResults = await query<{ post_id: string; name: string }>(
-        tagsSql,
-        [postIds]
-      );
+      const tagsResults = await query<{
+        post_id: string;
+        name: string;
+        id: string;
+      }>(tagsSql, [postIds]);
 
       // Group tags by post_id
-      const tagsByPostId: Record<string, string[]> = {};
+      const tagsByPostId: Record<string, { name: string; id: string }[]> = {};
       tagsResults.forEach((tag) => {
         if (!tagsByPostId[tag.post_id]) {
           tagsByPostId[tag.post_id] = [];
         }
-        tagsByPostId[tag.post_id].push(tag.name);
+        tagsByPostId[tag.post_id].push({ name: tag.name, id: tag.id });
       });
 
       // Add tags to each post

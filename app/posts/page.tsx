@@ -8,7 +8,6 @@ import { RunningCat } from "@/components/ui/running-cat";
 import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/layout/skeletons";
 import { ServerEnvChecker } from "@/components/layout/server-env-checker";
-import type { Post } from "@/lib/db/posts/posts-modify";
 import {
   getNullTitlePosts,
   getPinnedPosts,

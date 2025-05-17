@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/utils/utils";
-import { PlusCircle, TrendingUp, Users, Clock } from "lucide-react";
+import { PlusCircle, TrendingUp, Users, Clock, Star } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect } from "react";
+import { RecentActivities } from "./recent-activities";
+
 export function PostsSidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
@@ -23,6 +26,8 @@ export function PostsSidebar() {
   const currentCategory = searchParams.get("category");
   const isMobile = useIsMobile();
   const { isAdmin } = useAuth();
+
+  useEffect(() => {}, [pathname]);
 
   // Define category groups
   const categoryGroups = [
@@ -242,23 +247,20 @@ export function PostsSidebar() {
                           group.id === "tags"
                             ? `/posts?tag=${category.id}`
                             : category.id.includes("resources")
-                            ? `/resources?category=${category.id}`
+                            ? `/resources/${category.id}`
                             : `/posts?category=${category.id}`;
                         return (
-                          <Link key={category.id} href={href} className="block">
-                            <div
-                              className={cn(
-                                "px-3 py-2 rounded-md text-sm font-medium transition-colors flex justify-between items-center",
-                                currentCategory === category.id
-                                  ? "bg-primary text-primary-foreground"
-                                  : "hover:bg-muted"
-                              )}
-                            >
-                              <span>{category.name.split(")")[1]}</span>
-                              <Badge variant="secondary" className="ml-2">
-                                {category.count}
-                              </Badge>
-                            </div>
+                          <Link
+                            key={category.id}
+                            href={href}
+                            className={cn(
+                              "flex items-center justify-between py-1 px-2 rounded-md text-sm hover:bg-gray-100",
+                              currentCategory === category.id &&
+                                "bg-gray-100 font-medium"
+                            )}
+                          >
+                            <span>{category.name.split(")")[1]}</span>
+                            <Star className="h-4 w-4 text-yellow-400" />
                           </Link>
                         );
                       })}
@@ -271,8 +273,11 @@ export function PostsSidebar() {
         </Card>
       )}
 
+      {/* Recent Activities */}
+      {!isMobile && <RecentActivities />}
+
       {/* Trending Topics */}
-      <Card className="hidden md:block">
+      <Card>
         <CardHeader className="p-4">
           <CardTitle className="text-lg flex items-center">
             <TrendingUp className="h-4 w-4 mr-2" />
@@ -281,33 +286,15 @@ export function PostsSidebar() {
         </CardHeader>
         <CardContent className="p-4 pt-0">
           <div className="space-y-2">
-            {trendingTopics.map((topic) => (
+            {trendingTopics.map((topic, index) => (
               <div
-                key={topic.name}
-                className="flex justify-between items-center text-sm"
+                key={index}
+                className="flex items-center justify-between py-1"
               >
-                <span className="text-muted-foreground">{topic.name}</span>
+                <span className="text-sm">{topic.name}</span>
                 <Badge variant="secondary">{topic.count}</Badge>
               </div>
             ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Activity */}
-      <Card className="hidden md:block">
-        <CardHeader className="p-4">
-          <CardTitle className="text-lg flex items-center">
-            <Clock className="h-4 w-4 mr-2" />
-            {t("recentActivity")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 pt-0">
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <div>New post in MBA Rankings</div>
-            <div>3 new comments in Interview Tips</div>
-            <div>New user joined the forum</div>
-            <div>Updated FAQ section</div>
           </div>
         </CardContent>
       </Card>

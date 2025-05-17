@@ -366,6 +366,13 @@ export const translations = {
     deTag: "(Tag) Germany",
     esTag: "(Tag) Spain",
     huTag: "(Tag) Hungary",
+
+    // Recent Activities
+    recentActivities: "Recent Activities",
+    createdPost: "New post in",
+    updatedPost: "Updated post in",
+    deletedPost: "Deleted post in",
+    commentedOn: "New comment in",
   },
 
   // // Chinese (Simplified) translations
@@ -966,5 +973,12 @@ export const translations = {
     deTag: "(Tag) Đức",
     esTag: "(Tag) Tây Ban Nha",
     huTag: "(Tag) Hungary",
+
+    // Recent Activities
+    recentActivities: "Hoạt động gần đây",
+    createdPost: "Bài viết mới trong",
+    updatedPost: "Bài viết đã cập nhật trong",
+    deletedPost: "Bài viết đã xóa trong",
+    commentedOn: "Bình luận mới trong",
   },
 };
