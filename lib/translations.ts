@@ -233,6 +233,7 @@ export const translations = {
     beTheFirstToComment: "Be the first to comment!",
     joinTheConversation: "Join the conversation",
     writeReply: "Write a reply...",
+    markdownSupported: "Markdown supported",
 
     // Profile
     editProfile: "Edit Profile",
@@ -839,6 +840,7 @@ export const translations = {
     beTheFirstToComment: "Hãy là người đầu tiên bình luận!",
     joinTheConversation: "Tham gia cuộc trò chuyện",
     writeReply: "Viết phản hồi...",
+    markdownSupported: "Hỗ trợ markdown",
 
     // Profile
     editProfile: "Chỉnh sửa",
