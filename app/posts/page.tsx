@@ -94,16 +94,18 @@ export default async function Posts({
       {/* Poster/Banner Section */}
       <div className="relative w-full h-[200px] mb-8 rounded-lg overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 animate-gradient">
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-black/30 animate-pulse" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-black/20 animate-pulse" />
           <div className="relative h-full flex flex-col items-center justify-center text-white px-4">
-            <h1 className="text-2xl md:text-3xl font-bold mb-4 text-center">
+            <h1 className="text-2xl md:text-3xl font-bold mb-4 text-center animate-float">
               Dreamhacker Forum
             </h1>
-            <p className="text-lg md:text-xl text-center max-w-2xl">
+            <p className="text-lg md:text-xl text-center max-w-2xl animate-float-delayed">
               Join our community to share experiences, ask questions, and
               connect with fellow students
             </p>
           </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
         </div>
       </div>
       <div className="block md:hidden mb-8">
