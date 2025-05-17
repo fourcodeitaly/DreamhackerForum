@@ -277,7 +277,7 @@ export function PostsSidebar() {
       {!isMobile && <RecentActivities />}
 
       {/* Trending Topics */}
-      <Card>
+      <Card className="hidden md:block">
         <CardHeader className="p-4">
           <CardTitle className="text-lg flex items-center">
             <TrendingUp className="h-4 w-4 mr-2" />
