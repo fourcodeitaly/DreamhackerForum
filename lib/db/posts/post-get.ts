@@ -968,7 +968,15 @@ export async function getPostsByTags(
     // Get posts that match ALL tags
     const sql = `
       SELECT 
-        p.*,
+          p.id,
+          p.title,
+          p.image_url,
+          p.original_link,
+          p.user_id,
+          p.category_id,
+          p.is_pinned,
+          p.created_at,
+          p.updated_at,
         json_build_object(
           'id', u.id,
           'name', u.name,
