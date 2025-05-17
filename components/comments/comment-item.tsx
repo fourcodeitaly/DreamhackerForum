@@ -167,15 +167,15 @@ export function CommentItem({
   return (
     <Card
       className={cn(
-        "overflow-hidden border-muted/50 transition-all",
-        depth > 0 && "border-l-0 rounded-l-none",
+        "overflow-hidden transition-all shadow-none border-none",
+        depth > 0 && "border-l-2 border-slate-600 rounded-l-none",
         isDeleted && "opacity-70"
       )}
     >
       <CardHeader className="pb-2 pt-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Avatar className="h-8 w-8 border border-primary/10">
+            <Avatar className="size-8 border border-primary/10">
               <AvatarImage
                 src={
                   comment.author?.image_url ||
@@ -189,7 +189,7 @@ export function CommentItem({
             </Avatar>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-medium">
+                <span className="font-light text-xs">
                   {comment.author?.name || t("anonymousUser")}
                 </span>
                 {comment.author?.role === "admin" && (
@@ -200,12 +200,13 @@ export function CommentItem({
                     {t("admin")}
                   </Badge>
                 )}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{formatRelativeTime(comment.created_at)}</span>
-                {comment.is_edited && (
-                  <span className="italic">{t("edited")}</span>
-                )}
+                ・
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{formatRelativeTime(comment.created_at)}</span>
+                  {comment.is_edited && (
+                    <span className="italic">{t("edited")}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -246,7 +247,7 @@ export function CommentItem({
         </div>
       </CardHeader>
 
-      <CardContent className="pb-3 pt-1">
+      <CardContent className="pb-0 pt-1">
         {isEditing ? (
           <CommentEditor
             comment={comment}
@@ -264,7 +265,7 @@ export function CommentItem({
                 <Markdown content={comment.content} />
               </div>
             ) : (
-              <p className="whitespace-pre-wrap break-words text-base leading-relaxed">
+              <p className="whitespace-pre-wrap text-sm break-words leading-relaxed">
                 {comment.content}
               </p>
             )}
@@ -272,10 +273,10 @@ export function CommentItem({
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-wrap items-center gap-2 border-t bg-muted/5 py-2">
+      <CardFooter className="flex flex-wrap items-center gap-2 bg-muted/5 py-2 shadow-none text-muted-foreground">
         {!isDeleted && (
           <>
-            <div className="flex items-center rounded-full border bg-background px-2 py-1">
+            <div className="flex items-center rounded-full border border-slate-200 bg-background px-2 py-1 text-muted-foreground">
               <Button
                 variant="ghost"
                 size="icon"

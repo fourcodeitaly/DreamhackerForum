@@ -214,6 +214,8 @@ export const translations = {
     previous: "Previous",
     next: "Next",
     linkCopied: "Link copied to clipboard",
+    submitReply: "Submit Reply",
+    submitting: "Submitting ...",
 
     // Comments
     writeComment: "Write a comment...",
@@ -230,6 +232,7 @@ export const translations = {
     hideReplies: "Hide replies",
     beTheFirstToComment: "Be the first to comment!",
     joinTheConversation: "Join the conversation",
+    writeReply: "Write a reply...",
 
     // Profile
     editProfile: "Edit Profile",
@@ -810,6 +813,8 @@ export const translations = {
     previous: "Trước",
     next: "Tiếp",
     linkCopied: "Đã sao chép liên kết vào bảng tạm",
+    submitReply: "Gửi phản hồi",
+    submitting: "Đang gửi ...",
 
     // Comments
     writeComment: "Viết bình luận...",
@@ -826,6 +831,7 @@ export const translations = {
     hideReplies: "Ẩn phản hồi",
     beTheFirstToComment: "Hãy là người đầu tiên bình luận!",
     joinTheConversation: "Tham gia cuộc trò chuyện",
+    writeReply: "Viết phản hồi...",
 
     // Profile
     editProfile: "Chỉnh sửa",

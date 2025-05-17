@@ -1,40 +1,46 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { useAuth } from "@/hooks/use-auth"
-import { useTranslation } from "@/hooks/use-translation"
-import { Loader2, AlertCircle } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Markdown } from "@/components/markdown"
-import type { Comment } from "@/lib/types/comment"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Markdown } from "@/components/markdown";
+import type { Comment } from "@/lib/types/comment";
 
 interface CommentFormProps {
-  postId: string
-  parentId?: string
-  onCommentSubmit: (comment: Comment) => void
-  onCancel?: () => void
-  isReply?: boolean
+  postId: string;
+  parentId?: string;
+  onCommentSubmit: (comment: Comment) => void;
+  onCancel?: () => void;
+  isReply?: boolean;
 }
 
-export function CommentForm({ postId, parentId, onCommentSubmit, onCancel, isReply = false }: CommentFormProps) {
-  const { t } = useTranslation()
-  const { user } = useAuth()
-  const [content, setContent] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<string>("write")
+export function CommentForm({
+  postId,
+  parentId,
+  onCommentSubmit,
+  onCancel,
+  isReply = false,
+}: CommentFormProps) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("write");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!user || !content.trim()) return
+    if (!user || !content.trim()) return;
 
-    setIsSubmitting(true)
-    setError(null)
+    setIsSubmitting(true);
+    setError(null);
 
     try {
       const response = await fetch("/api/comments", {
@@ -48,30 +54,30 @@ export function CommentForm({ postId, parentId, onCommentSubmit, onCancel, isRep
           content: content.trim(),
           is_markdown: true,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to submit comment")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit comment");
       }
 
-      const data = await response.json()
-      onCommentSubmit(data.comment)
-      setContent("")
-      setActiveTab("write")
+      const data = await response.json();
+      onCommentSubmit(data.comment);
+      setContent("");
+      setActiveTab("write");
     } catch (err) {
-      console.error("Error submitting comment:", err)
-      setError(err instanceof Error ? err.message : "Failed to submit comment")
+      console.error("Error submitting comment:", err);
+      setError(err instanceof Error ? err.message : "Failed to submit comment");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-2 grid w-full grid-cols-2">
-          <TabsTrigger value="write">{t("write")}</TabsTrigger>
+          <TabsTrigger value="write">{t("edit")}</TabsTrigger>
           <TabsTrigger value="preview" disabled={!content.trim()}>
             {t("preview")}
           </TabsTrigger>
@@ -82,10 +88,12 @@ export function CommentForm({ postId, parentId, onCommentSubmit, onCancel, isRep
             placeholder={isReply ? t("writeReply") : t("writeComment")}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="min-h-[100px] resize-none border-2 focus-visible:ring-primary/50"
+            className="min-h-[50px] resize-none border-2 focus-visible:ring-primary/50"
             disabled={isSubmitting}
           />
-          <div className="mt-1 text-xs text-muted-foreground">{t("markdownSupported")}</div>
+          <div className="mt-1 text-xs text-muted-foreground">
+            {t("markdownSupported")}
+          </div>
         </TabsContent>
 
         <TabsContent value="preview" className="mt-0">
@@ -110,7 +118,12 @@ export function CommentForm({ postId, parentId, onCommentSubmit, onCancel, isRep
 
       <div className="flex justify-end gap-2">
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
             {t("cancel")}
           </Button>
         )}
@@ -131,5 +144,5 @@ export function CommentForm({ postId, parentId, onCommentSubmit, onCancel, isRep
         </Button>
       </div>
     </form>
-  )
+  );
 }
