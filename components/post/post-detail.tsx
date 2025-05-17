@@ -289,7 +289,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       </CardHeader>
 
       <CardContent className="p-0 md:p-6">
-        {post.image_url && (
+        {/* {post.image_url && (
           <div className="mb-6">
             <img
               src={
@@ -300,7 +300,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
               className="rounded-md w-full max-h-96 object-cover"
             />
           </div>
-        )}
+        )} */}
 
         <div className="prose dark:prose-invert max-w-none">
           {/* Render markdown content */}

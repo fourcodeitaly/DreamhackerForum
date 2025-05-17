@@ -113,7 +113,7 @@ export default async function Posts({
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Sidebar - Sticky */}
-        <div className="lg:w-1/4">
+        <div className="lg:w-1/5">
           <div className="sticky top-20">
             {isAdmin && (
               <Button
@@ -132,7 +132,7 @@ export default async function Posts({
         </div>
 
         {/* Main content */}
-        <div className="lg:w-2/4">
+        <div className="lg:w-3/5">
           <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <h1 className="text-3xl font-bold">
               {tag
@@ -163,7 +163,7 @@ export default async function Posts({
         </div>
 
         {/* Right sidebar - Sticky */}
-        <div className="lg:w-1/4">
+        <div className="lg:w-1/5">
           <div className="sticky top-20 space-y-6 hidden md:block">
             <FeaturedPosts posts={featuredPosts} />
             <TopContributors topContributors={topContributors} />

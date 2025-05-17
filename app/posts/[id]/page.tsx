@@ -37,14 +37,14 @@ export default async function PostPage({ params }: PostPageProps) {
       <div className="container mx-auto px-4 md:py-8 pb-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar - Sticky */}
-          <div className="lg:w-1/4">
+          <div className="lg:w-1/5">
             <div className="sticky top-20">
               <PostsSidebar />
             </div>
           </div>
 
           {/* Main content */}
-          <div className="lg:w-2/4">
+          <div className="lg:w-3/5">
             <Suspense fallback={<Skeleton className="h-48" />}>
               <PostDetail post={post} />
             </Suspense>
@@ -63,7 +63,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </div>
 
           {/* Right sidebar - Sticky */}
-          <div className="lg:w-1/4">
+          <div className="lg:w-1/5">
             <div className="sticky top-20">
               <TopContributors topContributors={topContributors} />
             </div>

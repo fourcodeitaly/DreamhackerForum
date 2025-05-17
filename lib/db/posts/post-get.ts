@@ -218,7 +218,17 @@ export async function getPosts(
             'id', c.id,
             'name', c.name
           ) as category,
-          (SELECT COUNT(*) FROM comments WHERE post_id = p.id AND (status IS NULL OR status != 'deleted')) as comments_count
+          (
+            SELECT COUNT(*) 
+            FROM comments child
+            LEFT JOIN comments parent ON child.parent_id = parent.id
+            WHERE child.post_id = p.id
+              AND (child.status IS NULL OR child.status != 'deleted')
+              AND (
+                child.parent_id IS NULL -- top-level comment
+                OR parent.status IS DISTINCT FROM 'deleted' -- parent not deleted
+              )
+          ) as comments_count
         FROM posts p
         LEFT JOIN users u ON p.user_id = u.id
         LEFT JOIN categories c ON p.category_id = c.id
