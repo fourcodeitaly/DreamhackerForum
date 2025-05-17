@@ -320,7 +320,6 @@ export function MultilingualPostForm({
         description: isEditing ? t("errorEditingPost") : t("errorCreatingPost"),
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
