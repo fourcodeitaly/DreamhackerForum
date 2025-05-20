@@ -89,7 +89,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         })
         .join("\n");
 
-      return content;
+      return content.split("--------------------------------------")[0] || "";
     }
 
     // Legacy format or fallback
@@ -114,6 +114,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
             .join("\n")
         : "";
     }
+
     return post.content || "";
   };
 
