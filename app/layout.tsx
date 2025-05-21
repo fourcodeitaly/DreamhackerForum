@@ -10,15 +10,27 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { NotificationProvider } from "@/components/providers/notification-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { CategoryNavigation } from "@/components/layout/category-navigation";
-import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Study Abroad Interview Forum",
+  title: "Dreamhacker - Touch your dreams",
   description: "Share and discuss tips for study abroad interviews",
-  generator: "v0.dev",
+  icons: {
+    icon: [
+      {
+        url: "/favicon_io/favicon.ico",
+        type: "image/ico",
+      },
+    ],
+    shortcut: ["/favicon_io/favicon.ico"],
+    apple: [
+      {
+        url: "/favicon_io/favicon.ico",
+        type: "image/ico",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
