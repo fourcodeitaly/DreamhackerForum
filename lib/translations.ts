@@ -70,6 +70,7 @@ export const translations = {
     errorResendingEmail:
       "Error resending confirmation email. Please try again.",
     loading: "Loading...",
+    passwordOrEmailIncorrect: "Password or email incorrect",
 
     // Auth status
     admin: "Admin",
@@ -449,6 +450,7 @@ export const translations = {
     likesReceived: "Lượt thích nhận được",
 
     // Auth status
+    passwordOrEmailIncorrect: "Mật khẩu hoặc email không chính xác",
     admin: "Quản trị viên",
     accessDenied: "Truy cập bị từ chối",
     adminOnlyAccess: "Trang này chỉ dành cho quản trị viên. ",

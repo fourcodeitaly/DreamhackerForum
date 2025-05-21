@@ -11,14 +11,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function LoginForm() {
   const { t } = useTranslation();
   const { login, resendConfirmationEmail } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,28 +31,13 @@ export function LoginForm() {
     setEmailNotConfirmed(false);
 
     try {
-      await login({ email, password });
-      router.push("/");
-      toast({
-        title: t("loginSuccess"),
-        description: t("welcomeBack"),
-      });
-    } catch (err: any) {
-      console.error("Login error:", err);
-
-      // Check if the error is due to unconfirmed email
-      if (
-        err.message?.includes("Email not confirmed") ||
-        err.error?.message?.includes("Email not confirmed")
-      ) {
-        setEmailNotConfirmed(true);
-      } else {
-        toast({
-          title: t("loginError"),
-          description: err.message || t("invalidCredentials"),
-          variant: "destructive",
-        });
+      const user = await login({ email, password });
+      if (user) {
+        router.push("/");
       }
+    } catch (err: any) {
+      // Check if the error is due to unconfirmed email
+      setEmailNotConfirmed(true);
     } finally {
       setIsLoading(false);
     }
@@ -64,16 +47,8 @@ export function LoginForm() {
     setIsResendingEmail(true);
     try {
       await resendConfirmationEmail(email);
-      toast({
-        title: t("emailSent"),
-        description: t("confirmationEmailResent"),
-      });
     } catch (err: any) {
-      toast({
-        title: t("error"),
-        description: err.message || t("errorResendingEmail"),
-        variant: "destructive",
-      });
+      console.error("Resend confirmation email error:", err);
     } finally {
       setIsResendingEmail(false);
     }
@@ -86,24 +61,10 @@ export function LoginForm() {
           {emailNotConfirmed && (
             <Alert
               variant="default"
-              className="bg-amber-50 text-amber-800 border-amber-200"
+              className="bg-red-50 text-red-800 border-red-200"
             >
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>{t("emailNotConfirmed")}</AlertTitle>
-              <AlertDescription>
-                {t("pleaseConfirmEmail")}
-                <Button
-                  type="button"
-                  variant="link"
-                  className="p-0 h-auto font-normal underline ml-1"
-                  onClick={handleResendConfirmation}
-                  disabled={isResendingEmail}
-                >
-                  {isResendingEmail
-                    ? t("resendingEmail")
-                    : t("resendConfirmationEmail")}
-                </Button>
-              </AlertDescription>
+              <AlertTitle>{t("passwordOrEmailIncorrect")}</AlertTitle>
             </Alert>
           )}
 

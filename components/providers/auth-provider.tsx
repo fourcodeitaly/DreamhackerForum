@@ -127,7 +127,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (credentials: { email: string; password: string }) => {
     const { user: userData, error } = await loginUser(credentials);
-    if (error) throw new Error(error);
+    if (error) {
+      throw new Error(error);
+    }
     if (userData) setUser(userData);
     return userData;
   };
