@@ -48,7 +48,7 @@ export function SchoolarshipPosts() {
               <div className="flex items-center space-x-2">
                 <Star className="h-4 w-4 text-yellow-400 min-w-3" />
                 <Link
-                  href={`/posts?category=${post.category?.id}`}
+                  href={`/posts/${post.id}`}
                   className="text-sm text-gray-600 hover:text-gray-900 block"
                 >
                   {post.title[language]}
