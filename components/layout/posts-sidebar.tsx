@@ -7,7 +7,7 @@ import { TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
 import { RecentActivities } from "./recent-activities";
-import { SchoolarshipPosts } from "./schoolarship-posts";
+import { ScholarshipPosts } from "./scholarship-posts";
 
 export function PostsSidebar() {
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ export function PostsSidebar() {
   return (
     <div className="space-y-6">
       {/* Scholarships */}
-      <SchoolarshipPosts />
+      <ScholarshipPosts />
 
       {/* Recent Activities */}
       <RecentActivities />

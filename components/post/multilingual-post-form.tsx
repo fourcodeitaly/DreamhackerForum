@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { useTranslation } from "@/hooks/use-translation";
 import { useRouter } from "next/navigation";
-import { Loader2, Upload, X, Languages, LinkIcon } from "lucide-react";
+import { Loader2, Upload, X, Languages, LinkIcon, Badge } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MarkdownEditor } from "@/components/markdown-editor"; // Use Markdown Editor
 import { useToast } from "@/components/ui/use-toast";
@@ -53,8 +53,20 @@ export function MultilingualPostForm({
     vi: initialData?.content?.vi || "",
   });
 
+  const tagsList = [
+    { name: t("usTag"), id: "us" },
+    { name: t("ukTag"), id: "uk" },
+    { name: t("caTag"), id: "ca" },
+    { name: t("auTag"), id: "au" },
+    { name: t("cnTag"), id: "cn" },
+    { name: t("scholarshipsTag"), id: "scholarship" },
+  ];
+
   const [category, setCategory] = useState(initialData?.category_id || "");
-  // const [tags, setTags] = useState<string[]>(initialData?.tags || []);
+  const [tags, setTags] = useState<{ name: string; id: string }[]>(
+    initialData?.tags || []
+  );
+
   const [currentTag, setCurrentTag] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
@@ -88,19 +100,19 @@ export function MultilingualPostForm({
     setImagePreview(null);
   };
 
-  // const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === "Enter" && currentTag.trim()) {
-  //     e.preventDefault();
-  //     if (!tags.includes(currentTag.trim())) {
-  //       setTags([...tags, currentTag.trim()]);
-  //     }
-  //     setCurrentTag("");
-  //   }
-  // };
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && currentTag.trim()) {
+      e.preventDefault();
+      if (!tags.some((tag) => tag.name === currentTag.trim())) {
+        setTags([...tags, { name: currentTag.trim(), id: currentTag.trim() }]);
+      }
+      setCurrentTag("");
+    }
+  };
 
-  // const handleRemoveTag = (tagToRemove: string) => {
-  //   setTags(tags.filter((tag) => tag !== tagToRemove));
-  // };
+  const handleRemoveTag = (tagToRemove: { name: string; id: string }) => {
+    setTags(tags.filter((tag) => tag.id !== tagToRemove.id));
+  };
 
   const handleTitleChange = (lang: "en" | "zh" | "vi", value: string) => {
     setTitle({ ...title, [lang]: value });
@@ -266,7 +278,7 @@ export function MultilingualPostForm({
           title,
           content,
           categoryId: category,
-          // tags,
+          tags: tags.map((tag) => tag.id),
           imageUrl: imagePreview,
           originalLink: originalLink || undefined, // Include original link
         }).catch((error) => {
@@ -294,7 +306,7 @@ export function MultilingualPostForm({
           title,
           content,
           categoryId: category,
-          // tags,
+          tags: tags.map((tag) => tag.id),
           imageUrl: imagePreview || undefined,
           originalLink: originalLink || undefined, // Include original link
         });
@@ -549,6 +561,57 @@ export function MultilingualPostForm({
             </Tabs>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="tags">{t("tags").split(")")[1]}</Label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {tags.map((tag) => (
+                <div
+                  key={tag.id}
+                  className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full"
+                >
+                  <span>{tag.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(tag)}
+                    className="hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <Select
+              value={currentTag}
+              onValueChange={(value) => {
+                if (value && !tags.some((tag) => tag.id === value)) {
+                  setTags([
+                    ...tags,
+                    {
+                      name:
+                        tagsList.find((tag) => tag.id === value)?.name || "",
+                      id: value,
+                    },
+                  ]);
+                }
+                setCurrentTag("");
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("addTagsPlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>{t("tags").split(")")[1]}</SelectLabel>
+                  {tagsList.map((tag) => (
+                    <SelectItem key={tag.id} value={tag.id}>
+                      {tag.name.split(")")[1]}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Original Link Field */}
           <div className="space-y-2">
             <Label htmlFor="original-link" className="flex items-center gap-2">
@@ -679,41 +742,6 @@ export function MultilingualPostForm({
               </TabsContent>
             </Tabs>
           </div>
-
-          {/* <div className="space-y-2">
-            <Label htmlFor="tags">{t("tags")}</Label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="secondary"
-                  className="flex items-center gap-1"
-                >
-                  {tag}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-4 w-4 p-0 hover:bg-transparent"
-                    onClick={() => handleRemoveTag(tag)}
-                  >
-                    <X className="h-3 w-3" />
-                    <span className="sr-only">{t("removeTag")}</span>
-                  </Button>
-                </Badge>
-              ))}
-            </div>
-            <Input
-              id="tags"
-              value={currentTag}
-              onChange={(e) => setCurrentTag(e.target.value)}
-              placeholder={t("addTagsPlaceholder")}
-              onKeyDown={handleAddTag}
-            />
-            <p className="text-xs text-muted-foreground">
-              {t("pressEnterToAddTag")}
-            </p>
-          </div> */}
 
           {/* <div className="space-y-2">
             <Label htmlFor="image">{t("image")}</Label>

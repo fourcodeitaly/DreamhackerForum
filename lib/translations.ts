@@ -659,6 +659,7 @@ export const translations = {
     visaGuides: "Hướng dẫn visa",
     universityProfiles: "Hồ sơ đại học",
     scholarships: "Học bổng",
+    scholarshipsTag: "(Tag) Học bổng",
     community: "Cộng đồng",
     forum: "Diễn đàn",
     guidelines: "Hướng dẫn cộng đồng",

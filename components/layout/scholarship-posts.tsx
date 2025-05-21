@@ -10,7 +10,7 @@ import { getPostsByTags } from "@/lib/db/posts/post-get";
 import { Post } from "@/lib/db/posts/posts-modify";
 import { useLanguage } from "@/hooks/use-language";
 
-export function SchoolarshipPosts() {
+export function ScholarshipPosts() {
   const { t } = useTranslation();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ export function SchoolarshipPosts() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const scholarshipPosts = await getPostsByTags(["schoolarship"], 1, 5);
+        const scholarshipPosts = await getPostsByTags(["scholarship"], 1, 5);
         setPosts(scholarshipPosts.posts);
       } catch (error) {
         console.error("Error fetching recent activities:", error);

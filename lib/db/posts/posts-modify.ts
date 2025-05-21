@@ -1,7 +1,7 @@
 "use server";
 
 import { createActivity } from "../activities/activities-modify";
-import { queryOne, transaction } from "../postgres";
+import { query, queryOne, transaction } from "../postgres";
 
 export type MultilingualContent = {
   en: string;
@@ -107,6 +107,10 @@ export async function createPost(postData: {
       );
 
       if (post) {
+        if (postData.tags) {
+          await createPostTag(post.id, postData.tags);
+        }
+
         await createActivity(
           postData.user_id,
           "post_created",
@@ -124,6 +128,37 @@ export async function createPost(postData: {
   } catch (error) {
     console.error("Error creating post:", error);
     return null;
+  }
+}
+
+export async function createPostTag(postId: string, tagIds: string[]) {
+  try {
+    for (const tagId of tagIds) {
+      const sql = `
+        INSERT INTO post_tags (post_id, tag_id)
+        VALUES ($1, $2)
+      `;
+      await queryOne(sql, [postId, tagId]);
+      console.log("Created post tag:", postId, tagId);
+    }
+  } catch (error) {
+    console.error("Error creating post tag:", error);
+    return false;
+  }
+}
+
+export async function deletePostTag(postId: string, tagIds: string[]) {
+  try {
+    for (const tagId of tagIds) {
+      const sql = `
+        DELETE FROM post_tags WHERE post_id = $1 AND tag_id = $2
+      `;
+      await queryOne(sql, [postId, tagId]);
+      console.log("Deleted post tag:", postId, tagId);
+    }
+  } catch (error) {
+    console.error("Error deleting post tag:", error);
+    return false;
   }
 }
 
@@ -164,12 +199,6 @@ export async function updatePost(
       paramIndex++;
     }
 
-    if (postData.tags !== undefined) {
-      updates.push(`tags = $${paramIndex}`);
-      values.push(postData.tags);
-      paramIndex++;
-    }
-
     if (postData.image_url !== undefined) {
       updates.push(`image_url = $${paramIndex}`);
       values.push(postData.image_url);
@@ -204,7 +233,25 @@ export async function updatePost(
       RETURNING *
     `;
 
-    return await queryOne<Post>(sql, values);
+    const post = await queryOne<Post>(sql, values);
+
+    const oldTags = await query<{ tag_id: string }>(
+      "SELECT tag_id FROM post_tags WHERE post_id = $1",
+      [postId]
+    );
+
+    if (oldTags) {
+      await deletePostTag(
+        postId,
+        oldTags.map((tag) => tag.tag_id)
+      );
+    }
+
+    if (postData.tags) {
+      await createPostTag(postId, postData.tags);
+    }
+
+    return post;
   } catch (error) {
     console.error("Error updating post:", error);
     return null;
