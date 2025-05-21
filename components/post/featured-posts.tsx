@@ -46,7 +46,7 @@ export function FeaturedPosts({ posts }: { posts: Post[] }) {
         {posts.map((post, index) => (
           <div key={post.id} className="min-w-full">
             <Card className="border-0 overflow-hidden">
-              <div className="relative h-80 w-full">
+              <div className="relative h-52 md:h-80 w-full">
                 <img
                   src={
                     post.image_url ||

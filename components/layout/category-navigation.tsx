@@ -112,18 +112,25 @@ export function CategoryNavigation() {
         { id: "financial-resources", name: t("resourcesFinancialResources") },
       ],
     },
-    // {
-    //   id: "study-abroad",
-    //   name: t("studyAbroad"),
-    //   categories: [
-    //     { id: "visa-interview", name: t("visaInterview") },
-    //     { id: "university-interview", name: t("universityInterview") },
-    //     { id: "scholarship-interview", name: t("scholarshipInterview") },
-    //     { id: "language-test", name: t("languageTest") },
-    //     { id: "application-tips", name: t("applicationTips") },
-    //     { id: "cultural-adjustment", name: t("culturalAdjustment") },
-    //   ],
-    // },
+    {
+      id: "scholarship",
+      name: t("scholarship"),
+      categories: [
+        { id: "us-scholarship", name: t("usScholarship") },
+        { id: "ca-scholarship", name: t("caScholarship") },
+        { id: "hk-scholarship", name: t("hkScholarship") },
+        { id: "sg-scholarship", name: t("sgScholarship") },
+        { id: "jp-scholarship", name: t("jpScholarship") },
+        { id: "se-scholarship", name: t("seScholarship") },
+        { id: "de-scholarship", name: t("deScholarship") },
+        { id: "es-scholarship", name: t("esScholarship") },
+        { id: "hu-scholarship", name: t("huScholarship") },
+        { id: "it-scholarship", name: t("itScholarship") },
+        { id: "ch-scholarship", name: t("chScholarship") },
+        { id: "uk-scholarship", name: t("ukScholarship") },
+        { id: "fr-scholarship", name: t("frScholarship") },
+      ],
+    },
   ];
 
   return (

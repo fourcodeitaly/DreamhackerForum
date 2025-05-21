@@ -14,16 +14,3 @@ export async function getCategory(
     return null;
   }
 }
-
-export async function getPostsByCategory(
-  categoryId: string,
-  page = 1,
-  limit = 10
-): Promise<{ posts: Post[]; total: number }> {
-  try {
-    return await getPosts(page, limit, false, categoryId);
-  } catch (error) {
-    console.error("Error fetching category posts:", error);
-    return { posts: [], total: 0 };
-  }
-}

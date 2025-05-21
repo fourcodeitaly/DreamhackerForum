@@ -44,8 +44,8 @@ export function TopContributors({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
+        <CardTitle className="flex items-center text-lg">
+          <Trophy className="mr-2 h-4 w-4 text-yellow-500" />
           {t("topContributors", { count: 5 })}
         </CardTitle>
       </CardHeader>
@@ -85,7 +85,7 @@ export function TopContributors({
                 )}
               </div>
               <div>
-                <div className="font-medium">{user.name || user.username}</div>
+                <div className="text-sm">{user.name || user.username}</div>
                 <div className="flex items-center space-x-2 mt-1">
                   <div className="flex items-center text-xs">
                     <MessageSquare className="mr-1 h-3 w-3" />

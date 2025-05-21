@@ -19,6 +19,12 @@ import { getCategory } from "@/lib/db/category/category-get";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getServerUser } from "@/lib/supabase/server";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 export const dynamic = "force-dynamic";
 
@@ -92,7 +98,7 @@ export default async function Posts({
       {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
 
       {/* Poster/Banner Section */}
-      <div className="relative w-full h-[200px] mb-8 rounded-lg overflow-hidden">
+      <div className="hidden md:block relative w-full h-[200px] mb-8 rounded-lg overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 animate-gradient">
           <div className="absolute inset-0 bg-black/30 animate-pulse" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-black/20 animate-pulse" />
@@ -165,9 +171,31 @@ export default async function Posts({
 
         {/* Right sidebar - Sticky */}
         <div className="lg:w-1/5">
-          <div className="sticky top-20 space-y-6 hidden md:block">
-            <FeaturedPosts posts={featuredPosts} />
-            <TopContributors topContributors={topContributors} />
+          <div className="sticky top-20 space-y-6">
+            {/* <div className="block md:hidden mb-4">
+              <Accordion type="single" collapsible>
+                <AccordionItem value="featured">
+                  <AccordionTrigger className="text-lg font-semibold">
+                    Featured Posts
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <FeaturedPosts posts={featuredPosts} />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="contributors">
+                  <AccordionTrigger className="text-lg font-semibold">
+                    Top Contributors
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <TopContributors topContributors={topContributors} />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div> */}
+            <div className="hidden md:block space-y-6">
+              <FeaturedPosts posts={featuredPosts} />
+              <TopContributors topContributors={topContributors} />
+            </div>
           </div>
         </div>
       </div>

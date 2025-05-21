@@ -56,7 +56,7 @@ export function RecentActivities() {
     <Card>
       <CardHeader className="p-4">
         <CardTitle className="text-lg flex items-center">
-          <Clock className="h-4 w-4 mr-2" />
+          <Clock className="h-4 w-4 mr-2 text-green-700" />
           {t("recentActivities")}
         </CardTitle>
       </CardHeader>

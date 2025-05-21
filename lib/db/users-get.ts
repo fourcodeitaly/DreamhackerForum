@@ -1,3 +1,5 @@
+"use server";
+
 import { query, queryOne } from "./postgres";
 
 export interface Contributor {

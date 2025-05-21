@@ -2,24 +2,18 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { SearchBar } from "@/components/layout/search-bar";
-import { useTranslation } from "@/hooks/use-translation";
 import { Menu, X, GraduationCap } from "lucide-react";
 import { AuthStatus } from "../auth/auth-status";
-import { useAuth } from "@/hooks/use-auth";
 import { CategoryNavigation } from "./category-navigation";
 import { NotificationButton } from "@/components/notifications/notification-button";
 
 export default function Header() {
-  const { t } = useTranslation();
-  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAdmin } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,12 +22,6 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // const navLinks = [
-  //   { href: "/", label: t("home") },
-  //   { href: "/resources", label: t("resources") },
-  //   { href: "/posts?page=1&nullPosts=true", label: t("nullPosts") },
-  // ];
 
   return (
     <header
