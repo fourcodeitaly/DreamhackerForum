@@ -60,14 +60,9 @@ export function FeaturedPosts({ posts }: { posts: Post[] }) {
                   <Badge className="mb-2 bg-blue-600 hover:bg-blue-700">
                     {post.category_id || t("featured")}
                   </Badge>
-                  <h2 className="text-md md:text-lg font-bold mb-2">
+                  <h2 className="text-md font-bold mb-2">
                     {post.title?.en || ""}
                   </h2>
-                  <p className="text-sm md:text-base mb-4 line-clamp-2">
-                    {post.content?.en
-                      ?.substring(0, 150)
-                      .replace(/<[^>]*>/g, "") || ""}
-                  </p>
                   <Button asChild variant="default" size="sm">
                     <Link href={`/posts/${post.id}`}>{t("readMore")}</Link>
                   </Button>
@@ -78,7 +73,7 @@ export function FeaturedPosts({ posts }: { posts: Post[] }) {
         ))}
       </div>
 
-      <div className="absolute bottom-4 right-4 flex space-x-2">
+      <div className="absolute bottom-6 right-4 flex space-x-2">
         <Button
           variant="outline"
           size="icon"
@@ -101,7 +96,7 @@ export function FeaturedPosts({ posts }: { posts: Post[] }) {
         </Button>
       </div>
 
-      <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+      <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
         {posts.map((_, index) => (
           <button
             key={index}
