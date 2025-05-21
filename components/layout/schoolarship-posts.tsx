@@ -19,7 +19,7 @@ export function SchoolarshipPosts() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const scholarshipPosts = await getPostsByTags(["scholarship"], 1, 5);
+        const scholarshipPosts = await getPostsByTags(["schoolarship"], 1, 5);
         setPosts(scholarshipPosts.posts);
       } catch (error) {
         console.error("Error fetching recent activities:", error);
