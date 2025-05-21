@@ -48,6 +48,7 @@ const categories: { id: string; name: string }[] = [
   { id: "de", name: "Germany" },
   { id: "es", name: "Spain" },
   { id: "hu", name: "Hungary" },
+  { id: "scholarship", name: "Scholarship" },
 ];
 
 export default async function Posts({
