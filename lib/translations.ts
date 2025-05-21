@@ -752,7 +752,7 @@ export const translations = {
     // Scholarship
     scholarship: "(Học bổng) Học bổng",
     scholarshipInformation: "(Học bổng) Thông tin học bổng",
-    allScholarship: "(Học bổng) Tất cả học bổng",
+    allScholarships: "(Học bổng) Tất cả học bổng",
     usScholarship: "(Học bổng) Học bổng Mỹ",
     caScholarship: "(Học bổng) Học bổng Canada",
     hkScholarship: "(Học bổng) Học bổng Hong Kong",

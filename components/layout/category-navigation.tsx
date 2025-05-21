@@ -115,21 +115,7 @@ export function CategoryNavigation() {
     {
       id: "scholarship",
       name: t("scholarship"),
-      categories: [
-        { id: "us-scholarship", name: t("usScholarship") },
-        { id: "ca-scholarship", name: t("caScholarship") },
-        { id: "hk-scholarship", name: t("hkScholarship") },
-        { id: "sg-scholarship", name: t("sgScholarship") },
-        { id: "jp-scholarship", name: t("jpScholarship") },
-        { id: "se-scholarship", name: t("seScholarship") },
-        { id: "de-scholarship", name: t("deScholarship") },
-        { id: "es-scholarship", name: t("esScholarship") },
-        { id: "hu-scholarship", name: t("huScholarship") },
-        { id: "it-scholarship", name: t("itScholarship") },
-        { id: "ch-scholarship", name: t("chScholarship") },
-        { id: "uk-scholarship", name: t("ukScholarship") },
-        { id: "fr-scholarship", name: t("frScholarship") },
-      ],
+      categories: [{ id: "scholarship", name: t("allScholarships") }],
     },
   ];
 
@@ -151,7 +137,7 @@ export function CategoryNavigation() {
                     } else if (category.id.includes("resources")) {
                       href = `/resources?category=${category.id}`;
                     } else if (category.id.includes("scholarship")) {
-                      href = `/posts?tag=${category.id.split("-")[0]}`;
+                      href = `/posts?tag=${category.id}`;
                     } else {
                       href = `/posts?category=${category.id}`;
                     }
