@@ -19,7 +19,7 @@ export function SchoolarshipPosts() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const scholarshipPosts = await getPostsByTags(["scls"], 1, 5);
+        const scholarshipPosts = await getPostsByTags(["scholarship"], 1, 5);
         setPosts(scholarshipPosts.posts);
       } catch (error) {
         console.error("Error fetching recent activities:", error);
@@ -64,7 +64,7 @@ export function SchoolarshipPosts() {
           ))}
           <div className="pt-2 text-center">
             <Link
-              href="/posts?tags=us"
+              href="/posts?tag=us"
               className="text-sm text-primary hover:underline"
             >
               {t("viewAll")} →

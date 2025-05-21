@@ -145,12 +145,16 @@ export function CategoryNavigation() {
               <NavigationMenuContent>
                 <ul className="grid w-full gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                   {group.categories.map((category) => {
-                    const href =
-                      group.id === "tags"
-                        ? `/posts?tag=${category.id}`
-                        : category.id.includes("resources")
-                        ? `/resources?category=${category.id}`
-                        : `/posts?category=${category.id}`;
+                    let href;
+                    if (group.id === "tags") {
+                      href = `/posts?tag=${category.id}`;
+                    } else if (category.id.includes("resources")) {
+                      href = `/resources?category=${category.id}`;
+                    } else if (category.id.includes("scholarship")) {
+                      href = `/posts?tag=${category.id.split("-")[0]}`;
+                    } else {
+                      href = `/posts?category=${category.id}`;
+                    }
                     return (
                       <li key={category.id}>
                         <NavigationMenuLink asChild>
