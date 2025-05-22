@@ -64,6 +64,7 @@ export function CategoryNavigation({ className }: { className?: string }) {
       name: t("masterPrograms"),
       categories: [
         { id: "master", name: t("allMasterPrograms") },
+        { id: "master-scholarship", name: t("masterScholarship") },
         {
           id: "master-school-introduction",
           name: t("masterSchoolIntroduction"),
@@ -87,6 +88,7 @@ export function CategoryNavigation({ className }: { className?: string }) {
       name: t("phdPrograms"),
       categories: [
         { id: "phd", name: t("allPhdPrograms") },
+        { id: "phd-scholarship", name: t("phdScholarship") },
         { id: "phd-business-school-intro", name: t("phdBusinessSchoolIntro") },
         { id: "phd-ranking", name: t("phdRanking") },
         { id: "phd-application-faq", name: t("phdApplicationFAQ") },
@@ -112,16 +114,16 @@ export function CategoryNavigation({ className }: { className?: string }) {
         { id: "financial-resources", name: t("resourcesFinancialResources") },
       ],
     },
-    {
-      id: "scholarship",
-      name: t("scholarship"),
-      categories: [
-        {
-          id: "c34d416e-1bed-4474-a020-e83032e2b15d",
-          name: t("allScholarships"),
-        },
-      ],
-    },
+    // {
+    //   id: "scholarship",
+    //   name: t("scholarship"),
+    //   categories: [
+    //     {
+    //       id: "c34d416e-1bed-4474-a020-e83032e2b15d",
+    //       name: t("allScholarships"),
+    //     },
+    //   ],
+    // },
     {
       id: "schools",
       name: t("schools"),

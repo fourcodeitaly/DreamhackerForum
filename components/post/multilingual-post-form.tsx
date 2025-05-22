@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,14 +101,17 @@ export function MultilingualPostForm({
     setImagePreview(null);
   };
 
-  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && currentTag.trim()) {
-      e.preventDefault();
-      if (!tags.some((tag) => tag.name === currentTag.trim())) {
-        setTags([...tags, { name: currentTag.trim(), id: currentTag.trim() }]);
-      }
-      setCurrentTag("");
+  const handleAddTag = (value: string) => {
+    if (value && !tags.some((tag) => tag.id === value)) {
+      setTags([
+        ...tags,
+        {
+          name: tagsList.find((tag) => tag.id === value)?.name || "",
+          id: value,
+        },
+      ]);
     }
+    setCurrentTag("");
   };
 
   const handleRemoveTag = (tagToRemove: { name: string; id: string }) => {
@@ -398,6 +401,10 @@ export function MultilingualPostForm({
           value: "master-application-summary",
           label: t("masterApplicationSummary"),
         },
+        {
+          value: "master-scholarship",
+          label: t("masterSCholarship"),
+        },
       ],
     },
     {
@@ -416,6 +423,10 @@ export function MultilingualPostForm({
         { value: "phd-application-summary", label: t("phdApplicationSummary") },
         { value: "phd-study-experience", label: t("phdStudyExperience") },
         { value: "phd-interview", label: t("phdInterview") },
+        {
+          value: "phd-scholarship",
+          label: t("phdSCholarship"),
+        },
       ],
     },
   ];
@@ -581,22 +592,7 @@ export function MultilingualPostForm({
                 </div>
               ))}
             </div>
-            <Select
-              value={currentTag}
-              onValueChange={(value) => {
-                if (value && !tags.some((tag) => tag.id === value)) {
-                  setTags([
-                    ...tags,
-                    {
-                      name:
-                        tagsList.find((tag) => tag.id === value)?.name || "",
-                      id: value,
-                    },
-                  ]);
-                }
-                setCurrentTag("");
-              }}
-            >
+            <Select value={currentTag} onValueChange={handleAddTag}>
               <SelectTrigger>
                 <SelectValue placeholder={t("addTagsPlaceholder")} />
               </SelectTrigger>

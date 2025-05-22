@@ -169,6 +169,7 @@ export const translations = {
     masterApplicationSummary: "(Master) Application Summary",
     masterRecommendationLetter: "(Master) Recommendation Letter",
     masterApplicationFAQ: "(Master) Application FAQ",
+    masterScholarship: "(Master) Scholarship",
 
     // PhD Categories
     allPhdPrograms: "(PhD) All PhD",
@@ -180,6 +181,7 @@ export const translations = {
     phdApplicationSummary: "(PhD) Application Summary",
     phdRecommendationLetter: "(PhD) Recommendation Letter",
     phdApplicationFAQ: "(PhD) Application FAQ",
+    phdScholarship: "(PhD) Scholarship",
 
     // Study Abroad Categories
     // studyAbroad: "Study Abroad",
@@ -545,6 +547,7 @@ export const translations = {
     mbaEssayWriting: "(MBA) Viết bài luận",
     mbaInterviews: "(MBA) Phỏng vấn",
     mbaApplicationSummary: "(MBA) Tóm tắt ứng tuyển",
+    mbaScholarship: "(MBA) Học bổng MBA",
 
     // Business School Categories
     allMasterPrograms: "(Master) Tổng hợp Master",
@@ -556,6 +559,7 @@ export const translations = {
     masterApplicationSummary: "(Master) Tóm tắt ứng tuyển",
     masterRecommendationLetter: "(Master) Thư giới thiệu",
     masterApplicationFAQ: "(Master) Câu hỏi thường gặp",
+    masterScholarship: "(Master) Học bổng Master",
 
     // PhD Categories
     allPhdPrograms: "(Phd) Tổng hợp PhD",
@@ -567,6 +571,7 @@ export const translations = {
     phdApplicationSummary: "(Phd) Tóm tắt ứng tuyển",
     phdRecommendationLetter: "(Phd) Thư giới thiệu",
     phdApplicationFAQ: "(Phd) Câu hỏi thường gặp",
+    phdScholarship: "(Phd) Học bổng PhD",
 
     // Study Abroad Categories
     studyAbroad: "(Du học) Du học",
