@@ -68,7 +68,7 @@ export function ScholarshipPosts() {
           ))}
           <div className="pt-2 text-center">
             <Link
-              href="/posts?tag=us"
+              href="/posts?tag=c34d416e-1bed-4474-a020-e83032e2b15d"
               className="text-sm text-primary hover:underline"
             >
               {t("viewAll")} →
