@@ -25,7 +25,7 @@ export function PostsSidebar() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="md:hidden">
         <CategoryNavigation className="flex-wrap" />
       </div>
