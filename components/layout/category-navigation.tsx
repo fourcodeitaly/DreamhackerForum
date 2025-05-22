@@ -122,6 +122,11 @@ export function CategoryNavigation() {
         },
       ],
     },
+    {
+      id: "schools",
+      name: t("schools"),
+      categories: [{ id: "schools", name: t("allSchools") }],
+    },
   ];
 
   return (
@@ -143,6 +148,8 @@ export function CategoryNavigation() {
                       href = `/resources?category=${category.id}`;
                     } else if (group.id === "scholarship") {
                       href = `/posts?tag=${category.id}`;
+                    } else if (group.id === "schools") {
+                      href = `/schools`;
                     } else {
                       href = `/posts?category=${category.id}`;
                     }

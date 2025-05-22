@@ -132,6 +132,7 @@ export const translations = {
     noContent: "No content",
 
     // Categories
+    nations: "Nations",
     categories: "Categories",
     allPosts: "All Posts",
     deletePost: "Delete Post",
@@ -140,6 +141,10 @@ export const translations = {
     deleting: "Deleting...",
     errorDeletingPost: "Error deleting post",
     postDeleted: "Post deleted",
+
+    // Schools
+    allSchools: "(School) All Schools",
+    schools: "(School) Schools",
 
     // MBA Categories
     allMbaPrograms: "(MBA) All MBA",
@@ -511,7 +516,9 @@ export const translations = {
       "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
     loading: "Đang tải...",
     noContent: "Không có nội dung",
+
     // Categories
+    nations: "Quốc gia",
     categories: "Danh mục",
     allPosts: "Tất cả bài viết",
     deletePost: "Xóa bài viết",
@@ -520,6 +527,10 @@ export const translations = {
     deleting: "Đang xóa...",
     errorDeletingPost: "Lỗi khi xóa bài viết",
     postDeleted: "Bài viết đã được xóa",
+
+    // Schools
+    allSchools: "(School) Tất cả trường",
+    schools: "(School) Trường",
 
     // MBA Categories
     allMbaPrograms: "(MBA) Tổng hợp MBA",

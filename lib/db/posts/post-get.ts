@@ -767,7 +767,7 @@ export async function getPostCount(categoryId?: string): Promise<number> {
 }
 
 export async function getPostsByTags(
-  tags: string[],
+  tagIds: string[],
   page = 1,
   limit = 10,
   userId?: string
@@ -790,8 +790,8 @@ export async function getPostsByTags(
     `;
 
     const countResult = await queryOne<{ count: string }>(countSql, [
-      tags,
-      tags.length,
+      tagIds,
+      tagIds.length,
     ]);
 
     const total = Number.parseInt(countResult?.count || "0");
@@ -832,7 +832,12 @@ export async function getPostsByTags(
       LIMIT $3 OFFSET $4
     `;
 
-    const posts = await query<Post>(sql, [tags, tags.length, limit, offset]);
+    const posts = await query<Post>(sql, [
+      tagIds,
+      tagIds.length,
+      limit,
+      offset,
+    ]);
 
     const postIds = posts.map((post) => post.id);
 

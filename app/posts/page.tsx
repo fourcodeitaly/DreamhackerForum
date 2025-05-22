@@ -18,6 +18,8 @@ import { getCategory } from "@/lib/db/category/category-get";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getServerUser } from "@/lib/supabase/server";
+import { getTagById, getTags, Tag } from "@/lib/db/tags/tags-get";
+import { Post } from "@/lib/db/posts/posts-modify";
 export const dynamic = "force-dynamic";
 
 const categories: { id: string; name: string }[] = [
@@ -76,17 +78,19 @@ export default async function Posts({
   const categoryName = categoryData?.name?.en || "All Posts";
 
   // Fetch posts based on parameters
-  let result;
-  if (nullPosts) {
-    result = await getNullTitlePosts(pageNumber, postsPerPage);
-  } else if (tag) {
-    result = await getPostsByTags([tag], pageNumber, postsPerPage);
+  let result: { posts: Post[]; total: number } | null = null;
+  let tagInfo: Tag | null = null;
+  if (tag) {
+    tagInfo = await getTagById(tag);
+    if (tagInfo) {
+      result = await getPostsByTags([tagInfo.id], pageNumber, postsPerPage);
+    }
   } else {
     result = await getPosts(pageNumber, postsPerPage, false, categoryId);
   }
 
-  const initialPosts = result.posts ?? [];
-  const totalPosts = result.total;
+  const initialPosts = result?.posts ?? [];
+  const totalPosts = result?.total ?? 0;
 
   // Fetch featured posts
   const featuredPosts = await getPinnedPosts();
@@ -148,9 +152,7 @@ export default async function Posts({
           <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <h1 className="text-3xl font-bold">
               {tag
-                ? `Posts tagged with "${
-                    categories.find((c) => c.id === tag)?.name
-                  }"`
+                ? `Posts tagged with "${tagInfo?.name}"`
                 : categoryId
                 ? categoryName
                 : "All Posts"}
