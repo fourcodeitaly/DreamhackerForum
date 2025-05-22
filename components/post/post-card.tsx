@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslation } from "@/hooks/use-translation";
-import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare } from "lucide-react";
+import { Heart, MessageSquare, Bookmark } from "lucide-react";
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { toCamelCase } from "@/utils/snake-case";
 import { formatRelativeTime } from "@/utils/utils";
@@ -76,12 +76,25 @@ export function PostCard({ post }: PostCardProps) {
               ))
             )}
           </div>
-          <div className="flex justify-end text-xs text-muted-foreground gap-4">
-            <div className="flex items-center">
-              <MessageSquare className="h-3 w-3 mr-1 text-green-700" />
-              {post.comments_count || 0}
+
+          <div className="flex gap-2 justify-between items-center">
+            <div className="flex justify-end text-xs text-muted-foreground gap-4">
+              <div className="flex items-center">
+                <Heart className="h-3 w-3 mr-1 text-red-700" />
+                {post.comments_count || 0}
+              </div>
+              <div className="flex items-center">
+                <MessageSquare className="h-3 w-3 mr-1 text-green-700" />
+                {post.comments_count || 0}
+              </div>
+              <div className="flex items-center">
+                <Bookmark className="h-3 w-3 mr-1 text-yellow-700" />
+                {post.comments_count || 0}
+              </div>
             </div>
-            {formatRelativeTime(post.created_at || "")}
+            <div className="text-xs text-muted-foreground border-[1px] rounded-full px-2 py-1 border-muted-foreground ml-2">
+              {formatRelativeTime(post.created_at || "")}
+            </div>
           </div>
         </div>
       </CardHeader>
