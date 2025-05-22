@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
 
     // Create directory for post images if it doesn't exist
-    const uploadDir = join(process.cwd(), "public", "images", "posts", postId);
+    const uploadDir = join(process.cwd(), "uploads", "images", "posts", postId);
     await mkdir(uploadDir, { recursive: true });
 
     const imageUrls = [];
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       await writeFile(path, buffer);
 
       // Get the relative path to the image
-      const imageUrl = `/images/posts/${postId}/${filename}`;
+      const imageUrl = `/api/uploads/images/posts/${postId}/${filename}`;
       imageUrls.push(imageUrl);
 
       // Save image URL to database

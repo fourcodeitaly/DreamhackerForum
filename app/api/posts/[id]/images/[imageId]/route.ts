@@ -24,7 +24,7 @@ export async function DELETE(
     }
 
     // Delete the image file from the filesystem
-    const imagePath = join(process.cwd(), "public", image[0].image_url);
+    const imagePath = join(process.cwd(), image[0].image_url.split("/api/")[1]);
     await unlink(imagePath);
 
     // Delete the image record from the database
