@@ -329,7 +329,7 @@ export function MultilingualPostForm({
             });
             formData.append("postId", initialData.id);
 
-            const uploadResponse = await fetch("/api/upload", {
+            const uploadResponse = await fetch("/api/uploads", {
               method: "POST",
               body: formData,
             });
@@ -371,7 +371,7 @@ export function MultilingualPostForm({
             });
             formData.append("postId", result.post.id);
 
-            const uploadResponse = await fetch("/api/upload", {
+            const uploadResponse = await fetch("/api/uploads", {
               method: "POST",
               body: formData,
             });
