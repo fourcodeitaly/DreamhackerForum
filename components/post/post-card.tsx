@@ -29,9 +29,9 @@ export function PostCard({ post }: PostCardProps) {
           </h2>
         </Link>
 
-        <div className="flex items-center gap-2 text-xs text-muted-foreground justify-between">
-          <div className="flex items-center gap-4">
-            {post.category && (
+        <div className="flex flex-col md:flex-row gap-4 text-xs text-muted-foreground justify-between">
+          <div className="flex items-center gap-2 flex-wrap">
+            {post.category && post.category.id.length > 0 && (
               <Link href={`/posts?category=${post.category.id}`}>
                 <Badge
                   variant="outline"
@@ -41,7 +41,7 @@ export function PostCard({ post }: PostCardProps) {
                 </Badge>
               </Link>
             )}
-            {post.tags && post.tags.length > 0 ? (
+            {post.tags && post.tags.length > 1 ? (
               <>
                 <Link href={`/posts?tag=${post.tags[0].id}`}>
                   <Badge
@@ -75,14 +75,14 @@ export function PostCard({ post }: PostCardProps) {
                 </Badge>
               ))
             )}
+          </div>
+          <div className="flex justify-end text-xs text-muted-foreground gap-4">
             <div className="flex items-center">
               <MessageSquare className="h-3 w-3 mr-1 text-green-700" />
               {post.comments_count || 0}
             </div>
-          </div>
-          <span className="flex justify-end text-xs text-muted-foreground">
             {formatRelativeTime(post.created_at || "")}
-          </span>
+          </div>
         </div>
       </CardHeader>
     </Card>
