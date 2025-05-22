@@ -9,6 +9,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/utils/utils";
 import type { Post } from "@/lib/db/posts/posts-modify";
+import { toCamelCase } from "@/utils/snake-case";
 
 export function FeaturedPosts({ posts }: { posts: Post[] }) {
   const { t } = useTranslation();
@@ -58,7 +59,7 @@ export function FeaturedPosts({ posts }: { posts: Post[] }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 text-white">
                   <Badge className="mb-2 bg-blue-600 hover:bg-blue-700">
-                    {post.category_id || t("featured")}
+                    {t(toCamelCase(post.category_id || "")) || t("featured")}
                   </Badge>
                   <h2 className="text-md font-bold mb-2">
                     {post.title?.en || ""}

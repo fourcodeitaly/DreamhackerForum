@@ -12,12 +12,19 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogClose,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Bookmark,
   Heart,
   MessageCircle,
   Share2,
   Edit,
   ExternalLink,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
@@ -27,6 +34,7 @@ import { PostLanguageSwitcher } from "@/components/post/post-language-switcher";
 import { normalizePostData } from "@/utils/data-utils";
 import { Markdown } from "@/components/markdown"; // Import the Markdown component
 import type { Post } from "@/lib/db/posts/posts-modify";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PostDetailProps {
   post: Post;
@@ -36,6 +44,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const { user, isAdmin } = useAuth();
+  const { toast } = useToast();
 
   const [post, setPost] = useState<Post>(rawPost);
   const [liked, setLiked] = useState(false);
@@ -44,6 +53,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">(
     "en"
   );
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (rawPost) {
@@ -290,24 +300,58 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       </CardHeader>
 
       <CardContent className="p-0 md:p-6">
-        {/* {post.image_url && (
-          <div className="mb-6">
-            <img
-              src={
-                post.image_url ||
-                "/placeholder.svg?height=400&width=800&query=post"
-              }
-              alt={getLocalizedTitle()}
-              className="rounded-md w-full max-h-96 object-cover"
-            />
-          </div>
-        )} */}
-
-        <div className="prose dark:prose-invert max-w-none">
-          {/* Render markdown content */}
+        <div className="prose prose-sm dark:prose-invert max-w-none">
+          {post.images && post.images.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 my-6">
+              {post.images.map((image) => (
+                <div
+                  key={image.id}
+                  className="relative aspect-square group cursor-pointer"
+                  onClick={() => setSelectedImage(image.image_url)}
+                >
+                  <img
+                    src={image.image_url}
+                    alt="Post image"
+                    className="w-full h-full object-cover rounded-lg m-0"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
           <Markdown content={getLocalizedContent()} />
         </div>
       </CardContent>
+
+      {/* Image Dialog */}
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={() => setSelectedImage(null)}
+      >
+        <DialogTitle className="sr-only">Image Preview</DialogTitle>
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full p-0">
+          <div className="relative">
+            {selectedImage && (
+              <img
+                src={selectedImage}
+                alt="Full size image"
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            )}
+            <DialogClose asChild>
+              <div className="absolute top-2 right-2">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-8 w-8 rounded-full"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close</span>
+                </Button>
+              </div>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <CardFooter className="p-0 pt-4 md:p-6 flex items-center justify-between border-t">
         <Button

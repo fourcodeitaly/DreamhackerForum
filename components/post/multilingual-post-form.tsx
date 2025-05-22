@@ -69,13 +69,16 @@ export function MultilingualPostForm({
   );
 
   const [currentTag, setCurrentTag] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    initialData?.image_url || null
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>(
+    initialData?.images?.map((img) => img.image_url) || []
   );
+  const [existingImages, setExistingImages] = useState<
+    { id: string; image_url: string }[]
+  >(initialData?.images || []);
   const [originalLink, setOriginalLink] = useState<string>(
     initialData?.original_link || ""
-  ); // Added original link
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">(
     "vi"
@@ -83,22 +86,50 @@ export function MultilingualPostForm({
   const [isTranslatingTitle, setIsTranslatingTitle] = useState(false);
   const [isTranslatingContent, setIsTranslatingContent] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImage(file);
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    // Create temporary preview URLs
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews((prev) => [...prev, ...newPreviews]);
+    setImages((prev) => [...prev, ...files]);
   };
 
-  const handleRemoveImage = () => {
-    setImage(null);
-    setImagePreview(null);
+  const handleRemoveImage = async (index: number) => {
+    // Check if it's an existing image
+    if (index < existingImages.length) {
+      const imageToDelete = existingImages[index];
+      try {
+        const response = await fetch(
+          `/api/posts/${initialData?.id}/images/${imageToDelete.id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to delete image");
+        }
+
+        // Remove from existing images
+        setExistingImages((prev) => prev.filter((_, i) => i !== index));
+        // Remove from previews
+        setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+      } catch (error) {
+        console.error("Error deleting image:", error);
+        toast({
+          title: t("error"),
+          description: t("errorDeletingImage"),
+          variant: "destructive",
+        });
+      }
+    } else {
+      // It's a new image
+      const newIndex = index - existingImages.length;
+      setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+      setImages((prev) => prev.filter((_, i) => i !== newIndex));
+    }
   };
 
   const handleAddTag = (value: string) => {
@@ -242,7 +273,7 @@ export function MultilingualPostForm({
 
     setIsLoading(true);
 
-    // Validate that at least English content is provided
+    // Validate that at least Vietnamese content is provided
     if (!title.vi || !content.vi) {
       toast({
         title: t("validationError"),
@@ -283,14 +314,31 @@ export function MultilingualPostForm({
           content,
           categoryId: category,
           tags: tags.map((tag) => tag.id),
-          imageUrl: imagePreview,
-          originalLink: originalLink || undefined, // Include original link
+          originalLink: originalLink || undefined,
         }).catch((error) => {
           console.error("Error updating post:", error);
           return { success: false, message: "Error updating post" };
         });
 
         if (result.success) {
+          // If there are new images, upload them
+          if (images.length > 0) {
+            const formData = new FormData();
+            images.forEach((file) => {
+              formData.append("files", file);
+            });
+            formData.append("postId", initialData.id);
+
+            const uploadResponse = await fetch("/api/upload", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+              throw new Error("Failed to upload images");
+            }
+          }
+
           toast({
             title: t("success"),
             description: t("postUpdated"),
@@ -311,11 +359,28 @@ export function MultilingualPostForm({
           content,
           categoryId: category,
           tags: tags.map((tag) => tag.id),
-          imageUrl: imagePreview || undefined,
-          originalLink: originalLink || undefined, // Include original link
+          originalLink: originalLink || undefined,
         });
 
         if (result.success && result.post) {
+          // If there are images, upload them
+          if (images.length > 0) {
+            const formData = new FormData();
+            images.forEach((file) => {
+              formData.append("files", file);
+            });
+            formData.append("postId", result.post.id);
+
+            const uploadResponse = await fetch("/api/upload", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+              throw new Error("Failed to upload images");
+            }
+          }
+
           toast({
             title: t("success"),
             description: t("postCreated"),
@@ -336,6 +401,7 @@ export function MultilingualPostForm({
         description: isEditing ? t("errorEditingPost") : t("errorCreatingPost"),
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -403,7 +469,7 @@ export function MultilingualPostForm({
         },
         {
           value: "master-scholarship",
-          label: t("masterSCholarship"),
+          label: t("masterScholarship"),
         },
       ],
     },
@@ -425,7 +491,7 @@ export function MultilingualPostForm({
         { value: "phd-interview", label: t("phdInterview") },
         {
           value: "phd-scholarship",
-          label: t("phdSCholarship"),
+          label: t("phdScholarship"),
         },
       ],
     },
@@ -740,52 +806,54 @@ export function MultilingualPostForm({
             </Tabs>
           </div>
 
-          {/* <div className="space-y-2">
-            <Label htmlFor="image">{t("image")}</Label>
-            {imagePreview ? (
-              <div className="relative">
-                <img
-                  src={imagePreview || "/placeholder.svg"}
-                  alt="Preview"
-                  className="max-h-64 rounded-md object-cover"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 h-8 w-8 rounded-full"
-                  onClick={handleRemoveImage}
-                >
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">{t("removeImage")}</span>
-                </Button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed rounded-md p-6 text-center">
-                <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+          <div className="space-y-2">
+            <Label htmlFor="images">{t("images")}</Label>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative aspect-square">
+                  <img
+                    src={preview}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 h-8 w-8 rounded-full"
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">{t("removeImage")}</span>
+                  </Button>
+                </div>
+              ))}
+              <div className="border-2 border-dashed rounded-md p-4 text-center aspect-square flex flex-col items-center justify-center">
+                <Upload className="h-8 w-8 text-muted-foreground" />
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {t("dragAndDropImage")}
+                  {t("dragAndDropImages")}
                 </p>
                 <Button
                   type="button"
                   variant="outline"
                   className="mt-4"
                   onClick={() =>
-                    document.getElementById("image-upload")?.click()
+                    document.getElementById("images-upload")?.click()
                   }
                 >
-                  {t("selectImage")}
+                  {t("selectImages")}
                 </Button>
                 <Input
-                  id="image-upload"
+                  id="images-upload"
                   type="file"
                   accept="image/*"
+                  multiple
                   className="hidden"
                   onChange={handleImageChange}
                 />
               </div>
-            )}
-          </div> */}
+            </div>
+          </div>
 
           <div className="flex justify-end space-x-2">
             <Button

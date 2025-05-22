@@ -130,6 +130,8 @@ export const translations = {
     postNotFoundDescription:
       "The post you are looking for does not exist or has been removed.",
     noContent: "No content",
+    dragAndDropImages: "Drag and drop images, or click to select",
+    selectImages: "Select Images",
 
     // Categories
     nations: "Nations",
@@ -519,6 +521,8 @@ export const translations = {
       "Bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
     loading: "Đang tải...",
     noContent: "Không có nội dung",
+    dragAndDropImages: "Kéo và thả hình ảnh, hoặc nhấp để chọn",
+    selectImages: "Chọn hình ảnh",
 
     // Categories
     nations: "Quốc gia",

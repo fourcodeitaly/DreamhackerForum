@@ -52,7 +52,18 @@ export async function getPostById(
             'id', c.id,
             'name', c.name
           ) as category,
-          (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count
+          (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count,
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', pi.id,
+                'image_url', pi.image_url,
+                'display_order', pi.display_order
+              ) ORDER BY pi.display_order
+            )
+            FROM post_images pi
+            WHERE pi.post_id = p.id
+          ) as images
         FROM posts p
         LEFT JOIN users u ON p.user_id = u.id
         LEFT JOIN categories c ON p.category_id = c.id

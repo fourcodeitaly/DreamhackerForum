@@ -22,6 +22,7 @@ export type Post = {
   created_at?: string;
   updated_at?: string;
   tags?: { name: string; id: string }[];
+  images?: { id: string; image_url: string; display_order: number }[];
   author?: {
     id: string;
     name: string;
