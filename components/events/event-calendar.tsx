@@ -44,37 +44,40 @@ export function EventCalendar({ events }: EventCalendarProps) {
       </CardHeader>
       <CardContent className="p-0">
         <div className="flex flex-col lg:flex-row">
-          <div className="p-6 border-b lg:border-b-0 lg:border-r">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md"
-              modifiers={{
-                event: (date) =>
-                  events.some(
-                    (event) =>
-                      format(new Date(event.startDate), "yyyy-MM-dd") ===
-                      format(date, "yyyy-MM-dd")
-                  ),
-                today: (date) => isToday(date),
-              }}
-              modifiersStyles={{
-                event: {
-                  backgroundColor: "hsl(var(--primary) / 0.7)",
-                  color: "hsl(var(--primary-foreground))",
-                },
-                today: {
-                  border: "2px solid hsl(var(--primary))",
-                },
-              }}
-              classNames={{
-                day_today: "bg-accent text-accent-foreground",
-                day_outside: "text-muted-foreground opacity-50",
-                caption_label: "text-sm font-medium",
-                caption_dropdowns: "flex h-7 items-center justify-center gap-1",
-              }}
-            />
+          <div className="p-6 border-b lg:border-b-0 lg:border-r flex justify-center">
+            <div className="w-full max-w-[270px]">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                className="rounded-md"
+                modifiers={{
+                  event: (date) =>
+                    events.some(
+                      (event) =>
+                        format(new Date(event.startDate), "yyyy-MM-dd") ===
+                        format(date, "yyyy-MM-dd")
+                    ),
+                  today: (date) => isToday(date),
+                }}
+                modifiersStyles={{
+                  event: {
+                    backgroundColor: "hsl(var(--primary) / 0.7)",
+                    color: "hsl(var(--primary-foreground))",
+                  },
+                  today: {
+                    border: "2px solid hsl(var(--primary))",
+                  },
+                }}
+                classNames={{
+                  day_today: "bg-accent text-accent-foreground",
+                  day_outside: "text-muted-foreground opacity-50",
+                  caption_label: "text-sm font-medium",
+                  caption_dropdowns:
+                    "flex h-7 items-center justify-center gap-1",
+                }}
+              />
+            </div>
           </div>
 
           <div className="p-6 flex-1">
