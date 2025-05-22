@@ -22,25 +22,25 @@ export function CategoryNavigation() {
       id: "tags",
       name: t("tags"),
       categories: [
-        { id: "us", name: t("usTag") },
-        { id: "ca", name: t("caTag") },
-        { id: "hk", name: t("hkTag") },
-        { id: "sg", name: t("sgTag") },
-        { id: "jp", name: t("jpTag") },
-        { id: "se", name: t("seTag") },
-        { id: "au", name: t("auTag") },
-        { id: "it", name: t("itTag") },
-        { id: "ch", name: t("chTag") },
-        { id: "uk", name: t("ukTag") },
-        { id: "fr", name: t("frTag") },
-        { id: "nl", name: t("nlTag") },
-        { id: "dk", name: t("dkTag") },
-        { id: "fi", name: t("fiTag") },
-        { id: "ie", name: t("ieTag") },
-        { id: "cn", name: t("cnTag") },
-        { id: "de", name: t("deTag") },
-        { id: "es", name: t("esTag") },
-        { id: "hu", name: t("huTag") },
+        { id: "75d74626-55fe-47be-bc03-7e6531d19249", name: t("usTag") },
+        { id: "e4e9fb41-5a05-470c-925b-f91b1a00d962", name: t("caTag") },
+        { id: "379ec624-0d31-4026-aa48-38396f542fe5", name: t("hkTag") },
+        { id: "83f2e16c-5c5d-459f-ab3d-301efefa78ad", name: t("sgTag") },
+        { id: "d87db404-09f1-4f92-ada4-16e8baa73856", name: t("jpTag") },
+        { id: "8c589bbf-0cce-4d26-a28c-d17c8942155e", name: t("seTag") },
+        { id: "40e5e7f7-fc8c-4e17-9297-02e4c04623f4", name: t("auTag") },
+        { id: "4edebb77-56a0-451e-92cb-5c3cda094349", name: t("itTag") },
+        { id: "43428091-acb5-478d-b351-975725896454", name: t("chTag") },
+        { id: "65df2188-2c7a-43e0-affc-bf0d4ac924f5", name: t("ukTag") },
+        { id: "3a3b7c21-9f07-40bb-944b-b72fe89ef8c9", name: t("frTag") },
+        { id: "7b98881d-f4de-40f6-81e0-4ec9e7f4dff4", name: t("nlTag") },
+        { id: "1160cfeb-35fd-4ad0-b03e-5b35a6d32d22", name: t("dkTag") },
+        { id: "442e3a3f-75db-4a0e-8ec2-6a161c00e2b9", name: t("fiTag") },
+        { id: "f38ab0c6-88ee-4587-bfe7-2eee9585b1ca", name: t("ieTag") },
+        { id: "4b1a14a4-a5a9-46af-968f-2d1d75f470e5", name: t("cnTag") },
+        { id: "705da86e-4ea8-4d96-a33d-16b8d4d4bf8f", name: t("deTag") },
+        { id: "4c9579a3-8ac8-43bb-8fbb-32280ba0bb91", name: t("esTag") },
+        { id: "ef5fe957-7903-4629-8f2b-a7035d4dc8b7", name: t("huTag") },
       ],
     },
     {
@@ -115,7 +115,12 @@ export function CategoryNavigation() {
     {
       id: "scholarship",
       name: t("scholarship"),
-      categories: [{ id: "scholarship", name: t("allScholarships") }],
+      categories: [
+        {
+          id: "c34d416e-1bed-4474-a020-e83032e2b15d",
+          name: t("allScholarships"),
+        },
+      ],
     },
   ];
 
@@ -136,11 +141,12 @@ export function CategoryNavigation() {
                       href = `/posts?tag=${category.id}`;
                     } else if (category.id.includes("resources")) {
                       href = `/resources?category=${category.id}`;
-                    } else if (category.id.includes("scholarship")) {
+                    } else if (group.id === "scholarship") {
                       href = `/posts?tag=${category.id}`;
                     } else {
                       href = `/posts?category=${category.id}`;
                     }
+
                     return (
                       <li key={category.id}>
                         <NavigationMenuLink asChild>

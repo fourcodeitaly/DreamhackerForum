@@ -59,7 +59,7 @@ export function MultilingualPostForm({
     { name: t("caTag"), id: "ca" },
     { name: t("auTag"), id: "au" },
     { name: t("cnTag"), id: "cn" },
-    { name: t("scholarshipsTag"), id: "scholarship" },
+    { name: t("scholarshipsTag"), id: "c34d416e-1bed-4474-a020-e83032e2b15d" },
   ];
 
   const [category, setCategory] = useState(initialData?.category_id || "");
