@@ -139,7 +139,6 @@ export async function createPostTag(postId: string, tagIds: string[]) {
         VALUES ($1, $2)
       `;
       await queryOne(sql, [postId, tagId]);
-      console.log("Created post tag:", postId, tagId);
     }
   } catch (error) {
     console.error("Error creating post tag:", error);
@@ -154,7 +153,6 @@ export async function deletePostTag(postId: string, tagIds: string[]) {
         DELETE FROM post_tags WHERE post_id = $1 AND tag_id = $2
       `;
       await queryOne(sql, [postId, tagId]);
-      console.log("Deleted post tag:", postId, tagId);
     }
   } catch (error) {
     console.error("Error deleting post tag:", error);

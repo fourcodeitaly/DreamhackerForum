@@ -20,12 +20,9 @@ export function AdminCheck({ children }: { children: React.ReactNode }) {
     // If authentication is done loading and user is not authenticated, redirect to login
     if (!isLoading) {
       if (!isAuthenticated) {
-        console.log("User not authenticated, redirecting to login");
         router.push("/login");
       } else if (!isAdmin) {
-        console.log("User authenticated but not admin:", user?.role);
-      } else {
-        console.log("Admin access granted");
+        router.push("/");
       }
     }
   }, [isLoading, isAuthenticated, isAdmin, router, user]);

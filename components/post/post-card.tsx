@@ -20,8 +20,6 @@ export function PostCard({ post }: PostCardProps) {
 
   const postTitle = post.title?.[language] || post.title?.en || "";
 
-  console.log(post.tags);
-
   return (
     <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="p-4">
