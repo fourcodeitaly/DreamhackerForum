@@ -31,7 +31,7 @@ export function PostCard({ post }: PostCardProps) {
 
         <div className="flex flex-col md:flex-row gap-4 text-xs text-muted-foreground justify-between">
           <div className="flex items-center gap-2 flex-wrap">
-            {post.category && post.category.id.length > 0 && (
+            {post.category && (
               <Link href={`/posts?category=${post.category.id}`}>
                 <Badge
                   variant="outline"
