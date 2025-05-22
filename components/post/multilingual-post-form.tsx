@@ -54,11 +54,12 @@ export function MultilingualPostForm({
   });
 
   const tagsList = [
-    { name: t("usTag"), id: "us" },
-    { name: t("ukTag"), id: "uk" },
-    { name: t("caTag"), id: "ca" },
-    { name: t("auTag"), id: "au" },
-    { name: t("cnTag"), id: "cn" },
+    { name: t("usTag"), id: "75d74626-55fe-47be-bc03-7e6531d19249" },
+    { name: t("ukTag"), id: "65df2188-2c7a-43e0-affc-bf0d4ac924f5" },
+    { name: t("caTag"), id: "e4e9fb41-5a05-470c-925b-f91b1a00d962" },
+    { name: t("auTag"), id: "40e5e7f7-fc8c-4e17-9297-02e4c04623f4" },
+    { name: t("cnTag"), id: "4b1a14a4-a5a9-46af-968f-2d1d75f470e5" },
+    { name: t("vnTag"), id: "4e1e7c2a-5250-4758-b7db-58497c6a3081" },
     { name: t("scholarshipsTag"), id: "c34d416e-1bed-4474-a020-e83032e2b15d" },
   ];
 

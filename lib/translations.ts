@@ -373,6 +373,7 @@ export const translations = {
     deTag: "(Tag) Germany",
     esTag: "(Tag) Spain",
     huTag: "(Tag) Hungary",
+    vnTag: "(Tag) Vietnam",
 
     // Recent Activities
     recentActivities: "Recent Activities",
@@ -752,6 +753,7 @@ export const translations = {
     deTag: "(Tag) Đức",
     esTag: "(Tag) Tây Ban Nha",
     huTag: "(Tag) Hungary",
+    vnTag: "(Tag) Việt Nam",
 
     // Recent Activities
     recentActivities: "Hoạt động gần đây",

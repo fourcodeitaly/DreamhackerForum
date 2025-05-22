@@ -11,11 +11,12 @@ export default async function SchoolsPage({
   searchParams: { nation?: string };
 }) {
   // Fetch all schools
+  const { nation } = await searchParams;
   const schoolsGroupByNationCode = await getSchoolsGroupByNationCode();
   const nations = Object.keys(schoolsGroupByNationCode);
 
   // Get the selected nation from URL params or default to the first nation
-  const selectedNation = searchParams.nation || "United States";
+  const selectedNation = nation || "United States";
 
   // If the selected nation doesn't exist, show 404
   if (!schoolsGroupByNationCode[selectedNation]) {
