@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Suspense } from "react";
 
-export function CategoryNavigation() {
+export function CategoryNavigation({ className }: { className?: string }) {
   const { t } = useTranslation();
 
   // Define category groups
@@ -132,7 +132,7 @@ export function CategoryNavigation() {
   return (
     <Suspense>
       <NavigationMenu>
-        <NavigationMenuList>
+        <NavigationMenuList className={cn(className)}>
           {categoryGroups.map((group) => (
             <NavigationMenuItem key={group.id}>
               <NavigationMenuTrigger className="bg-transparent">

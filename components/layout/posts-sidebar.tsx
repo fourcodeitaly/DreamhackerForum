@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
 import { RecentActivities } from "./recent-activities";
 import { ScholarshipPosts } from "./scholarship-posts";
+import { CategoryNavigation } from "./category-navigation";
 
 export function PostsSidebar() {
   const { t } = useTranslation();
@@ -25,6 +26,9 @@ export function PostsSidebar() {
 
   return (
     <div className="space-y-6">
+      <div className="md:hidden">
+        <CategoryNavigation className="flex-wrap" />
+      </div>
       {/* Scholarships */}
       <ScholarshipPosts />
 
