@@ -43,7 +43,7 @@ export async function createPostAction(formData: {
     await notifyFollowersNewPost(
       post.id,
       formData.userId,
-      `${user.username} has created a new post`
+      `${user.name} has created a new post`
     );
 
     revalidatePath("/");

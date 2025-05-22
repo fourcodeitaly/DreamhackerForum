@@ -52,7 +52,7 @@ const categories: { id: string; name: string }[] = [
   { id: "00fe2122-5f5d-4efa-a89b-acedb226d7eb", name: "South Africa" },
   { id: "7b9e1376-b384-4e8b-8525-e4d49c2c8dee", name: "Mexico" },
   { id: "bdae80b7-22fc-4b1d-9867-ef465ec61058", name: "Africa" },
-  { id: "scholarship", name: "Scholarship" },
+  { id: "c34d416e-1bed-4474-a020-e83032e2b15d", name: "Scholarship" },
 ];
 
 export default async function Posts({

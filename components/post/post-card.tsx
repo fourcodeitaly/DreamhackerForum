@@ -20,6 +20,8 @@ export function PostCard({ post }: PostCardProps) {
 
   const postTitle = post.title?.[language] || post.title?.en || "";
 
+  console.log(post.tags);
+
   return (
     <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="p-4">
@@ -41,7 +43,7 @@ export function PostCard({ post }: PostCardProps) {
                 </Badge>
               </Link>
             )}
-            {post.tags && post.tags.length > 1 ? (
+            {post.tags && post.tags.length > 0 ? (
               <>
                 <Link href={`/posts?tag=${post.tags[0].id}`}>
                   <Badge
@@ -53,14 +55,16 @@ export function PostCard({ post }: PostCardProps) {
                       : post.tags[0].name}
                   </Badge>
                 </Link>
-                <Link href={`/posts/${post.id}`}>
-                  <Badge
-                    variant="outline"
-                    className="hover:bg-accent text-muted-foreground text-xs cursor-pointer line-clamp-1"
-                  >
-                    +{post.tags.length - 1}
-                  </Badge>
-                </Link>
+                {post.tags.length > 1 && (
+                  <Link href={`/posts/${post.id}`}>
+                    <Badge
+                      variant="outline"
+                      className="hover:bg-accent text-muted-foreground text-xs cursor-pointer line-clamp-1"
+                    >
+                      +{post.tags.length - 1}
+                    </Badge>
+                  </Link>
+                )}
               </>
             ) : (
               post.tags?.map((tag) => (
