@@ -19,21 +19,6 @@ export function getMockEvents(): Event[] {
 
   return [
     {
-      id: "1",
-      title: "Web Development Workshop",
-      description:
-        "Learn the fundamentals of web development including HTML, CSS, and JavaScript. This hands-on workshop will cover modern web development practices and tools.",
-      startDate: addDays(now, 7),
-      endDate: addDays(now, 7),
-      location: "Room 101, Main Building",
-      type: "workshop",
-      organizer: "Tech Department",
-      capacity: 30,
-      registrationDeadline: addDays(now, 5),
-      imageUrl:
-        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072&auto=format&fit=crop",
-    },
-    {
       id: "2",
       title: "AI in Education Seminar",
       description:
@@ -62,21 +47,6 @@ export function getMockEvents(): Event[] {
       registrationDeadline: addDays(now, 20),
       imageUrl:
         "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop",
-    },
-    {
-      id: "4",
-      title: "Mobile App Development Workshop",
-      description:
-        "Learn to build cross-platform mobile applications using React Native. Perfect for beginners and intermediate developers.",
-      startDate: addDays(now, 21),
-      endDate: addDays(now, 21),
-      location: "Room 203, Engineering Building",
-      type: "workshop",
-      organizer: "Mobile Development Team",
-      capacity: 25,
-      registrationDeadline: addDays(now, 19),
-      imageUrl:
-        "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=2070&auto=format&fit=crop",
     },
     {
       id: "5",

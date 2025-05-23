@@ -143,18 +143,20 @@ export default async function Posts({
 
         {/* Main content */}
         <div className="lg:w-3/5">
-          <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <h1 className="text-2xl font-bold">
-              {tag
-                ? `Posts tagged with "${tagInfo?.name}"`
-                : categoryId
-                ? categoryName
-                : "All Posts"}
-            </h1>
-            {/* <SearchBar /> */}
-          </div>
-          <div className="mb-6">
-            <SortFilter />
+          <div className="flex justify-between items-center">
+            <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <h1 className="text-2xl font-bold">
+                {tag
+                  ? `Posts tagged with "${tagInfo?.name}"`
+                  : categoryId
+                  ? categoryName
+                  : "All Posts"}
+              </h1>
+              {/* <SearchBar /> */}
+            </div>
+            <div className="mb-6">
+              <SortFilter />
+            </div>
           </div>
           <div className="flex flex-col gap-4">
             <Suspense fallback={<PostListSkeleton />}>
