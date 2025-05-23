@@ -338,7 +338,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
               <div className="flex justify-between items-start w-full">
                 <div className="flex gap-4 w-full">
                   {post.event.images && post.event.images.length > 0 && (
-                    <div className="w-24 h-24 flex-shrink-0">
+                    <div className="w-24 h-24 flex-shrink-0 hidden md:block">
                       <img
                         src={
                           post.event.images.find(
