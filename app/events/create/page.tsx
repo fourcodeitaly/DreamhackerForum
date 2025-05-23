@@ -136,7 +136,7 @@ export default function CreateEventPage() {
       if (response.ok) {
         const event = (await response.json()) as Event;
 
-        if (images.length > 0) {
+        if (images.length > 0 || eventImage) {
           const formData = new FormData();
           images.forEach((file) => {
             formData.append("files", file);

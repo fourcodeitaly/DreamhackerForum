@@ -20,7 +20,7 @@ import { getServerUser } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
-  const { events } = await getEvents({ isPinned: true });
+  const { events } = await getEvents();
   const user = await getServerUser();
   const isAdmin = user?.role === "admin";
 
