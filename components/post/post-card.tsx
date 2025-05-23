@@ -5,7 +5,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { useTranslation } from "@/hooks/use-translation";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageSquare, Bookmark } from "lucide-react";
+import { Heart, MessageSquare, Bookmark, Award } from "lucide-react";
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { toCamelCase } from "@/utils/snake-case";
 import { formatRelativeTime } from "@/utils/utils";
@@ -19,15 +19,28 @@ export function PostCard({ post }: PostCardProps) {
   const { t } = useTranslation();
 
   const postTitle = post.title?.[language] || post.title?.en || "";
+  const hasScholarshipTag = post.tags?.some(
+    (tag) => tag.id === "c34d416e-1bed-4474-a020-e83032e2b15d"
+  );
 
   return (
-    <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
+    <Card className="w-full shadow-sm hover:shadow-md transition-shadow relative">
       <CardHeader className="p-4">
-        <Link href={`/posts/${post.id}`} className="block">
-          <h2 className="text-base font-semibold hover:underline mb-2">
-            {postTitle}
-          </h2>
-        </Link>
+        <div className="flex place-items-start gap-2 justify-between">
+          <Link href={`/posts/${post.id}`} className="block">
+            <h2 className="text-sm font-semibold hover:underline mb-2">
+              {postTitle}
+            </h2>
+          </Link>
+          {hasScholarshipTag && (
+            <Badge
+              variant="default"
+              className="bg-yellow-500 hover:bg-yellow-600 text-nowrap"
+            >
+              {t("scholarship").split(")")[1]}
+            </Badge>
+          )}
+        </div>
 
         <div className="flex flex-col md:flex-row gap-4 text-xs text-muted-foreground justify-between">
           <div className="flex items-center gap-2 flex-wrap">
