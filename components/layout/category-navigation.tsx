@@ -114,6 +114,11 @@ export function CategoryNavigation({ className }: { className?: string }) {
         { id: "financial-resources", name: t("resourcesFinancialResources") },
       ],
     },
+    {
+      id: "events",
+      name: t("events"),
+      categories: [{ id: "all-events", name: t("allEvents") }],
+    },
     // {
     //   id: "scholarship",
     //   name: t("scholarship"),
@@ -124,11 +129,11 @@ export function CategoryNavigation({ className }: { className?: string }) {
     //     },
     //   ],
     // },
-    {
-      id: "schools",
-      name: t("schools"),
-      categories: [{ id: "schools", name: t("allSchools") }],
-    },
+    // {
+    //   id: "schools",
+    //   name: t("schools"),
+    //   categories: [{ id: "schools", name: t("allSchools") }],
+    // },
   ];
 
   return (
@@ -152,6 +157,8 @@ export function CategoryNavigation({ className }: { className?: string }) {
                       href = `/posts?tag=${category.id}`;
                     } else if (group.id === "schools") {
                       href = `/schools`;
+                    } else if (group.id === "events") {
+                      href = `/events`;
                     } else {
                       href = `/posts?category=${category.id}`;
                     }

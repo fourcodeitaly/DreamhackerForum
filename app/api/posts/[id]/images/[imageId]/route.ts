@@ -10,7 +10,6 @@ export async function DELETE(
   try {
     const { id, imageId } = await params;
 
-    console.log(id, imageId);
     // Get the image URL from the database
     const imageSql = `
       SELECT image_url 

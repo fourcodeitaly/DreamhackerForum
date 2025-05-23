@@ -8,16 +8,7 @@ import { format, isToday, isSameDay } from "date-fns";
 import { cn } from "@/utils/utils";
 import { Calendar as CalendarIcon, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-  location: string;
-  type: "workshop" | "seminar" | "conference" | "other";
-}
+import { Event } from "@/lib/db/events/event-modify";
 
 interface EventCalendarProps {
   events: Event[];
@@ -30,7 +21,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
   const selectedDateEvents = events.filter(
     (event) =>
       date &&
-      format(new Date(event.startDate), "yyyy-MM-dd") ===
+      format(new Date(event.start_date), "yyyy-MM-dd") ===
         format(date, "yyyy-MM-dd")
   );
 
@@ -55,7 +46,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
                   event: (date) =>
                     events.some(
                       (event) =>
-                        format(new Date(event.startDate), "yyyy-MM-dd") ===
+                        format(new Date(event.start_date), "yyyy-MM-dd") ===
                         format(date, "yyyy-MM-dd")
                     ),
                   today: (date) => isToday(date),
@@ -98,30 +89,44 @@ export function EventCalendar({ events }: EventCalendarProps) {
                             <div className="flex items-center gap-1">
                               <Clock className="h-4 w-4" />
                               {format(
-                                new Date(event.startDate),
+                                new Date(event.start_date),
                                 "h:mm a"
-                              )} - {format(new Date(event.endDate), "h:mm a")}
+                              )} - {format(new Date(event.end_date), "h:mm a")}
                             </div>
                             <div className="flex items-center gap-1">
                               <MapPin className="h-4 w-4" />
-                              {event.location}
+                              {event.is_virtual
+                                ? "Virtual Event"
+                                : event.location}
                             </div>
                           </div>
                         </div>
-                        <Badge
-                          variant="secondary"
-                          className={cn(
-                            "capitalize",
-                            event.type === "workshop" &&
-                              "bg-blue-100 text-blue-800",
-                            event.type === "seminar" &&
-                              "bg-green-100 text-green-800",
-                            event.type === "conference" &&
-                              "bg-purple-100 text-purple-800"
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant="secondary"
+                            className={cn(
+                              "capitalize",
+                              event.type === "workshop" &&
+                                "bg-blue-100 text-blue-800",
+                              event.type === "seminar" &&
+                                "bg-green-100 text-green-800",
+                              event.type === "conference" &&
+                                "bg-purple-100 text-purple-800",
+                              event.type === "meetup" &&
+                                "bg-orange-100 text-orange-800"
+                            )}
+                          >
+                            {event.type}
+                          </Badge>
+                          {event.is_virtual && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-indigo-100 text-indigo-800"
+                            >
+                              Virtual
+                            </Badge>
                           )}
-                        >
-                          {event.type}
-                        </Badge>
+                        </div>
                       </div>
                     </Card>
                   </Link>

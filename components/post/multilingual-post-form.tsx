@@ -76,9 +76,7 @@ export function MultilingualPostForm({
   const [existingImages, setExistingImages] = useState<
     { id: string; image_url: string }[]
   >(initialData?.images || []);
-  const [originalLink, setOriginalLink] = useState<string>(
-    initialData?.original_link || ""
-  );
+  const [eventId, setEventId] = useState<string>(initialData?.event?.id || "");
   const [isLoading, setIsLoading] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">(
     "vi"
@@ -285,15 +283,6 @@ export function MultilingualPostForm({
     }
 
     // Validate URL format if original link is provided
-    if (originalLink && !isValidUrl(originalLink)) {
-      toast({
-        title: t("validationError"),
-        description: t("invalidUrlFormat"),
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
 
     try {
       // Generate excerpt from content (strip markdown formatting)
@@ -314,7 +303,7 @@ export function MultilingualPostForm({
           content,
           categoryId: category,
           tags: tags.map((tag) => tag.id),
-          originalLink: originalLink || undefined,
+          eventId: eventId || undefined,
         }).catch((error) => {
           console.error("Error updating post:", error);
           return { success: false, message: "Error updating post" };
@@ -359,7 +348,7 @@ export function MultilingualPostForm({
           content,
           categoryId: category,
           tags: tags.map((tag) => tag.id),
-          originalLink: originalLink || undefined,
+          eventId: eventId || undefined,
         });
 
         if (result.success && result.post) {
@@ -403,17 +392,6 @@ export function MultilingualPostForm({
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Validate URL format
-  const isValidUrl = (urlString: string): boolean => {
-    try {
-      if (!urlString) return true;
-      new URL(urlString);
-      return true;
-    } catch (e) {
-      return false;
     }
   };
 
@@ -679,17 +657,17 @@ export function MultilingualPostForm({
           <div className="space-y-2">
             <Label htmlFor="original-link" className="flex items-center gap-2">
               <LinkIcon className="h-4 w-4" />
-              {t("originalSource") || "Original Source Link"}
+              {t("events").split(")")[1]}
             </Label>
             <Input
               id="original-link"
-              type="url"
-              value={originalLink}
-              onChange={(e) => setOriginalLink(e.target.value)}
-              placeholder="https://example.com/article"
+              type="text"
+              value={eventId}
+              onChange={(e) => setEventId(e.target.value)}
+              placeholder={t("optionalEventId")}
             />
             <p className="text-xs text-muted-foreground">
-              {t("optionalSourceLink") || "Optional source link for reference"}
+              {t("optionalEventId") || "Optional event ID for reference"}
             </p>
           </div>
 

@@ -1,15 +1,28 @@
 import { EventCalendar } from "@/components/events/event-calendar";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, Calendar as CalendarIcon, List } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  List,
+  MapPin,
+  Users,
+  Globe,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
-import { getMockEvents } from "@/lib/mock/events";
+import { getEvents } from "@/lib/db/events/event-get";
 import { EventList } from "@/components/events/event-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/utils/utils";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { getServerUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
-  const events = await getMockEvents();
+  const { events } = await getEvents({ isPinned: true });
+  const user = await getServerUser();
+  const isAdmin = user?.role === "admin";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -22,12 +35,42 @@ export default async function EventsPage() {
                 <Link href={`/events/${event.id}`}>
                   <div className="relative aspect-[16/9] rounded-lg overflow-hidden group">
                     <img
-                      src={event.imageUrl}
+                      src={
+                        event.images.find((image) =>
+                          image.image_url.includes("event-image")
+                        )?.image_url
+                      }
                       alt={event.title}
                       className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "capitalize text-sm",
+                            event.type === "workshop" &&
+                              "bg-blue-100 text-blue-800",
+                            event.type === "seminar" &&
+                              "bg-green-100 text-green-800",
+                            event.type === "conference" &&
+                              "bg-purple-100 text-purple-800",
+                            event.type === "meetup" &&
+                              "bg-orange-100 text-orange-800"
+                          )}
+                        >
+                          {event.type}
+                        </Badge>
+                        {event.is_virtual && (
+                          <Badge
+                            variant="secondary"
+                            className="bg-indigo-100 text-indigo-800"
+                          >
+                            Virtual
+                          </Badge>
+                        )}
+                      </div>
                       <h3 className="font-semibold text-lg mb-1">
                         {event.title}
                       </h3>
@@ -57,6 +100,14 @@ export default async function EventsPage() {
                 List View
               </TabsTrigger>
             </TabsList>
+            {isAdmin && (
+              <Button asChild>
+                <Link href="/events/create" className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Create Event
+                </Link>
+              </Button>
+            )}
           </div>
 
           <TabsContent value="calendar" className="space-y-8">
@@ -77,15 +128,72 @@ export default async function EventsPage() {
                   <div className="group relative overflow-hidden rounded-lg border bg-background p-6 hover:shadow-lg transition-all">
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
                     <div className="relative">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "capitalize text-sm",
+                            event.type === "workshop" &&
+                              "bg-blue-100 text-blue-800",
+                            event.type === "seminar" &&
+                              "bg-green-100 text-green-800",
+                            event.type === "conference" &&
+                              "bg-purple-100 text-purple-800",
+                            event.type === "meetup" &&
+                              "bg-orange-100 text-orange-800"
+                          )}
+                        >
+                          {event.type}
+                        </Badge>
+                        {event.is_virtual && (
+                          <Badge
+                            variant="secondary"
+                            className="bg-indigo-100 text-indigo-800"
+                          >
+                            Virtual
+                          </Badge>
+                        )}
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "capitalize",
+                            event.registration_type === "free" &&
+                              "bg-green-100 text-green-800",
+                            event.registration_type === "paid" &&
+                              "bg-blue-100 text-blue-800",
+                            event.registration_type === "invitation" &&
+                              "bg-purple-100 text-purple-800"
+                          )}
+                        >
+                          {event.registration_type}
+                        </Badge>
+                      </div>
                       <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
                         {event.title}
                       </h3>
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
                         {event.description}
                       </p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <CalendarIcon className="h-4 w-4" />
-                        {new Date(event.startDate).toLocaleDateString()}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CalendarIcon className="h-4 w-4" />
+                          {format(event.start_date, "MMM d, yyyy")}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4" />
+                          {event.is_virtual ? "Virtual Event" : event.location}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Users className="h-4 w-4" />
+                          {event.organizer_name}
+                        </div>
+                        {event.registration_type === "paid" && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Globe className="h-4 w-4" />
+                            {event.registration_fee}{" "}
+                            {event.registration_currency}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

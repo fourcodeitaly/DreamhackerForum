@@ -26,6 +26,9 @@ import {
   ExternalLink,
   X,
   Calendar,
+  Clock,
+  MapPin,
+  ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
@@ -37,15 +40,7 @@ import { Markdown } from "@/components/markdown"; // Import the Markdown compone
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  type: "online" | "offline";
-  link?: string;
-}
+import { Event } from "@/lib/db/events/event-modify";
 
 interface PostDetailProps {
   post: Post;
@@ -304,9 +299,9 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         <h1 className="text-2xl font-bold mb-3 pt-6">{getLocalizedTitle()}</h1>
 
         {/* Display the original link if available */}
-        {post.original_link && (
+        {/* {post.event && (
           <a
-            href={post.original_link}
+            href={`/events/${post.event.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center text-sm text-primary hover:underline mb-4"
@@ -314,7 +309,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
             <ExternalLink className="h-4 w-4 mr-1" />
             {t("originalSource") || "Original Source"}
           </a>
-        )}
+        )} */}
 
         <div className="flex flex-wrap gap-2 mt-4">
           {(post.tags || []).map((tag: { name: string; id: string }) => (
@@ -328,44 +323,77 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       </CardHeader>
 
       <CardContent className="p-0 md:p-6">
+        {post.event && (
+          <div>
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <Calendar className="h-5 w-5 mr-2 text-primary" />
+              {t("upcomingEvents").split(")")[1]}
+            </h2>
+          </div>
+        )}
+
+        {post.event && (
+          <Link href={`/events/${post.event.id}`} key={post.event.id}>
+            <Card className="p-4 hover:shadow-md transition-all group my-4">
+              <div className="flex justify-between items-start">
+                <div className="flex gap-4">
+                  {post.event.images && post.event.images.length > 0 && (
+                    <div className="w-24 h-24 flex-shrink-0">
+                      <img
+                        src={
+                          post.event.images.find(
+                            (image) => image.display_order === 0
+                          )?.image_url
+                        }
+                        alt={post.event.title}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <h4 className="font-medium group-hover:text-primary transition-colors">
+                      {post.event.title}
+                    </h4>
+                    <div className="flex flex-col gap-1 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        {format(
+                          new Date(post.event.start_date),
+                          "MMM d, yyyy"
+                        )}{" "}
+                        at {format(new Date(post.event.start_date), "h:mm a")}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        {post.event.location}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "capitalize",
+                      post.event.type === "workshop" &&
+                        "bg-blue-100 text-blue-800",
+                      post.event.type === "seminar" &&
+                        "bg-green-100 text-green-800",
+                      post.event.type === "conference" &&
+                        "bg-purple-100 text-purple-800"
+                    )}
+                  >
+                    {post.event.type}
+                  </Badge>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Card>
+          </Link>
+        )}
+
         <div className="prose prose-sm dark:prose-invert max-w-none">
           {/* Upcoming Events Section */}
-          <div className="mb-8">
-            {post.events && post.events.length > 0 ? (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
-                  <Calendar className="h-5 w-5 mr-2 text-primary" />
-                  {t("upcomingEvents")}
-                </h2>
-                {post.events.slice(0, 3).map((event) => (
-                  <Card
-                    key={event.id}
-                    className="p-4 hover:bg-accent/50 transition-colors"
-                  >
-                    <Link href={event.link} className="block">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <Calendar className="h-6 w-6 text-primary" />
-                        </div>
-                        <div className="flex-grow">
-                          <h3 className="font-medium mb-1">{event.title}</h3>
-                          <div className="text-sm text-muted-foreground space-y-1">
-                            <p>{format(new Date(event.date), "PPP")}</p>
-                            <p className="flex items-center gap-2">
-                              <span>{event.location}</span>
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10">
-                                {event.type}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </Card>
-                ))}
-              </div>
-            ) : null}
-          </div>
 
           {/* Post Images */}
           {post.images && post.images.length > 0 && (

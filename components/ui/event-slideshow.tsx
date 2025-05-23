@@ -7,7 +7,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./button";
-import { Event } from "@/lib/mock/events";
+import { Event } from "@/lib/db/events/event-modify";
 
 interface EventSlideshowProps {
   events: Event[];
@@ -56,7 +56,11 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
                   {/* Event Image */}
                   <div className="absolute inset-0">
                     <img
-                      src={event.imageUrl}
+                      src={
+                        event.images.find((image) =>
+                          image.image_url.includes("event-image")
+                        )?.image_url
+                      }
                       alt={event.title}
                       className="w-full h-full object-cover"
                     />
@@ -71,7 +75,7 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
                     <div className="text-white/90 space-y-3">
                       <p className="text-sm md:text-lg font-medium flex items-center gap-2">
                         <Calendar className="h-5 w-5 text-white/80" />
-                        {format(event.startDate, "PPP")}
+                        {format(event.start_date, "PPP")}
                       </p>
                       <p className="flex items-center gap-3">
                         <span className="text-sm md:text-lg font-medium">
@@ -80,6 +84,11 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
                         <span className="px-4 py-1.5 rounded-full bg-white/20 text-sm font-semibold tracking-wide uppercase">
                           {event.type}
                         </span>
+                        {event.is_virtual && (
+                          <span className="px-4 py-1.5 rounded-full bg-white/20 text-sm font-semibold tracking-wide uppercase">
+                            Virtual
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>

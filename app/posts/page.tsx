@@ -22,6 +22,7 @@ import { Post } from "@/lib/db/posts/posts-modify";
 import { getMockEvents } from "@/lib/mock/events";
 import Link from "next/link";
 import { EventSlideshow } from "@/components/ui/event-slideshow";
+import { getEvents } from "@/lib/db/events/event-get";
 
 export const dynamic = "force-dynamic";
 
@@ -105,7 +106,7 @@ export default async function Posts({
   const isAdmin = user?.role === "admin";
 
   // Fetch upcoming events
-  const upcomingEvents = await getMockEvents();
+  const upcomingEvents = await getEvents();
 
   return (
     <div className="container mx-auto p-4">
@@ -114,7 +115,7 @@ export default async function Posts({
 
       {/* Upcoming Events Section */}
       <div className="mb-8">
-        <EventSlideshow events={upcomingEvents} />
+        <EventSlideshow events={upcomingEvents.events} />
       </div>
 
       {/* <div className="block md:hidden mb-8">

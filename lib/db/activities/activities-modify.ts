@@ -6,14 +6,17 @@ export type ActivityType =
   | "post_created"
   | "post_updated"
   | "post_deleted"
-  | "comment_created";
+  | "comment_created"
+  | "event_created"
+  | "event_updated"
+  | "event_deleted";
 
 export interface Activity {
   id: string;
   user_id: string;
   type: ActivityType;
-  target_id: string; // post_id or comment_id
-  target_type: "post" | "comment";
+  target_id: string; // post_id, comment_id, or event_id
+  target_type: "post" | "comment" | "event";
   category_id?: string;
   created_at: Date;
   metadata?: Record<string, any>;
@@ -23,11 +26,12 @@ export async function createActivity(
   userId: string,
   type: ActivityType,
   targetId: string,
-  targetType: "post" | "comment",
+  targetType: "post" | "comment" | "event",
   categoryId?: string,
   metadata?: Record<string, any>
 ): Promise<Activity> {
-  const sql = `
+  try {
+    const sql = `
     INSERT INTO activities (
       user_id,
       type,
@@ -39,16 +43,20 @@ export async function createActivity(
     RETURNING *
   `;
 
-  const result = await query<Activity>(sql, [
-    userId,
-    type,
-    targetId,
-    targetType,
-    categoryId,
-    metadata ? JSON.stringify(metadata) : null,
-  ]);
+    const result = await query<Activity>(sql, [
+      userId,
+      type,
+      targetId,
+      targetType,
+      categoryId,
+      metadata ? JSON.stringify(metadata) : null,
+    ]);
 
-  return result[0];
+    return result[0];
+  } catch (error) {
+    console.error("Error creating activity:", error);
+    throw error;
+  }
 }
 
 export async function getRecentActivities(

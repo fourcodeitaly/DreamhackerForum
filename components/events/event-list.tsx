@@ -4,18 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { cn } from "@/utils/utils";
-import { Clock, MapPin, ArrowRight } from "lucide-react";
+import { Clock, MapPin, ArrowRight, Users } from "lucide-react";
 import Link from "next/link";
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-  location: string;
-  type: "workshop" | "seminar" | "conference" | "other";
-}
+import { Event } from "@/lib/db/events/event-modify";
 
 interface EventListProps {
   events: Event[];
@@ -26,9 +17,9 @@ export function EventList({ events }: EventListProps) {
   const upcomingEvents = [...events]
     .sort(
       (a, b) =>
-        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
     )
-    .filter((event) => new Date(event.startDate) >= new Date())
+    .filter((event) => new Date(event.start_date) >= new Date())
     .slice(0, 5);
 
   return (
@@ -53,31 +44,47 @@ export function EventList({ events }: EventListProps) {
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4" />
                         {format(
-                          new Date(event.startDate),
+                          new Date(event.start_date),
                           "MMM d, yyyy"
-                        )} at {format(new Date(event.startDate), "h:mm a")}
+                        )} at {format(new Date(event.start_date), "h:mm a")}
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
-                        {event.location}
+                        {event.is_virtual ? "Virtual Event" : event.location}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        {event.organizer_name}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "capitalize",
-                        event.type === "workshop" &&
-                          "bg-blue-100 text-blue-800",
-                        event.type === "seminar" &&
-                          "bg-green-100 text-green-800",
-                        event.type === "conference" &&
-                          "bg-purple-100 text-purple-800"
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "capitalize",
+                          event.type === "workshop" &&
+                            "bg-blue-100 text-blue-800",
+                          event.type === "seminar" &&
+                            "bg-green-100 text-green-800",
+                          event.type === "conference" &&
+                            "bg-purple-100 text-purple-800",
+                          event.type === "meetup" &&
+                            "bg-orange-100 text-orange-800"
+                        )}
+                      >
+                        {event.type}
+                      </Badge>
+                      {event.is_virtual && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-indigo-100 text-indigo-800"
+                        >
+                          Virtual
+                        </Badge>
                       )}
-                    >
-                      {event.type}
-                    </Badge>
+                    </div>
                     <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>

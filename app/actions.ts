@@ -14,7 +14,7 @@ export async function createPostAction(formData: {
   categoryId?: string;
   tags?: string[];
   imageUrl?: string;
-  originalLink?: string;
+  eventId?: string;
   isPinned?: boolean;
 }): Promise<{ success: boolean; post?: Post; message?: string }> {
   try {
@@ -31,7 +31,7 @@ export async function createPostAction(formData: {
       category_id: formData.categoryId,
       tags: formData.tags,
       image_url: formData.imageUrl,
-      original_link: formData.originalLink || null,
+      event_id: formData.eventId || null,
       is_pinned: formData.isPinned || false,
     });
 
@@ -67,7 +67,7 @@ export async function updatePostAction(
     categoryId?: string;
     tags?: string[];
     imageUrl?: string | null;
-    originalLink?: string | null;
+    eventId?: string | null;
     isPinned?: boolean;
   }
 ) {
@@ -79,7 +79,7 @@ export async function updatePostAction(
       category_id: formData.categoryId,
       tags: formData.tags,
       image_url: formData.imageUrl || undefined,
-      original_link: formData.originalLink || null,
+      event_id: formData.eventId || null,
       is_pinned: formData.isPinned,
     });
 

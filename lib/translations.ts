@@ -143,7 +143,6 @@ export const translations = {
     deleting: "Deleting...",
     errorDeletingPost: "Error deleting post",
     postDeleted: "Post deleted",
-    events: "Events",
     hide: "Hide",
     show: "Show",
 
@@ -187,6 +186,12 @@ export const translations = {
     phdRecommendationLetter: "(PhD) Recommendation Letter",
     phdApplicationFAQ: "(PhD) Application FAQ",
     phdScholarship: "(PhD) Scholarship",
+
+    // Events
+    events: "(Event) Events",
+    allEvents: "(Event) All Events",
+    upcomingEvents: "(Event) Upcoming Events",
+    optionalEventId: "Optional event ID for reference",
 
     // Study Abroad Categories
     // studyAbroad: "Study Abroad",
@@ -537,7 +542,6 @@ export const translations = {
     deleting: "Đang xóa...",
     errorDeletingPost: "Lỗi khi xóa bài viết",
     postDeleted: "Bài viết đã được xóa",
-    events: "Sự kiện",
     hide: "Ẩn",
     show: "Hiện",
 
@@ -582,6 +586,12 @@ export const translations = {
     phdRecommendationLetter: "(Phd) Thư giới thiệu",
     phdApplicationFAQ: "(Phd) Câu hỏi thường gặp",
     phdScholarship: "(Phd) Học bổng PhD",
+
+    // Events
+    events: "(Sự kiện) Sự kiện",
+    allEvents: "(Sự kiện) Tất cả sự kiện",
+    upcomingEvents: "(Sự kiện) Sự kiện sắp tới",
+    optionalEventId: "ID sự kiện (tùy chọn)",
 
     // Study Abroad Categories
     studyAbroad: "(Du học) Du học",

@@ -47,7 +47,6 @@ export async function query<T = any>(
   text: string,
   params: any[] = []
 ): Promise<T[]> {
-  const start = Date.now();
   const client = await getPool().connect();
   try {
     // Enable statement timeout to prevent long-running queries

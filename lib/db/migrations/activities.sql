@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS activities (
   category_id VARCHAR(255) REFERENCES categories(id) ON DELETE SET NULL,
   metadata JSONB,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT valid_activity_type CHECK (type IN ('post_created', 'post_updated', 'post_deleted', 'comment_created')),
-  CONSTRAINT valid_target_type CHECK (target_type IN ('post', 'comment'))
+  CONSTRAINT valid_activity_type CHECK (type IN ('post_created', 'post_updated', 'post_deleted', 'comment_created', 'event_created', 'event_updated', 'event_deleted')),
+  CONSTRAINT valid_target_type CHECK (target_type IN ('post', 'comment', 'event'))
 );
 
 -- Create index for faster queries

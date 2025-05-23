@@ -1,6 +1,7 @@
 "use server";
 
 import { createActivity } from "../activities/activities-modify";
+import { Event } from "../events/event-modify";
 import { query, queryOne, transaction } from "../postgres";
 
 export type MultilingualContent = {
@@ -17,7 +18,7 @@ export type Post = {
   user_id: string;
   category_id?: string | null;
   image_url?: string | null;
-  original_link?: string | null;
+  event_id?: string | null;
   is_pinned?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -45,14 +46,7 @@ export type Post = {
     username: string;
     image_url?: string;
   };
-  events?: {
-    id: string;
-    title: string;
-    date: string;
-    location: string;
-    type: "online" | "offline";
-    link: string;
-  }[];
+  event?: Event;
 };
 
 // Type definitions
@@ -80,7 +74,7 @@ export async function createPost(postData: {
   category_id?: string;
   tags?: string[];
   image_url?: string;
-  original_link?: string | null;
+  event_id?: string | null;
   is_pinned?: boolean;
 }): Promise<Post | null> {
   try {
@@ -90,7 +84,7 @@ export async function createPost(postData: {
       const sql = `
       INSERT INTO posts (
         user_id, title, content, category_id,
-        image_url, original_link, is_pinned, created_at, updated_at
+        image_url, event_id, is_pinned, created_at, updated_at
       ) 
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
@@ -102,7 +96,7 @@ export async function createPost(postData: {
         JSON.stringify(postData.content),
         postData.category_id || null,
         postData.image_url || null,
-        postData.original_link || null,
+        postData.event_id || null,
         postData.is_pinned || false,
         now,
         now,
@@ -177,7 +171,7 @@ export async function updatePost(
     category_id?: string;
     tags?: string[];
     image_url?: string;
-    original_link?: string | null;
+    event_id?: string | null;
     is_pinned?: boolean;
   }
 ): Promise<Post | null> {
@@ -212,9 +206,9 @@ export async function updatePost(
       paramIndex++;
     }
 
-    if (postData.original_link !== undefined) {
-      updates.push(`original_link = $${paramIndex}`);
-      values.push(postData.original_link);
+    if (postData.event_id !== undefined) {
+      updates.push(`event_id = $${paramIndex}`);
+      values.push(postData.event_id);
       paramIndex++;
     }
 

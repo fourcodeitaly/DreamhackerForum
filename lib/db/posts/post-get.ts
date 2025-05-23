@@ -63,10 +63,58 @@ export async function getPostById(
             )
             FROM post_images pi
             WHERE pi.post_id = p.id
-          ) as images
+          ) as images,
+          (
+            SELECT json_build_object(
+              'id', e.id,
+              'title', e.title,
+              'description', e.description,
+              'start_date', e.start_date,
+              'end_date', e.end_date,
+              'location', e.location,
+              'type', e.type,
+              'capacity', e.capacity,
+              'registered_count', e.registered_count,
+              'is_virtual', e.is_virtual,
+              'virtual_meeting_link', e.virtual_meeting_link,
+              'image_url', e.image_url,
+              'is_published', e.is_published,
+              'created_user_id', e.created_user_id,
+              'organizer_name', e.organizer_name,
+              'organizer_email', e.organizer_email,
+              'organizer_phone', e.organizer_phone,
+              'organizer_website', e.organizer_website,
+              'organizer_logo', e.organizer_logo,
+              'organizer_description', e.organizer_description,
+              'organizer_location', e.organizer_location,
+              'registration_url', e.registration_url,
+              'registration_deadline', e.registration_deadline,
+              'registration_fee', e.registration_fee,
+              'registration_currency', e.registration_currency,
+              'registration_type', e.registration_type,
+              'registration_status', e.registration_status,
+              'status', e.status,
+              'created_at', e.created_at,
+              'updated_at', e.updated_at,
+              'images', (
+                SELECT json_agg(
+                  json_build_object(
+                    'id', ei.id,
+                    'image_url', ei.image_url,
+                    'display_order', ei.display_order
+                  )
+                )
+                FROM event_images ei
+                WHERE ei.event_id = e.id
+              )
+            )
+            FROM events e 
+            WHERE p.event_id = e.id
+          ) as event
         FROM posts p
         LEFT JOIN users u ON p.user_id = u.id
         LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN events e ON p.event_id = e.id
         WHERE p.id = $1
       `;
 
@@ -241,7 +289,31 @@ export async function getPosts(
                 child.parent_id IS NULL -- top-level comment
                 OR parent.status IS DISTINCT FROM 'deleted' -- parent not deleted
               )
-          ) as comments_count
+          ) as comments_count,
+          (
+            SELECT json_build_object(
+              'id', e.id,
+              'title', e.title,
+              'description', e.description,
+              'start_date', e.start_date,
+              'end_date', e.end_date,
+              'location', e.location,
+              'type', e.type,
+              'images', (
+                SELECT json_agg(
+                  json_build_object(
+                    'id', ei.id,
+                    'image_url', ei.image_url,
+                    'display_order', ei.display_order
+                  )
+                )
+                FROM event_images ei
+                WHERE ei.event_id = e.id
+              )
+            )
+            FROM events e
+            WHERE p.event_id = e.id
+          ) as event
         FROM posts p
         LEFT JOIN users u ON p.user_id = u.id
         LEFT JOIN categories c ON p.category_id = c.id

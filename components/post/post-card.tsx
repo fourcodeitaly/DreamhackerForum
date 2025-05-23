@@ -47,12 +47,12 @@ export function PostCard({ post }: PostCardProps) {
                 </Badge>
               </Link>
             )}
-            {post.events && post.events.length > 0 && (
+            {post.event && (
               <Badge
                 variant="default"
                 className="bg-red-500 hover:bg-red-600 text-nowrap"
               >
-                {t("events")}
+                {t("events").split(")")[1]}
               </Badge>
             )}
           </div>
