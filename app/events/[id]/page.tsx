@@ -1,22 +1,18 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { cn } from "@/utils/utils";
-import { useRouter } from "next/navigation";
-import { Event, getMockEvents } from "@/lib/mock/events";
-import { useState, useEffect } from "react";
+import { getMockEvents } from "@/lib/mock/events";
 import {
   Calendar,
   Clock,
   MapPin,
   Users,
-  ArrowLeft,
   Share2,
   BookmarkPlus,
 } from "lucide-react";
+import { notFound } from "next/navigation";
 
 interface EventDetailPageProps {
   params: {
@@ -24,39 +20,16 @@ interface EventDetailPageProps {
   };
 }
 
-export default function EventDetailPage({ params }: EventDetailPageProps) {
-  const router = useRouter();
-  const [event, setEvent] = useState<Event | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // TODO: Replace with actual API call
-    const events = getMockEvents();
-    const foundEvent = events.find((e) => e.id === params.id);
-
-    if (foundEvent) {
-      setEvent(foundEvent);
-    } else {
-      router.push("/events");
-    }
-
-    setIsLoading(false);
-  }, [params.id, router]);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="py-8">
-            <div className="text-center">Loading...</div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+export default async function EventDetailPage({
+  params,
+}: EventDetailPageProps) {
+  // TODO: Replace with actual API call
+  const { id } = await params;
+  const events = getMockEvents();
+  const event = events.find((e) => e.id === id);
 
   if (!event) {
-    return null;
+    notFound();
   }
 
   return (
@@ -89,7 +62,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
               </Badge>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                {format(new Date(event.startDate), "EEEE, MMMM d, yyyy")}
+                {format(event.startDate, "EEEE, MMMM d, yyyy")}
               </div>
             </div>
 
@@ -104,8 +77,8 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                {format(new Date(event.startDate), "h:mm a")} -{" "}
-                {format(new Date(event.endDate), "h:mm a")}
+                {format(event.startDate, "h:mm a")} -{" "}
+                {format(event.endDate, "h:mm a")}
               </div>
             </div>
 
@@ -113,7 +86,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
               <Button
                 size="lg"
                 className="rounded-full"
-                disabled={new Date(event.registrationDeadline) <= new Date()}
+                disabled={event.registrationDeadline <= new Date()}
               >
                 Register Now
               </Button>
@@ -156,14 +129,11 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                     <div>
                       <h4 className="font-medium">Date & Time</h4>
                       <p className="text-sm text-muted-foreground">
-                        {format(
-                          new Date(event.startDate),
-                          "EEEE, MMMM d, yyyy"
-                        )}
+                        {format(event.startDate, "EEEE, MMMM d, yyyy")}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(event.startDate), "h:mm a")} -{" "}
-                        {format(new Date(event.endDate), "h:mm a")}
+                        {format(event.startDate, "h:mm a")} -{" "}
+                        {format(event.endDate, "h:mm a")}
                       </p>
                     </div>
                   </div>
@@ -193,12 +163,8 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                     <div>
                       <h4 className="font-medium">Registration Deadline</h4>
                       <p className="text-sm text-muted-foreground">
-                        {format(
-                          new Date(event.registrationDeadline),
-                          "MMMM d, yyyy"
-                        )}{" "}
-                        at{" "}
-                        {format(new Date(event.registrationDeadline), "h:mm a")}
+                        {format(event.registrationDeadline, "MMMM d, yyyy")} at{" "}
+                        {format(event.registrationDeadline, "h:mm a")}
                       </p>
                     </div>
                   </div>
@@ -224,7 +190,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                   <div>
                     <h4 className="font-medium">Registration Status</h4>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(event.registrationDeadline) > new Date()
+                      {event.registrationDeadline > new Date()
                         ? "Open for registration"
                         : "Registration closed"}
                     </p>
@@ -233,9 +199,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                   <Button
                     className="w-full"
                     size="lg"
-                    disabled={
-                      new Date(event.registrationDeadline) <= new Date()
-                    }
+                    disabled={event.registrationDeadline <= new Date()}
                   >
                     Register Now
                   </Button>
