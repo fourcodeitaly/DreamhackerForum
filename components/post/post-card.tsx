@@ -28,8 +28,11 @@ export function PostCard({ post }: PostCardProps) {
       <CardHeader className="p-4">
         <div className="flex place-items-start gap-2 justify-between">
           <Link href={`/posts/${post.id}`} className="block">
-            <h2 className="text-sm font-semibold hover:underline mb-2">
+            <h2 className="text-sm font-medium hover:underline mb-2">
               {postTitle}
+              <span className="text-xs text-muted-foreground font-light text-nowrap">
+                ・{post.user?.name}
+              </span>
             </h2>
           </Link>
           {hasScholarshipTag && (
@@ -41,7 +44,6 @@ export function PostCard({ post }: PostCardProps) {
             </Badge>
           )}
         </div>
-
         <div className="flex flex-col md:flex-row gap-4 text-xs text-muted-foreground justify-between">
           <div className="flex items-center gap-2 flex-wrap">
             {post.category && (
