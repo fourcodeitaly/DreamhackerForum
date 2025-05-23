@@ -24,7 +24,7 @@ export function PostCard({ post }: PostCardProps) {
   );
 
   return (
-    <Card className="w-full shadow-sm hover:shadow-md transition-shadow relative">
+    <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="p-4">
         <div className="flex place-items-start gap-2 justify-between">
           <Link href={`/posts/${post.id}`} className="block">
@@ -38,12 +38,14 @@ export function PostCard({ post }: PostCardProps) {
           </Link>
           <div className="flex gap-2">
             {hasScholarshipTag && (
-              <Badge
-                variant="default"
-                className="bg-yellow-500 hover:bg-yellow-600 text-nowrap animate-pulse"
-              >
-                {t("scholarship").split(")")[1]}
-              </Badge>
+              <Link href={`/scholarships`}>
+                <Badge
+                  variant="default"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-nowrap animate-pulse"
+                >
+                  {t("scholarship").split(")")[1]}
+                </Badge>
+              </Link>
             )}
             {post.events && post.events.length > 0 && (
               <Badge

@@ -64,8 +64,8 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
                   </div>
 
                   {/* Event Content */}
-                  <div className="relative h-full p-6 flex flex-col justify-end w-11/12 mx-auto">
-                    <h3 className="text-2xl font-bold mb-3 text-white tracking-tight">
+                  <div className="relative h-full p-6 flex flex-col justify-end w-10/12 md:w-11/12 mx-auto">
+                    <h3 className="text-2xl font-bold mb-3 text-white tracking-tight shadow-xl">
                       {event.title}
                     </h3>
                     <div className="text-white/90 space-y-3">

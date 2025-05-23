@@ -144,6 +144,8 @@ export const translations = {
     errorDeletingPost: "Error deleting post",
     postDeleted: "Post deleted",
     events: "Events",
+    hide: "Hide",
+    show: "Show",
 
     // Schools
     allSchools: "(School) All Schools",
@@ -536,6 +538,8 @@ export const translations = {
     errorDeletingPost: "Lỗi khi xóa bài viết",
     postDeleted: "Bài viết đã được xóa",
     events: "Sự kiện",
+    hide: "Ẩn",
+    show: "Hiện",
 
     // Schools
     allSchools: "(School) Tất cả trường",

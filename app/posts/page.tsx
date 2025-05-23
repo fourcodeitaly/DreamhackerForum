@@ -108,18 +108,18 @@ export default async function Posts({
   const upcomingEvents = await getMockEvents();
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto p-4">
       {/* Only show in development */}
       {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
 
       {/* Upcoming Events Section */}
-      <div className="hidden md:block mb-8">
+      <div className="mb-8">
         <EventSlideshow events={upcomingEvents} />
       </div>
 
-      <div className="block md:hidden mb-8">
+      {/* <div className="block md:hidden mb-8">
         <FeaturedPosts posts={featuredPosts} />
-      </div>
+      </div> */}
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Sidebar - Sticky */}

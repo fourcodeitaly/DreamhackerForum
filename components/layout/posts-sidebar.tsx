@@ -30,10 +30,14 @@ export function PostsSidebar() {
         <CategoryNavigation className="flex-wrap" />
       </div>
       {/* Scholarships */}
-      <ScholarshipPosts />
+      <div className="hidden lg:block">
+        <ScholarshipPosts />
+      </div>
 
       {/* Recent Activities */}
-      <RecentActivities />
+      <div className="hidden lg:block">
+        <RecentActivities />
+      </div>
 
       {/* Trending Topics */}
       <Card className="hidden lg:block">

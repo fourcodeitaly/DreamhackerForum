@@ -1,6 +1,7 @@
 import { PostCard } from "./post-card";
 import { Pagination } from "../pagination";
 import type { Post } from "@/lib/db/posts/posts-modify";
+import { Card } from "../ui/card";
 
 interface PostListProps {
   posts?: Post[];
