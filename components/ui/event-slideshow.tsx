@@ -65,16 +65,16 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
 
                   {/* Event Content */}
                   <div className="relative h-full p-6 flex flex-col justify-end w-10/12 md:w-11/12 mx-auto">
-                    <h3 className="text-2xl font-bold mb-3 text-white tracking-tight shadow-xl">
+                    <h3 className="text-lg md:text-2xl font-bold mb-3 text-white tracking-tight shadow-xl">
                       {event.title}
                     </h3>
                     <div className="text-white/90 space-y-3">
-                      <p className="text-lg font-medium flex items-center gap-2">
+                      <p className="text-sm md:text-lg font-medium flex items-center gap-2">
                         <Calendar className="h-5 w-5 text-white/80" />
                         {format(event.startDate, "PPP")}
                       </p>
                       <p className="flex items-center gap-3">
-                        <span className="text-lg font-medium">
+                        <span className="text-sm md:text-lg font-medium">
                           {event.location}
                         </span>
                         <span className="px-4 py-1.5 rounded-full bg-white/20 text-sm font-semibold tracking-wide uppercase">
@@ -94,18 +94,18 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background backdrop-blur-sm rounded-full"
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background backdrop-blur-sm rounded-full size-6 md:size-10"
         onClick={prevSlide}
       >
-        <ChevronLeft className="h-6 w-6" />
+        <ChevronLeft className="h-4 w-4 md:h-6 md:w-6" />
       </Button>
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background backdrop-blur-sm rounded-full"
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background backdrop-blur-sm rounded-full size-6 md:size-10"
         onClick={nextSlide}
       >
-        <ChevronRight className="h-6 w-6" />
+        <ChevronRight className="h-4 w-4 md:h-6 md:w-6" />
       </Button>
 
       {/* Dots indicator */}
