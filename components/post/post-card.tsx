@@ -36,7 +36,7 @@ export function PostCard({ post }: PostCardProps) {
               </span>
             </h2>
           </Link>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             {hasScholarshipTag && (
               <Link href={`/scholarships`}>
                 <Badge
@@ -48,12 +48,14 @@ export function PostCard({ post }: PostCardProps) {
               </Link>
             )}
             {post.event && (
-              <Badge
-                variant="default"
-                className="bg-red-500 hover:bg-red-600 text-nowrap"
-              >
-                {t("events").split(")")[1]}
-              </Badge>
+              <Link href={`/events/${post.event.id}`}>
+                <Badge
+                  variant="default"
+                  className="bg-red-500 hover:bg-red-600 text-nowrap"
+                >
+                  {t("events").split(")")[1]}
+                </Badge>
+              </Link>
             )}
           </div>
         </div>

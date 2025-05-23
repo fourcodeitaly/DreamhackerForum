@@ -324,7 +324,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
       <CardContent className="p-0 md:p-6">
         {post.event && (
-          <div>
+          <div className="mt-4">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <Calendar className="h-5 w-5 mr-2 text-primary" />
               {t("upcomingEvents").split(")")[1]}
@@ -335,8 +335,8 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         {post.event && (
           <Link href={`/events/${post.event.id}`} key={post.event.id}>
             <Card className="p-4 hover:shadow-md transition-all group my-4">
-              <div className="flex justify-between items-start">
-                <div className="flex gap-4">
+              <div className="flex justify-between items-start w-full">
+                <div className="flex gap-4 w-full">
                   {post.event.images && post.event.images.length > 0 && (
                     <div className="w-24 h-24 flex-shrink-0">
                       <img
@@ -350,10 +350,29 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
                       />
                     </div>
                   )}
-                  <div className="space-y-2">
-                    <h4 className="font-medium group-hover:text-primary transition-colors">
-                      {post.event.title}
-                    </h4>
+                  <div className="space-y-2 w-full">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-medium group-hover:text-primary transition-colors">
+                        {post.event.title}
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "capitalize",
+                            post.event.type === "workshop" &&
+                              "bg-blue-100 text-blue-800",
+                            post.event.type === "seminar" &&
+                              "bg-green-100 text-green-800",
+                            post.event.type === "conference" &&
+                              "bg-purple-100 text-purple-800"
+                          )}
+                        >
+                          {post.event.type}
+                        </Badge>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
                     <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4" />
@@ -369,23 +388,6 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="secondary"
-                    className={cn(
-                      "capitalize",
-                      post.event.type === "workshop" &&
-                        "bg-blue-100 text-blue-800",
-                      post.event.type === "seminar" &&
-                        "bg-green-100 text-green-800",
-                      post.event.type === "conference" &&
-                        "bg-purple-100 text-purple-800"
-                    )}
-                  >
-                    {post.event.type}
-                  </Badge>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </Card>
