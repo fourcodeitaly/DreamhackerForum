@@ -25,6 +25,7 @@ import {
   Edit,
   ExternalLink,
   X,
+  Calendar,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
@@ -35,6 +36,16 @@ import { normalizePostData } from "@/utils/data-utils";
 import { Markdown } from "@/components/markdown"; // Import the Markdown component
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { useToast } from "@/components/ui/use-toast";
+import { format } from "date-fns";
+
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  location: string;
+  type: "online" | "offline";
+  link?: string;
+}
 
 interface PostDetailProps {
   post: Post;
@@ -65,6 +76,23 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       setCurrentLanguage(language);
     }
   }, [rawPost, language]);
+
+  // useEffect(() => {
+  //   const fetchEvents = async () => {
+  //     try {
+  //       const response = await fetch("/api/events/upcoming");
+  //       if (!response.ok) throw new Error("Failed to fetch events");
+  //       const data = await response.json();
+  //       setEvents(data);
+  //     } catch (error) {
+  //       console.error("Error fetching events:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchEvents();
+  // }, []);
 
   // Handle case where post might be null or undefined
   if (!post) {
@@ -301,6 +329,45 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
       <CardContent className="p-0 md:p-6">
         <div className="prose prose-sm dark:prose-invert max-w-none">
+          {/* Upcoming Events Section */}
+          <div className="mb-8">
+            {post.events && post.events.length > 0 ? (
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                  <Calendar className="h-5 w-5 mr-2 text-primary" />
+                  {t("upcomingEvents")}
+                </h2>
+                {post.events.slice(0, 3).map((event) => (
+                  <Card
+                    key={event.id}
+                    className="p-4 hover:bg-accent/50 transition-colors"
+                  >
+                    <Link href={event.link} className="block">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Calendar className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="font-medium mb-1">{event.title}</h3>
+                          <div className="text-sm text-muted-foreground space-y-1">
+                            <p>{format(new Date(event.date), "PPP")}</p>
+                            <p className="flex items-center gap-2">
+                              <span>{event.location}</span>
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10">
+                                {event.type}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </Card>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          {/* Post Images */}
           {post.images && post.images.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 my-6">
               {post.images.map((image) => (
@@ -318,6 +385,8 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
               ))}
             </div>
           )}
+
+          {/* Post Content */}
           <Markdown content={getLocalizedContent()} />
         </div>
       </CardContent>

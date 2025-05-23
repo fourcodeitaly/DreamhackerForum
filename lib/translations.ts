@@ -143,6 +143,7 @@ export const translations = {
     deleting: "Deleting...",
     errorDeletingPost: "Error deleting post",
     postDeleted: "Post deleted",
+    events: "Events",
 
     // Schools
     allSchools: "(School) All Schools",
@@ -534,6 +535,7 @@ export const translations = {
     deleting: "Đang xóa...",
     errorDeletingPost: "Lỗi khi xóa bài viết",
     postDeleted: "Bài viết đã được xóa",
+    events: "Sự kiện",
 
     // Schools
     allSchools: "(School) Tất cả trường",

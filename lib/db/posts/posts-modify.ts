@@ -45,6 +45,14 @@ export type Post = {
     username: string;
     image_url?: string;
   };
+  events?: {
+    id: string;
+    title: string;
+    date: string;
+    location: string;
+    type: "online" | "offline";
+    link: string;
+  }[];
 };
 
 // Type definitions

@@ -29,20 +29,31 @@ export function PostCard({ post }: PostCardProps) {
         <div className="flex place-items-start gap-2 justify-between">
           <Link href={`/posts/${post.id}`} className="block">
             <h2 className="text-sm font-medium hover:underline mb-2">
+              <span className="mr-2">🔥</span>
               {postTitle}
               <span className="text-xs text-muted-foreground font-light text-nowrap">
                 ・{post.user?.name}
               </span>
             </h2>
           </Link>
-          {hasScholarshipTag && (
-            <Badge
-              variant="default"
-              className="bg-yellow-500 hover:bg-yellow-600 text-nowrap"
-            >
-              {t("scholarship").split(")")[1]}
-            </Badge>
-          )}
+          <div className="flex gap-2">
+            {hasScholarshipTag && (
+              <Badge
+                variant="default"
+                className="bg-yellow-500 hover:bg-yellow-600 text-nowrap animate-pulse"
+              >
+                {t("scholarship").split(")")[1]}
+              </Badge>
+            )}
+            {post.events && post.events.length > 0 && (
+              <Badge
+                variant="default"
+                className="bg-red-500 hover:bg-red-600 text-nowrap"
+              >
+                {t("events")}
+              </Badge>
+            )}
+          </div>
         </div>
         <div className="flex flex-col md:flex-row gap-4 text-xs text-muted-foreground justify-between">
           <div className="flex items-center gap-2 flex-wrap">

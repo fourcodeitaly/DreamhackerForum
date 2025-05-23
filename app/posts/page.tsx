@@ -8,18 +8,21 @@ import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/layout/skeletons";
 import { ServerEnvChecker } from "@/components/layout/server-env-checker";
 import {
-  getNullTitlePosts,
   getPinnedPosts,
   getPosts,
   getPostsByTags,
 } from "@/lib/db/posts/post-get";
 import { getTopContributors } from "@/lib/db/users-get";
 import { getCategory } from "@/lib/db/category/category-get";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getServerUser } from "@/lib/supabase/server";
 import { getTagById, getTags, Tag } from "@/lib/db/tags/tags-get";
 import { Post } from "@/lib/db/posts/posts-modify";
+import { getMockEvents } from "@/lib/mock/events";
+import Link from "next/link";
+import { EventSlideshow } from "@/components/ui/event-slideshow";
+
 export const dynamic = "force-dynamic";
 
 const categories: { id: string; name: string }[] = [
@@ -101,28 +104,19 @@ export default async function Posts({
   const user = await getServerUser();
   const isAdmin = user?.role === "admin";
 
+  // Fetch upcoming events
+  const upcomingEvents = await getMockEvents();
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Only show in development */}
       {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
 
-      {/* Poster/Banner Section */}
-      <div className="hidden md:block relative w-full h-[150px] mb-8 rounded-lg overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 animate-gradient">
-          <div className="absolute inset-0 bg-black/30 animate-pulse" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-black/20 animate-pulse" />
-          <div className="relative h-full flex flex-col items-center justify-center text-white px-4">
-            <h1 className="text-xl md:text-2xl font-bold mb-4 text-center animate-float">
-              Dreamhacker Forum
-            </h1>
-            <p className="text-md md:text-lg text-center max-w-2xl animate-float-delayed">
-              Join our community to share experiences, ask questions, and
-              connect with fellow students
-            </p>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-        </div>
+      {/* Upcoming Events Section */}
+      <div className="hidden md:block mb-8">
+        <EventSlideshow events={upcomingEvents} />
       </div>
+
       <div className="block md:hidden mb-8">
         <FeaturedPosts posts={featuredPosts} />
       </div>
