@@ -1,214 +1,154 @@
 export interface School {
   id: string;
   name: string;
-  code: string;
-  description: string;
+  logo: string;
   location: string;
-  website: string;
-  logo_url: string;
-  type: "university" | "college" | "high_school";
-  country: string;
-  city: string;
-  address: string;
-  phone: string;
-  email: string;
-  founded_year: number;
-  student_count: number;
-  faculty_count: number;
-  programs: string[];
-  facilities: string[];
-  achievements: string[];
-  social_media: {
-    facebook?: string;
-    twitter?: string;
-    instagram?: string;
-    linkedin?: string;
+  founded: number;
+  type: "public" | "private";
+  ranking: number;
+  totalStudents: number;
+  acceptanceRate: number;
+  averageGPA: number;
+  averageSAT: number;
+  averageACT: number;
+  tuition: {
+    inState: number;
+    outState: number;
+    international: number;
   };
-  images: {
-    id: string;
-    url: string;
-    type: "campus" | "building" | "event" | "other";
-  }[];
-  created_at: Date;
-  updated_at: Date;
+  popularMajors: string[];
+  campusLife: {
+    studentClubs: number;
+    sportsTeams: number;
+    housingOptions: string[];
+  };
+  description: string;
+  website: string;
+  images: string[];
 }
 
-export const mockSchools: School[] = [
-  {
-    id: "1",
-    name: "Harvard University",
-    code: "HARV",
-    description:
-      "Harvard University is a private Ivy League research university in Cambridge, Massachusetts. Established in 1636, it is the oldest institution of higher learning in the United States.",
-    location: "Cambridge, Massachusetts",
-    website: "https://www.harvard.edu",
-    logo_url: "/images/schools/harvard-logo.png",
-    type: "university",
-    country: "United States",
-    city: "Cambridge",
-    address: "Massachusetts Hall, Cambridge, MA 02138",
-    phone: "+1 (617) 495-1000",
-    email: "info@harvard.edu",
-    founded_year: 1636,
-    student_count: 21648,
-    faculty_count: 2400,
-    programs: [
-      "Computer Science",
-      "Business Administration",
-      "Law",
-      "Medicine",
-      "Engineering",
-    ],
-    facilities: [
-      "Research Laboratories",
-      "Sports Complex",
-      "Library System",
-      "Student Center",
-      "Medical Center",
-    ],
-    achievements: [
-      "Nobel Prize Winners",
-      "Pulitzer Prize Winners",
-      "Rhodes Scholars",
-      "Olympic Medalists",
-    ],
-    social_media: {
-      facebook: "https://facebook.com/harvard",
-      twitter: "https://twitter.com/harvard",
-      instagram: "https://instagram.com/harvard",
-      linkedin: "https://linkedin.com/school/harvard",
+export async function getMockSchools(): Promise<School[]> {
+  return [
+    {
+      id: "1",
+      name: "Stanford University",
+      logo: "https://identity.stanford.edu/wp-content/uploads/sites/3/2020/07/block-s-right.png",
+      location: "Stanford, California",
+      founded: 1891,
+      type: "private",
+      ranking: 2,
+      totalStudents: 17249,
+      acceptanceRate: 4.3,
+      averageGPA: 3.96,
+      averageSAT: 1505,
+      averageACT: 34,
+      tuition: {
+        inState: 56169,
+        outState: 56169,
+        international: 56169,
+      },
+      popularMajors: [
+        "Computer Science",
+        "Engineering",
+        "Biology",
+        "Economics",
+        "Psychology",
+      ],
+      campusLife: {
+        studentClubs: 650,
+        sportsTeams: 36,
+        housingOptions: ["Residential Colleges", "Apartments", "Greek Housing"],
+      },
+      description:
+        "Stanford University is one of the world's leading research and teaching institutions. It is known for its entrepreneurial character, drawn from the legacy of its founders, Jane and Leland Stanford, and its relationship to Silicon Valley.",
+      website: "https://www.stanford.edu",
+      images: [
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+      ],
     },
-    images: [
-      {
-        id: "1",
-        url: "/images/schools/harvard-campus.jpg",
-        type: "campus",
+    {
+      id: "2",
+      name: "Massachusetts Institute of Technology",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/MIT_logo.svg/1200px-MIT_logo.svg.png",
+      location: "Cambridge, Massachusetts",
+      founded: 1861,
+      type: "private",
+      ranking: 1,
+      totalStudents: 11574,
+      acceptanceRate: 4.1,
+      averageGPA: 3.97,
+      averageSAT: 1540,
+      averageACT: 35,
+      tuition: {
+        inState: 53790,
+        outState: 53790,
+        international: 53790,
       },
-      {
-        id: "2",
-        url: "/images/schools/harvard-library.jpg",
-        type: "building",
+      popularMajors: [
+        "Computer Science",
+        "Engineering",
+        "Mathematics",
+        "Physics",
+        "Economics",
+      ],
+      campusLife: {
+        studentClubs: 450,
+        sportsTeams: 33,
+        housingOptions: [
+          "Residential Halls",
+          "Greek Housing",
+          "Independent Living",
+        ],
       },
-    ],
-    created_at: new Date("2024-01-01"),
-    updated_at: new Date("2024-01-01"),
-  },
-  {
-    id: "2",
-    name: "Stanford University",
-    code: "STAN",
-    description:
-      "Stanford University is a private research university in Stanford, California. Known for its entrepreneurial character and relationship with Silicon Valley.",
-    location: "Stanford, California",
-    website: "https://www.stanford.edu",
-    logo_url: "/images/schools/stanford-logo.png",
-    type: "university",
-    country: "United States",
-    city: "Stanford",
-    address: "450 Serra Mall, Stanford, CA 94305",
-    phone: "+1 (650) 723-2300",
-    email: "info@stanford.edu",
-    founded_year: 1885,
-    student_count: 17249,
-    faculty_count: 2100,
-    programs: [
-      "Computer Science",
-      "Engineering",
-      "Business",
-      "Medicine",
-      "Law",
-    ],
-    facilities: [
-      "Research Centers",
-      "Athletic Facilities",
-      "Libraries",
-      "Arts Center",
-      "Medical Center",
-    ],
-    achievements: [
-      "Nobel Laureates",
-      "Turing Award Winners",
-      "Olympic Champions",
-      "Entrepreneurs",
-    ],
-    social_media: {
-      facebook: "https://facebook.com/stanford",
-      twitter: "https://twitter.com/stanford",
-      instagram: "https://instagram.com/stanford",
-      linkedin: "https://linkedin.com/school/stanford",
+      description:
+        "MIT is a world-renowned institute of technology and research, known for its cutting-edge research and innovation in science, engineering, and technology.",
+      website: "https://www.mit.edu",
+      images: [
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+      ],
     },
-    images: [
-      {
-        id: "3",
-        url: "/images/schools/stanford-campus.jpg",
-        type: "campus",
+    {
+      id: "3",
+      name: "University of California, Berkeley",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Seal_of_University_of_California%2C_Berkeley.svg/1200px-Seal_of_University_of_California%2C_Berkeley.svg.png",
+      location: "Berkeley, California",
+      founded: 1868,
+      type: "public",
+      ranking: 22,
+      totalStudents: 42347,
+      acceptanceRate: 14.5,
+      averageGPA: 3.89,
+      averageSAT: 1415,
+      averageACT: 31,
+      tuition: {
+        inState: 14431,
+        outState: 44207,
+        international: 44207,
       },
-      {
-        id: "4",
-        url: "/images/schools/stanford-quad.jpg",
-        type: "building",
+      popularMajors: [
+        "Computer Science",
+        "Engineering",
+        "Business",
+        "Biology",
+        "Political Science",
+      ],
+      campusLife: {
+        studentClubs: 1000,
+        sportsTeams: 30,
+        housingOptions: ["Residence Halls", "Apartments", "Greek Housing"],
       },
-    ],
-    created_at: new Date("2024-01-01"),
-    updated_at: new Date("2024-01-01"),
-  },
-  {
-    id: "3",
-    name: "MIT",
-    code: "MIT",
-    description:
-      "The Massachusetts Institute of Technology is a private research university in Cambridge, Massachusetts. Known for its research and education in physical sciences and engineering.",
-    location: "Cambridge, Massachusetts",
-    website: "https://www.mit.edu",
-    logo_url: "/images/schools/mit-logo.png",
-    type: "university",
-    country: "United States",
-    city: "Cambridge",
-    address: "77 Massachusetts Ave, Cambridge, MA 02139",
-    phone: "+1 (617) 253-1000",
-    email: "info@mit.edu",
-    founded_year: 1861,
-    student_count: 11520,
-    faculty_count: 1100,
-    programs: [
-      "Engineering",
-      "Computer Science",
-      "Physics",
-      "Mathematics",
-      "Architecture",
-    ],
-    facilities: [
-      "Research Laboratories",
-      "Innovation Hub",
-      "Media Lab",
-      "Sports Center",
-      "Museum",
-    ],
-    achievements: [
-      "Nobel Prize Winners",
-      "National Medal of Science",
-      "Turing Award Winners",
-      "Space Missions",
-    ],
-    social_media: {
-      facebook: "https://facebook.com/mit",
-      twitter: "https://twitter.com/mit",
-      instagram: "https://instagram.com/mit",
-      linkedin: "https://linkedin.com/school/mit",
+      description:
+        "UC Berkeley is a public research university and the flagship campus of the University of California system. It is known for its academic excellence and social activism.",
+      website: "https://www.berkeley.edu",
+      images: [
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=60",
+      ],
     },
-    images: [
-      {
-        id: "5",
-        url: "/images/schools/mit-campus.jpg",
-        type: "campus",
-      },
-      {
-        id: "6",
-        url: "/images/schools/mit-dome.jpg",
-        type: "building",
-      },
-    ],
-    created_at: new Date("2024-01-01"),
-    updated_at: new Date("2024-01-01"),
-  },
-];
+  ];
+}
