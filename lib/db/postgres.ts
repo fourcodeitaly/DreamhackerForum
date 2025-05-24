@@ -17,9 +17,7 @@ function getPool(): Pool {
       ssl: config.isAWS
         ? {
             rejectUnauthorized: false,
-            ca: config.ssl,
-            minVersion: "TLSv1.2",
-            ciphers: "HIGH:!aNULL:!MD5",
+            ca: require("fs").readFileSync(config.ssl),
           }
         : undefined,
       max: 10, // Reduce max connections for serverless environment
