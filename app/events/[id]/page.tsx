@@ -102,7 +102,7 @@ export default async function EventDetailPage({
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-wrap">
               <Button
                 size="lg"
                 className="rounded-full"
