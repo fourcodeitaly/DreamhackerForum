@@ -34,7 +34,7 @@ export default async function EventDetailPage({
   const user = await getServerUser();
   const canEdit = user?.role === "admin" || user?.id === event?.created_user_id;
 
-  const eventImage = event?.images.find((image) =>
+  const eventImage = event?.images?.find((image) =>
     image.image_url.includes("event-image")
   )?.image_url;
 
