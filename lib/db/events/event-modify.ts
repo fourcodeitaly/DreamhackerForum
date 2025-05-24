@@ -186,6 +186,25 @@ export async function updateEvent(
   }
 }
 
+export async function removeEventFromPosts(eventId: string): Promise<boolean> {
+  try {
+    return await transaction(async (client) => {
+      // First update posts to set event_id to null
+      const updatePostsSql = `
+        UPDATE posts 
+        SET event_id = NULL 
+        WHERE event_id = $1
+      `;
+      await client.query(updatePostsSql, [eventId]);
+
+      return true;
+    });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    return false;
+  }
+}
+
 export async function deleteEvent(eventId: string): Promise<boolean> {
   try {
     return await transaction(async (client) => {
@@ -199,12 +218,15 @@ export async function deleteEvent(eventId: string): Promise<boolean> {
         throw new Error("User is not an admin or the owner of the event");
       }
 
+      await removeEventFromPosts(eventId);
+
       const sql = `
       DELETE FROM events
       WHERE id = $1
       RETURNING id
     `;
       const result = await queryOne<{ id: string }>(sql, [eventId]);
+
       return !!result;
     });
   } catch (error) {
