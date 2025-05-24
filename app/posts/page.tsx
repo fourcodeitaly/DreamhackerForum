@@ -19,8 +19,6 @@ import { Button } from "@/components/ui/button";
 import { getServerUser } from "@/lib/supabase/server";
 import { getTagById, getTags, Tag } from "@/lib/db/tags/tags-get";
 import { Post } from "@/lib/db/posts/posts-modify";
-import { getMockEvents } from "@/lib/mock/events";
-import Link from "next/link";
 import { EventSlideshow } from "@/components/ui/event-slideshow";
 import { getEvents } from "@/lib/db/events/event-get";
 
