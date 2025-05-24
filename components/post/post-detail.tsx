@@ -23,7 +23,6 @@ import {
   MessageCircle,
   Share2,
   Edit,
-  ExternalLink,
   X,
   Calendar,
   Clock,
@@ -71,23 +70,6 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       setCurrentLanguage(language);
     }
   }, [rawPost, language]);
-
-  // useEffect(() => {
-  //   const fetchEvents = async () => {
-  //     try {
-  //       const response = await fetch("/api/events/upcoming");
-  //       if (!response.ok) throw new Error("Failed to fetch events");
-  //       const data = await response.json();
-  //       setEvents(data);
-  //     } catch (error) {
-  //       console.error("Error fetching events:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchEvents();
-  // }, []);
 
   // Handle case where post might be null or undefined
   if (!post) {

@@ -13,9 +13,12 @@ import {
   Globe,
   Mail,
   Phone,
+  Edit,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getEventById } from "@/lib/db/events/event-get";
+import { getServerUser } from "@/lib/supabase/server";
+import Link from "next/link";
 
 interface EventDetailPageProps {
   params: {
@@ -28,6 +31,8 @@ export default async function EventDetailPage({
 }: EventDetailPageProps) {
   const { id } = await params;
   const event = await getEventById(id);
+  const user = await getServerUser();
+  const canEdit = user?.role === "admin" || user?.id === event?.created_user_id;
 
   const eventImage = event?.images.find((image) =>
     image.image_url.includes("event-image")
@@ -125,11 +130,71 @@ export default async function EventDetailPage({
           <div className="lg:col-span-2 space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle>About This Event</CardTitle>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-2xl mb-2">
+                      {event.title}
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          "capitalize",
+                          event.type === "workshop" &&
+                            "bg-blue-100 text-blue-800",
+                          event.type === "seminar" &&
+                            "bg-green-100 text-green-800",
+                          event.type === "conference" &&
+                            "bg-purple-100 text-purple-800",
+                          event.type === "meetup" &&
+                            "bg-orange-100 text-orange-800"
+                        )}
+                      >
+                        {event.type}
+                      </Badge>
+                      {event.is_virtual && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-indigo-100 text-indigo-800"
+                        >
+                          Virtual
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  {canEdit && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link
+                        href={`/events/${event.id}/edit`}
+                        className="flex items-center gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit Event
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none">
-                  <p className="text-muted-foreground">{event.description}</p>
+                  <p className="text-muted-foreground mb-6">
+                    {event.description}
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <h3 className="font-semibold mb-2">Date & Time</h3>
+                      <p className="text-muted-foreground">
+                        {format(new Date(event.start_date), "PPP")} -{" "}
+                        {format(new Date(event.end_date), "PPP")}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">Location</h3>
+                      <p className="text-muted-foreground">
+                        {event.is_virtual ? "Virtual Event" : event.location}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -273,53 +338,49 @@ export default async function EventDetailPage({
                 <CardTitle>Registration</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-medium">Registration Type</h4>
-                    <p className="text-sm text-muted-foreground capitalize">
-                      {event.registration_type}
-                    </p>
-                  </div>
-
-                  {event.registration_type === "paid" && (
-                    <div>
-                      <h4 className="font-medium">Registration Fee</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {event.registration_fee} {event.registration_currency}
-                      </p>
-                    </div>
-                  )}
-
-                  <div>
-                    <h4 className="font-medium">Capacity</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {event.capacity} participants
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium">Registration Status</h4>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">
+                      Registration Type
+                    </span>
                     <Badge
                       variant="secondary"
                       className={cn(
                         "capitalize",
-                        event.registration_status === "open" &&
+                        event.registration_type === "free" &&
                           "bg-green-100 text-green-800",
-                        event.registration_status === "closed" &&
-                          "bg-red-100 text-red-800",
-                        event.registration_status === "waitlist" &&
-                          "bg-yellow-100 text-yellow-800"
+                        event.registration_type === "paid" &&
+                          "bg-blue-100 text-blue-800",
+                        event.registration_type === "invitation" &&
+                          "bg-purple-100 text-purple-800"
                       )}
                     >
-                      {event.registration_status}
+                      {event.registration_type}
                     </Badge>
+                  </div>
+                  {event.registration_type === "paid" && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Registration Fee
+                      </span>
+                      <span className="font-medium">
+                        {event.registration_fee} {event.registration_currency}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">
+                      Registration Deadline
+                    </span>
+                    <span className="font-medium">
+                      {format(new Date(event.registration_deadline), "PPP")}
+                    </span>
                   </div>
 
                   <Button
                     className="w-full"
                     size="lg"
                     disabled={event.registration_deadline <= new Date()}
-                    // onClick={() => window.open(event.registrationUrl, "_blank")}
                   >
                     Register Now
                   </Button>
