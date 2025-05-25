@@ -383,11 +383,15 @@ export default async function SchoolsPage() {
 
                     {/* Action Buttons */}
                     <div className="flex items-center gap-4">
-                      <Button>Apply Now</Button>
-                      <Button variant="outline">
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Visit Website
-                      </Button>
+                      <Link href={`/schools/${school.id}`}>
+                        <Button>Apply Now</Button>
+                      </Link>
+                      <Link href={`/schools/${school.id}`}>
+                        <Button variant="outline">
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Visit Website
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </CardContent>

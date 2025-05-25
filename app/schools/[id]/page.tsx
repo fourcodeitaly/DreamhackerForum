@@ -1,3 +1,10 @@
+"use client";
+
+import { use, useEffect, useState } from "react";
+import { School } from "@/lib/mock/schools";
+import { SchoolDepartment } from "@/lib/mock/school-departments";
+import { getMockSchools } from "@/lib/mock/schools";
+import { mockSchoolDepartments } from "@/lib/mock/school-departments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,24 +31,77 @@ import {
   Linkedin,
   Youtube,
 } from "lucide-react";
-import { getMockSchools } from "@/lib/mock/schools";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { DepartmentCard } from "@/components/schools/department-card";
 
 export const dynamic = "force-dynamic";
 
-export default async function SchoolProfilePage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const schools = await getMockSchools();
-  const school = schools.find((s) => s.id === params.id);
+interface SchoolPageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default function SchoolPage({ params }: SchoolPageProps) {
+  const [school, setSchool] = useState<School | null>(null);
+  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
+  const [similarSchools, setSimilarSchools] = useState<School[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { id } = use(params);
+
+  useEffect(() => {
+    // In a real application, these would be API calls
+    const fetchData = async () => {
+      const schools = await getMockSchools();
+      const schoolData = schools.find((s: School) => s.id === id);
+      const schoolDepartments = mockSchoolDepartments.filter(
+        (dept) => dept.school_id === id
+      );
+
+      setSchool(schoolData || null);
+      setDepartments(schoolDepartments);
+      setSimilarSchools(schools.filter((s: School) => s.id !== id).slice(0, 3));
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardContent className="py-8">
+            <div className="text-center">Loading...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!school) {
-    notFound();
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardContent className="py-8">
+            <div className="text-center">School not found</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
+
+  const lawDepartments = departments.filter(
+    (dept) => dept.law_school_rank_us !== null
+  );
+  const businessDepartments = departments.filter(
+    (dept) => dept.business_school_rank_us !== null
+  );
+  const medicalDepartments = departments.filter(
+    (dept) => dept.medicine_school_rank_us !== null
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -343,6 +403,58 @@ export default async function SchoolProfilePage({
               </CardContent>
             </Card>
 
+            <Card>
+              <CardHeader>
+                <CardTitle>Departments</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="law" className="space-y-4">
+                  <TabsList>
+                    {/* <TabsTrigger value="all">All Departments</TabsTrigger> */}
+                    <TabsTrigger value="law">Law Schools</TabsTrigger>
+                    <TabsTrigger value="business">Business Schools</TabsTrigger>
+                    <TabsTrigger value="medical">Medical Schools</TabsTrigger>
+                  </TabsList>
+
+                  {/* <TabsContent value="all" className="space-y-4">
+                    {departments.map((department) => (
+                      <DepartmentCard
+                        key={department.id}
+                        department={department}
+                      />
+                    ))}
+                  </TabsContent> */}
+
+                  <TabsContent value="law" className="space-y-4">
+                    {lawDepartments.map((department) => (
+                      <DepartmentCard
+                        key={department.id}
+                        department={department}
+                      />
+                    ))}
+                  </TabsContent>
+
+                  <TabsContent value="business" className="space-y-4">
+                    {businessDepartments.map((department) => (
+                      <DepartmentCard
+                        key={department.id}
+                        department={department}
+                      />
+                    ))}
+                  </TabsContent>
+
+                  <TabsContent value="medical" className="space-y-4">
+                    {medicalDepartments.map((department) => (
+                      <DepartmentCard
+                        key={department.id}
+                        department={department}
+                      />
+                    ))}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+
             {/* Related Posts */}
             <Card>
               <CardHeader>
@@ -471,36 +583,33 @@ export default async function SchoolProfilePage({
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {schools
-                    .filter((s) => s.id !== school.id)
-                    .slice(0, 3)
-                    .map((similarSchool) => (
-                      <Link
-                        key={similarSchool.id}
-                        href={`/schools/${similarSchool.id}`}
-                        className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="w-12 h-12 relative rounded-lg overflow-hidden flex-shrink-0 bg-white">
-                          <Image
-                            src={similarSchool.logo}
-                            alt={similarSchool.name}
-                            fill
-                            className="object-contain p-2"
-                          />
+                  {similarSchools.map((similarSchool) => (
+                    <Link
+                      key={similarSchool.id}
+                      href={`/schools/${similarSchool.id}`}
+                      className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="w-12 h-12 relative rounded-lg overflow-hidden flex-shrink-0 bg-white">
+                        <Image
+                          src={similarSchool.logo}
+                          alt={similarSchool.name}
+                          fill
+                          className="object-contain p-2"
+                        />
+                      </div>
+                      <div>
+                        <div className="font-medium">{similarSchool.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {similarSchool.location}
                         </div>
-                        <div>
-                          <div className="font-medium">
-                            {similarSchool.name}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {similarSchool.location}
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </CardContent>
             </Card>
+
+            {/* Departments Information */}
           </div>
         </div>
       </div>
