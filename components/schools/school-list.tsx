@@ -14,15 +14,17 @@ interface SchoolListProps {
 export function SchoolList({ schools }: SchoolListProps) {
   const { t } = useTranslation();
 
+  console.log(schools);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {schools.map((school) => (
-        <Link href={`/posts?tag=${school.tag_id}`} key={school.schoolcode}>
+        <Link href={`/posts?tag=${school.tag_id}`} key={school.id}>
           <Card className="h-full hover:shadow-md transition-shadow">
             <CardHeader className="p-4">
               <CardTitle className="text-lg flex items-center">
                 <Building2 className="h-5 w-5 mr-2 text-primary" />
-                {school.schoolname}
+                {school.name}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">

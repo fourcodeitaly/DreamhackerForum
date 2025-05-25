@@ -3,8 +3,8 @@
 import { query, queryOne } from "../postgres";
 
 export interface School {
-  schoolcode: string;
-  schoolname: string;
+  id: string;
+  name: string;
   nation: string;
   nationcode: string;
   tag_id: string;

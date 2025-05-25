@@ -129,11 +129,11 @@ export function CategoryNavigation({ className }: { className?: string }) {
     //     },
     //   ],
     // },
-    // {
-    //   id: "schools",
-    //   name: t("schools"),
-    //   categories: [{ id: "schools", name: t("allSchools") }],
-    // },
+    {
+      id: "schools",
+      name: t("schools"),
+      categories: [{ id: "schools", name: t("allSchools") }],
+    },
   ];
 
   return (
