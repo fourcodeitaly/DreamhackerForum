@@ -60,11 +60,11 @@ export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
             <p className="text-lg text-muted-foreground mb-8">
               Discover detailed information about leading universities worldwide
             </p>
-            <div className="flex justify-center gap-4">
+            {/* <div className="flex justify-center gap-4">
               <Button asChild>
                 <Link href="/schools/compare">Compare Universities</Link>
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -380,12 +380,17 @@ export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
 
                       {/* Action Buttons */}
                       <div className="flex items-center gap-4">
-                        <Button>
-                          <Link href={`/schools/${school.id}`}>Apply Now</Link>
+                        <Button asChild>
+                          <Link href={`/schools/${school.id}`}>
+                            <Building2 className="h-4 w-4 mr-2" />
+                            View School Profile
+                          </Link>
                         </Button>
-                        <Button variant="outline">
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Visit Website
+                        <Button variant="outline" asChild>
+                          <Link href={`/schools/${school.id}`}>
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Visit Website
+                          </Link>
                         </Button>
                       </div>
                     </div>
