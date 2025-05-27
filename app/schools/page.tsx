@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +18,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
+import {
+  getSchoolByNationOrderByRank,
+  School,
+} from "@/lib/db/schools/school-get";
+import { use, useState } from "react";
+import { useEffect } from "react";
+import Loading from "./loading";
 
 export const dynamic = "force-dynamic";
 
@@ -39,14 +47,46 @@ interface SchoolsPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
-  const location = ((await searchParams).location as string) || "us";
+export default function SchoolsPage({ searchParams }: SchoolsPageProps) {
+  const { location } = use(searchParams);
+  const [schools, setSchools] = useState<School[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const schools = await getSchoolByNationOrderByRank({
-    nationCode: location,
-    limit: 10,
-    offset: 0,
-  });
+  useEffect(() => {
+    const fetchSchools = async () => {
+      setIsLoading(true);
+      const schools = await getSchoolByNationOrderByRank({
+        nationCode: location?.toString() || "us",
+        limit: 10,
+        offset: 0,
+      });
+      setSchools(schools);
+      setHasMore(schools.length === 10);
+      setIsLoading(false);
+    };
+    fetchSchools();
+  }, [location]);
+
+  const loadMore = async () => {
+    setIsLoadingMore(true);
+    const newOffset = offset + 10;
+    const moreSchools = await getSchoolByNationOrderByRank({
+      nationCode: location?.toString() || "us",
+      limit: 10,
+      offset: newOffset,
+    });
+    setSchools([...schools, ...moreSchools]);
+    setOffset(newOffset);
+    setHasMore(moreSchools.length === 10);
+    setIsLoadingMore(false);
+  };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -117,286 +157,301 @@ export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
                 </CardContent>
               </Card>
             ) : (
-              schools.map((school) => (
-                <Card key={school.id} className="overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col gap-6">
-                      {/* School Header */}
-                      <div className="flex items-start gap-6">
-                        <div className="w-24 h-24 relative rounded-lg overflow-hidden flex-shrink-0">
-                          <Image
-                            src={school.logo || "/placeholder.png"}
-                            alt={school.name}
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                        <div className="flex-grow">
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <h3 className="text-2xl font-bold mb-2">
-                                {school.name}
-                              </h3>
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <MapPin className="h-4 w-4" />
-                                <span>{school.location}</span>
-                                <span>•</span>
-                                <Building2 className="h-4 w-4" />
-                                <span className="capitalize">
-                                  {school.type}
-                                </span>
-                                <span>•</span>
-                                <Calendar className="h-4 w-4" />
-                                <span>Founded {school.founded}</span>
+              <>
+                {schools.map((school) => (
+                  <Card key={school.id} className="overflow-hidden">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col gap-6">
+                        {/* School Header */}
+                        <div className="flex items-start gap-6">
+                          <div className="w-24 h-24 relative rounded-lg overflow-hidden flex-shrink-0">
+                            <Image
+                              src={school.logo || "/placeholder.png"}
+                              alt={school.name}
+                              fill
+                              className="object-contain"
+                            />
+                          </div>
+                          <div className="flex-grow">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <h3 className="text-2xl font-bold mb-2">
+                                  {school.name}
+                                </h3>
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                  <MapPin className="h-4 w-4" />
+                                  <span>{school.location}</span>
+                                  <span>•</span>
+                                  <Building2 className="h-4 w-4" />
+                                  <span className="capitalize">
+                                    {school.type}
+                                  </span>
+                                  <span>•</span>
+                                  <Calendar className="h-4 w-4" />
+                                  <span>Founded {school.founded}</span>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant="secondary"
-                                className="bg-yellow-100 text-yellow-800"
-                              >
-                                <Trophy className="h-4 w-4 mr-1" />
-                                Rank #{school.us_news_rank_world}
-                              </Badge>
-                              <Button variant="outline" size="icon">
-                                <Star className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* School Details Tabs */}
-                      <Tabs defaultValue="overview" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3">
-                          <TabsTrigger value="overview">Overview</TabsTrigger>
-                          <TabsTrigger value="admissions">
-                            Admissions
-                          </TabsTrigger>
-                          {/* <TabsTrigger value="academics">Academics</TabsTrigger> */}
-                          <TabsTrigger value="campus">Campus Life</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="overview" className="mt-4">
-                          <div className="space-y-4">
-                            <p className="text-muted-foreground">
-                              {school.description}
-                            </p>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col items-center text-center">
-                                    <Users className="h-6 w-6 mb-2 text-primary" />
-                                    <div className="text-2xl font-bold">
-                                      {school.total_students?.toLocaleString()}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                      Students
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col items-center text-center">
-                                    <DollarSign className="h-6 w-6 mb-2 text-primary" />
-                                    <div className="text-2xl font-bold">
-                                      $
-                                      {school.tuition.international?.toLocaleString()}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                      Tuition (In-State)
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col items-center text-center">
-                                    <Activity className="h-6 w-6 mb-2 text-primary" />
-                                    <div className="text-2xl font-bold">
-                                      {school.acceptance_rate}%
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                      Acceptance Rate
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col items-center text-center">
-                                    <Users2 className="h-6 w-6 mb-2 text-primary" />
-                                    <div className="text-2xl font-bold">
-                                      {school.campus_life?.student_clubs}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                      Student Clubs
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </div>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="admissions" className="mt-4">
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col">
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      Average GPA
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                      {school.average_gpa}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col">
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      Average SAT
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                      {school.average_gre}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col">
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      Average ACT
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                      {school.average_toefl}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {/* <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col">
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      In-State Tuition
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                      $
-                                      {school.tuition.in_state?.toLocaleString()}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card> */}
-                              {/* <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col">
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      Out-of-State Tuition
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                      $
-                                      {school.tuition.out_state?.toLocaleString()}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card> */}
-                            </div>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="academics" className="mt-4">
-                          <div className="space-y-4">
-                            <h4 className="font-medium">Popular Majors</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {school.popular_majors?.map((major: string) => (
+                              <div className="flex items-center gap-2">
                                 <Badge
-                                  key={major}
                                   variant="secondary"
-                                  className="text-sm"
+                                  className="bg-yellow-100 text-yellow-800"
                                 >
-                                  {major}
+                                  <Trophy className="h-4 w-4 mr-1" />
+                                  Rank #{school.us_news_rank_world}
                                 </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="campus" className="mt-4">
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col">
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      Student Clubs
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                      {school.campus_life?.student_clubs}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                              <Card>
-                                <CardContent className="p-4">
-                                  <div className="flex flex-col">
-                                    <div className="text-sm text-muted-foreground mb-1">
-                                      Sports Teams
-                                    </div>
-                                    <div className="text-2xl font-bold">
-                                      {school.campus_life?.sports_teams}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </div>
-                            <div>
-                              <h4 className="font-medium mb-2">
-                                Housing Options
-                              </h4>
-                              <div className="flex flex-wrap gap-2">
-                                {school.campus_life?.housing_options.map(
-                                  (option: string) => (
-                                    <Badge
-                                      key={option}
-                                      variant="secondary"
-                                      className="text-sm"
-                                    >
-                                      {option}
-                                    </Badge>
-                                  )
-                                )}
+                                <Button variant="outline" size="icon">
+                                  <Star className="h-4 w-4" />
+                                </Button>
                               </div>
                             </div>
                           </div>
-                        </TabsContent>
-                      </Tabs>
+                        </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex items-center gap-4">
-                        <Button asChild>
-                          <Link href={`/schools/${school.id}`}>
-                            <Building2 className="h-4 w-4 mr-2" />
-                            View School Profile
-                          </Link>
-                        </Button>
-                        <Button variant="outline" asChild>
-                          <Link href={`/schools/${school.id}`}>
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Visit Website
-                          </Link>
-                        </Button>
+                        {/* School Details Tabs */}
+                        <Tabs defaultValue="overview" className="w-full">
+                          <TabsList className="grid w-full grid-cols-3">
+                            <TabsTrigger value="overview">Overview</TabsTrigger>
+                            <TabsTrigger value="admissions">
+                              Admissions
+                            </TabsTrigger>
+                            {/* <TabsTrigger value="academics">Academics</TabsTrigger> */}
+                            <TabsTrigger value="campus">
+                              Campus Life
+                            </TabsTrigger>
+                          </TabsList>
+
+                          <TabsContent value="overview" className="mt-4">
+                            <div className="space-y-4">
+                              <p className="text-muted-foreground">
+                                {school.description}
+                              </p>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col items-center text-center">
+                                      <Users className="h-6 w-6 mb-2 text-primary" />
+                                      <div className="text-2xl font-bold">
+                                        {school.total_students?.toLocaleString()}
+                                      </div>
+                                      <div className="text-sm text-muted-foreground">
+                                        Students
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col items-center text-center">
+                                      <DollarSign className="h-6 w-6 mb-2 text-primary" />
+                                      <div className="text-2xl font-bold">
+                                        $
+                                        {school.tuition.international?.toLocaleString()}
+                                      </div>
+                                      <div className="text-sm text-muted-foreground">
+                                        Tuition (In-State)
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col items-center text-center">
+                                      <Activity className="h-6 w-6 mb-2 text-primary" />
+                                      <div className="text-2xl font-bold">
+                                        {school.acceptance_rate}%
+                                      </div>
+                                      <div className="text-sm text-muted-foreground">
+                                        Acceptance Rate
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col items-center text-center">
+                                      <Users2 className="h-6 w-6 mb-2 text-primary" />
+                                      <div className="text-2xl font-bold">
+                                        {school.campus_life?.student_clubs}
+                                      </div>
+                                      <div className="text-sm text-muted-foreground">
+                                        Student Clubs
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="admissions" className="mt-4">
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col">
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        Average GPA
+                                      </div>
+                                      <div className="text-2xl font-bold">
+                                        {school.average_gpa}
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col">
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        Average SAT
+                                      </div>
+                                      <div className="text-2xl font-bold">
+                                        {school.average_gre}
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col">
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        Average ACT
+                                      </div>
+                                      <div className="text-2xl font-bold">
+                                        {school.average_toefl}
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col">
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        In-State Tuition
+                                      </div>
+                                      <div className="text-2xl font-bold">
+                                        $
+                                        {school.tuition.in_state?.toLocaleString()}
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card> */}
+                                {/* <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col">
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        Out-of-State Tuition
+                                      </div>
+                                      <div className="text-2xl font-bold">
+                                        $
+                                        {school.tuition.out_state?.toLocaleString()}
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card> */}
+                              </div>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="academics" className="mt-4">
+                            <div className="space-y-4">
+                              <h4 className="font-medium">Popular Majors</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {school.popular_majors?.map((major: string) => (
+                                  <Badge
+                                    key={major}
+                                    variant="secondary"
+                                    className="text-sm"
+                                  >
+                                    {major}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="campus" className="mt-4">
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col">
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        Student Clubs
+                                      </div>
+                                      <div className="text-2xl font-bold">
+                                        {school.campus_life?.student_clubs}
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                <Card>
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col">
+                                      <div className="text-sm text-muted-foreground mb-1">
+                                        Sports Teams
+                                      </div>
+                                      <div className="text-2xl font-bold">
+                                        {school.campus_life?.sports_teams}
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                              <div>
+                                <h4 className="font-medium mb-2">
+                                  Housing Options
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {school.campus_life?.housing_options.map(
+                                    (option: string) => (
+                                      <Badge
+                                        key={option}
+                                        variant="secondary"
+                                        className="text-sm"
+                                      >
+                                        {option}
+                                      </Badge>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </TabsContent>
+                        </Tabs>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-4">
+                          <Button asChild>
+                            <Link href={`/schools/${school.id}`}>
+                              <Building2 className="h-4 w-4 mr-2" />
+                              View School Profile
+                            </Link>
+                          </Button>
+                          <Button variant="outline" asChild>
+                            <Link href={`/schools/${school.id}`}>
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              Visit Website
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                    </CardContent>
+                  </Card>
+                ))}
+                {hasMore && (
+                  <div className="flex justify-center mt-6">
+                    <Button
+                      onClick={loadMore}
+                      disabled={isLoadingMore}
+                      className="w-full max-w-xs"
+                    >
+                      {isLoadingMore ? "Loading..." : "Load More"}
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
