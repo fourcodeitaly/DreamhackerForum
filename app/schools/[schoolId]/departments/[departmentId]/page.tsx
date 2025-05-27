@@ -1,14 +1,6 @@
-"use client";
-
-import { use, useEffect, useState } from "react";
-import { SchoolDepartment } from "@/lib/mock/school-departments";
-import { School } from "@/lib/mock/schools";
-import { mockSchoolDepartments } from "@/lib/mock/school-departments";
-import { getMockSchools } from "@/lib/mock/schools";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Building2,
   Users,
@@ -21,6 +13,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { getSchoolById } from "@/lib/db/schools/school-get";
+import { getDepartmentBySchoolId } from "@/lib/db/departments/department-get";
 
 interface DepartmentPageProps {
   params: Promise<{
@@ -29,40 +23,11 @@ interface DepartmentPageProps {
   }>;
 }
 
-export default function DepartmentPage({ params }: DepartmentPageProps) {
-  const [department, setDepartment] = useState<SchoolDepartment | null>(null);
-  const [school, setSchool] = useState<School | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const { departmentId, schoolId } = use(params);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const departments = mockSchoolDepartments;
-      const schools = await getMockSchools();
-
-      const departmentData = departments.find((d) => d.id === departmentId);
-      const schoolData = schools.find((s) => s.id === schoolId);
-
-      setDepartment(departmentData || null);
-      setSchool(schoolData || null);
-      setIsLoading(false);
-    };
-
-    fetchData();
-  }, [departmentId, schoolId]);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="py-8">
-            <div className="text-center">Loading...</div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+export default async function DepartmentPage({ params }: DepartmentPageProps) {
+  const { departmentId, schoolId } = await params;
+  const departments = await getDepartmentBySchoolId(schoolId);
+  const school = await getSchoolById(schoolId);
+  const department = departments.find((d) => d.id === departmentId);
 
   if (!department || !school) {
     return (
@@ -85,7 +50,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
       <div className="relative">
         <div className="h-[300px] relative">
           <Image
-            src={school.images[0]}
+            src={school.logo}
             alt={department.name}
             fill
             className="object-cover"
@@ -116,7 +81,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                           {school.name}
                         </Badge>
                       </Link>
-                      {department.qs_world_rank && (
+                      {/* {department.qs_world_rank && (
                         <Badge
                           variant="secondary"
                           className="bg-yellow-100 text-yellow-800"
@@ -124,7 +89,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                           <Trophy className="h-4 w-4 mr-1" />
                           QS World Rank #{department.qs_world_rank}
                         </Badge>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>
@@ -253,7 +218,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {department.qs_world_rank && (
+                  {/* {department.qs_world_rank && (
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <div className="text-sm text-muted-foreground">
                         QS World Rank
@@ -282,7 +247,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                         #{department.us_rank}
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {department.law_school_rank_us && (
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <div className="text-sm text-muted-foreground">
@@ -323,29 +288,25 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <h4 className="font-medium mb-2">Research Excellence</h4>
                       <p className="text-sm text-muted-foreground">
-                        Leading research in key areas with significant funding
-                        and publications
+                        Updated Soon
                       </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <h4 className="font-medium mb-2">Student Success</h4>
                       <p className="text-sm text-muted-foreground">
-                        High employment rates and successful alumni in various
-                        industries
+                        Updated Soon
                       </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <h4 className="font-medium mb-2">Industry Recognition</h4>
                       <p className="text-sm text-muted-foreground">
-                        Strong partnerships with leading companies and
-                        organizations
+                        Updated Soon
                       </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <h4 className="font-medium mb-2">Academic Innovation</h4>
                       <p className="text-sm text-muted-foreground">
-                        Pioneering new teaching methods and curriculum
-                        development
+                        Updated Soon
                       </p>
                     </div>
                   </div>
@@ -364,7 +325,10 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                     <h3 className="text-lg font-semibold mb-4">
                       Degree Programs
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="text-sm text-muted-foreground">
+                      Updated Soon
+                    </div>
+                    {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
                         <h4 className="font-medium mb-2">Master's Programs</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
@@ -381,14 +345,17 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                           <li>Professional Doctorate</li>
                         </ul>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
                       Specializations
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-sm text-muted-foreground">
+                      Updated Soon
+                    </div>
+                    {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
                         <h4 className="font-medium mb-2">Research Focus</h4>
                         <ul className="space-y-1 text-sm text-muted-foreground">
@@ -421,7 +388,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                           <li>Scholarship</li>
                         </ul>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </CardContent>
@@ -438,7 +405,10 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                     <h3 className="text-lg font-semibold mb-4">
                       Research Areas
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="text-sm text-muted-foreground">
+                      Updated Soon
+                    </div>
+                    {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
                         <h4 className="font-medium mb-2">Primary Research</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
@@ -465,14 +435,17 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                           <li>Development Center</li>
                         </ul>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
                       Faculty Highlights
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="text-sm text-muted-foreground">
+                      Updated Soon
+                    </div>
+                    {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
                         <h4 className="font-medium mb-2">
                           Distinguished Faculty
@@ -493,7 +466,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                           prestigious organizations.
                         </p>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </CardContent>
@@ -516,12 +489,12 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                   <BookOpen className="h-4 w-4 mr-2" />
                   Request Information
                 </Button>
-                <Link href={`/schools/${school.id}`}>
-                  <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href={`/schools/${school.id}`}>
                     <Building2 className="h-4 w-4 mr-2" />
                     View School Profile
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -531,7 +504,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                 <CardTitle>Related Departments</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockSchoolDepartments
+                {/* {mockSchoolDepartments
                   .filter(
                     (d) => d.school_id === school.id && d.id !== department.id
                   )
@@ -558,7 +531,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                         </div>
                       </div>
                     </Link>
-                  ))}
+                  ))} */}
               </CardContent>
             </Card>
 

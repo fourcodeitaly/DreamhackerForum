@@ -1,14 +1,7 @@
 "use server";
 
 import { query, queryOne } from "../postgres";
-
-export interface School {
-  id: string;
-  name: string;
-  nation: string;
-  nationcode: string;
-  tag_id: string;
-}
+import { School } from "../schools/school-get";
 
 export interface Tag {
   id: string;
@@ -35,33 +28,33 @@ export async function getTags(): Promise<Tag[]> {
   }
 }
 
-export async function getSchools(): Promise<School[]> {
-  try {
-    const schools = await query<School>("SELECT * FROM schools");
-    return schools;
-  } catch (error) {
-    console.error("Error fetching schools:", error);
-    return [];
-  }
-}
+// export async function getSchools(): Promise<School[]> {
+//   try {
+//     const schools = await query<School>("SELECT * FROM schools");
+//     return schools;
+//   } catch (error) {
+//     console.error("Error fetching schools:", error);
+//     return [];
+//   }
+// }
 
-export async function getSchoolsGroupByNationCode(): Promise<
-  Record<string, School[]>
-> {
-  try {
-    const schools = await getSchools();
-    const schoolsGroupByNationCode = schools.reduce((acc, school) => {
-      const nationCode = school.nation;
-      if (!acc[nationCode]) {
-        acc[nationCode] = [];
-      }
-      acc[nationCode].push(school);
-      return acc;
-    }, {} as Record<string, School[]>);
+// export async function getSchoolsGroupByNationCode(): Promise<
+//   Record<string, School[]>
+// > {
+//   try {
+//     const schools = await getSchools();
+//     const schoolsGroupByNationCode = schools.reduce((acc, school) => {
+//       const nationCode = school.nation;
+//       if (!acc[nationCode]) {
+//         acc[nationCode] = [];
+//       }
+//       acc[nationCode].push(school);
+//       return acc;
+//     }, {} as Record<string, School[]>);
 
-    return schoolsGroupByNationCode;
-  } catch (error) {
-    console.error("Error fetching schools group by nation code:", error);
-    return {};
-  }
-}
+//     return schoolsGroupByNationCode;
+//   } catch (error) {
+//     console.error("Error fetching schools group by nation code:", error);
+//     return {};
+//   }
+// }

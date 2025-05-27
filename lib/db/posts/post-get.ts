@@ -896,7 +896,7 @@ export async function getPostsByTags(
           'name', u.name,
           'username', u.username,
           'image_url', u.image_url
-        ) as user,
+        ) as author,
         json_build_object(
           'id', c.id,
           'name', c.name

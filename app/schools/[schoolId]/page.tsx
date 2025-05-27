@@ -1,10 +1,3 @@
-"use client";
-
-import { use, useEffect, useState } from "react";
-import { School } from "@/lib/mock/schools";
-import { SchoolDepartment } from "@/lib/mock/school-departments";
-import { getMockSchools } from "@/lib/mock/schools";
-import { mockSchoolDepartments } from "@/lib/mock/school-departments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,8 +10,6 @@ import {
   Calendar,
   MapPin,
   ExternalLink,
-  Star,
-  Users2,
   Activity,
   GraduationCap,
   BookOpen,
@@ -32,54 +23,26 @@ import {
   Youtube,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { DepartmentCard } from "@/components/schools/department-card";
+import { getSchoolById } from "@/lib/db/schools/school-get";
+import { getDepartmentBySchoolId } from "@/lib/db/departments/department-get";
+import { getPostsByTags } from "@/lib/db/posts/post-get";
+import { PostCard } from "@/components/post/post-card";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 interface SchoolPageProps {
   params: Promise<{
-    id: string;
+    schoolId: string;
   }>;
 }
 
-export default function SchoolPage({ params }: SchoolPageProps) {
-  const [school, setSchool] = useState<School | null>(null);
-  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
-  const [similarSchools, setSimilarSchools] = useState<School[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const { id } = use(params);
-
-  useEffect(() => {
-    // In a real application, these would be API calls
-    const fetchData = async () => {
-      const schools = await getMockSchools();
-      const schoolData = schools.find((s: School) => s.id === id);
-      const schoolDepartments = mockSchoolDepartments.filter(
-        (dept) => dept.school_id === id
-      );
-
-      setSchool(schoolData || null);
-      setDepartments(schoolDepartments);
-      setSimilarSchools(schools.filter((s: School) => s.id !== id).slice(0, 3));
-      setIsLoading(false);
-    };
-
-    fetchData();
-  }, [id]);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="py-8">
-            <div className="text-center">Loading...</div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+export default async function SchoolPage({ params }: SchoolPageProps) {
+  const { schoolId } = await params;
+  const school = await getSchoolById(schoolId);
+  const relatedPosts = (await getPostsByTags([school?.tag_id || ""])).posts;
+  const departments = await getDepartmentBySchoolId(schoolId);
 
   if (!school) {
     return (
@@ -93,15 +56,15 @@ export default function SchoolPage({ params }: SchoolPageProps) {
     );
   }
 
-  const lawDepartments = departments.filter(
-    (dept) => dept.law_school_rank_us !== null
-  );
-  const businessDepartments = departments.filter(
-    (dept) => dept.business_school_rank_us !== null
-  );
-  const medicalDepartments = departments.filter(
-    (dept) => dept.medicine_school_rank_us !== null
-  );
+  // const lawDepartments = departments.filter(
+  //   (dept) => dept.law_school_rank_us !== null
+  // );
+  // const businessDepartments = departments.filter(
+  //   (dept) => dept.business_school_rank_us !== null
+  // );
+  // const medicalDepartments = departments.filter(
+  //   (dept) => dept.medicine_school_rank_us !== null
+  // );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -110,7 +73,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
         {/* Hero Image */}
         <div className="h-[400px] relative">
           <Image
-            src={school.images[0]}
+            src={school.logo || "/placeholder.png"}
             alt={school.name}
             fill
             className="object-cover"
@@ -136,7 +99,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         className="bg-yellow-100 text-yellow-800"
                       >
                         <Trophy className="h-4 w-4 mr-1" />
-                        Rank #{school.ranking}
+                        Rank #{school.us_news_rank_world}
                       </Badge>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
@@ -173,7 +136,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
                     <Users className="h-6 w-6 mb-2 text-primary" />
                     <div className="text-2xl font-bold">
-                      {school.totalStudents.toLocaleString()}
+                      {school.total_students?.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Students
@@ -182,7 +145,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
                     <Activity className="h-6 w-6 mb-2 text-primary" />
                     <div className="text-2xl font-bold">
-                      {school.acceptanceRate}%
+                      {school.acceptance_rate}%
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Acceptance Rate
@@ -191,10 +154,10 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
                     <DollarSign className="h-6 w-6 mb-2 text-primary" />
                     <div className="text-2xl font-bold">
-                      ${school.tuition.inState.toLocaleString()}
+                      ${school.tuition.international?.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      In-State Tuition
+                      International Tuition
                     </div>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
@@ -219,10 +182,10 @@ export default function SchoolPage({ params }: SchoolPageProps) {
 
                   <TabsContent value="academics" className="mt-6">
                     <div className="space-y-6">
-                      <div>
+                      {/* <div>
                         <h4 className="font-medium mb-4">Popular Majors</h4>
                         <div className="flex flex-wrap gap-2">
-                          {school.popularMajors.map((major) => (
+                          {school.popular_majors?.map((major) => (
                             <Badge
                               key={major}
                               variant="secondary"
@@ -232,7 +195,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             </Badge>
                           ))}
                         </div>
-                      </div>
+                      </div> */}
                       <div>
                         <h4 className="font-medium mb-4">Academic Calendar</h4>
                         <div className="grid grid-cols-2 gap-4">
@@ -261,23 +224,23 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             Average GPA
                           </div>
                           <div className="text-2xl font-bold">
-                            {school.averageGPA}
+                            {school.average_gpa}
                           </div>
                         </div>
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Average SAT
+                            Average GRE
                           </div>
                           <div className="text-2xl font-bold">
-                            {school.averageSAT}
+                            {school.average_gre}
                           </div>
                         </div>
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Average ACT
+                            Average TOEFL
                           </div>
                           <div className="text-2xl font-bold">
-                            {school.averageACT}
+                            {school.average_toefl}
                           </div>
                         </div>
                         <div>
@@ -285,7 +248,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             Acceptance Rate
                           </div>
                           <div className="text-2xl font-bold">
-                            {school.acceptanceRate}%
+                            {school.acceptance_rate}%
                           </div>
                         </div>
                       </div>
@@ -298,13 +261,13 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             <div className="text-sm text-muted-foreground">
                               Early Decision
                             </div>
-                            <div className="font-medium">November 1</div>
+                            <div className="font-medium">Updated Soon</div>
                           </div>
                           <div>
                             <div className="text-sm text-muted-foreground">
                               Regular Decision
                             </div>
-                            <div className="font-medium">January 15</div>
+                            <div className="font-medium">Updated Soon</div>
                           </div>
                         </div>
                       </div>
@@ -319,7 +282,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             Student Clubs
                           </div>
                           <div className="text-2xl font-bold">
-                            {school.campusLife.studentClubs}
+                            {school.campus_life?.student_clubs}
                           </div>
                         </div>
                         <div>
@@ -327,14 +290,14 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             Sports Teams
                           </div>
                           <div className="text-2xl font-bold">
-                            {school.campusLife.sportsTeams}
+                            {school.campus_life?.sports_teams}
                           </div>
                         </div>
                       </div>
                       <div>
                         <h4 className="font-medium mb-4">Housing Options</h4>
                         <div className="flex flex-wrap gap-2">
-                          {school.campusLife.housingOptions.map((option) => (
+                          {school.campus_life?.housing_options.map((option) => (
                             <Badge
                               key={option}
                               variant="secondary"
@@ -351,12 +314,12 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                   <TabsContent value="costs" className="mt-6">
                     <div className="space-y-6">
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
+                        {/* <div>
                           <div className="text-sm text-muted-foreground">
                             In-State Tuition
                           </div>
                           <div className="text-2xl font-bold">
-                            ${school.tuition.inState.toLocaleString()}
+                            ${school.tuition.in_state?.toLocaleString()}
                           </div>
                         </div>
                         <div>
@@ -364,20 +327,20 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             Out-of-State Tuition
                           </div>
                           <div className="text-2xl font-bold">
-                            ${school.tuition.outState.toLocaleString()}
+                            ${school.tuition.out_state?.toLocaleString()}
                           </div>
-                        </div>
+                        </div> */}
                         <div>
                           <div className="text-sm text-muted-foreground">
                             Room & Board
                           </div>
-                          <div className="text-2xl font-bold">$15,000</div>
+                          <div className="text-2xl font-bold">Updated Soon</div>
                         </div>
                         <div>
                           <div className="text-sm text-muted-foreground">
                             Books & Supplies
                           </div>
-                          <div className="text-2xl font-bold">$1,200</div>
+                          <div className="text-2xl font-bold">Updated Soon</div>
                         </div>
                       </div>
                       <div>
@@ -387,13 +350,13 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                             <div className="text-sm text-muted-foreground">
                               Students Receiving Aid
                             </div>
-                            <div className="font-medium">65%</div>
+                            <div className="font-medium">Updated Soon</div>
                           </div>
                           <div>
                             <div className="text-sm text-muted-foreground">
                               Average Aid Package
                             </div>
-                            <div className="font-medium">$35,000</div>
+                            <div className="font-medium">Updated Soon</div>
                           </div>
                         </div>
                       </div>
@@ -403,19 +366,30 @@ export default function SchoolPage({ params }: SchoolPageProps) {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="h-auto">
               <CardHeader>
                 <CardTitle>Departments</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="law" className="space-y-4">
-                  <TabsList>
-                    {/* <TabsTrigger value="all">All Departments</TabsTrigger> */}
-                    <TabsTrigger value="law">Law Schools</TabsTrigger>
-                    <TabsTrigger value="business">Business Schools</TabsTrigger>
-                    <TabsTrigger value="medical">Medical Schools</TabsTrigger>
+                <Tabs defaultValue={departments[0].id} className="space-y-4">
+                  <TabsList className="flex flex-wrap gap-2 pb-2 h-fit">
+                    {departments.map((department) => (
+                      <TabsTrigger
+                        key={department.id}
+                        value={department.id}
+                        className="whitespace-nowrap"
+                        title={department.name}
+                      >
+                        {department.name}
+                      </TabsTrigger>
+                    ))}
                   </TabsList>
 
+                  {departments.map((department) => (
+                    <TabsContent key={department.id} value={department.id}>
+                      <DepartmentCard department={department} />
+                    </TabsContent>
+                  ))}
                   {/* <TabsContent value="all" className="space-y-4">
                     {departments.map((department) => (
                       <DepartmentCard
@@ -425,10 +399,10 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                     ))}
                   </TabsContent> */}
 
-                  <TabsContent value="law" className="space-y-4">
+                  {/* <TabsContent value="law" className="space-y-4">
                     {lawDepartments.map((department) => (
                       <DepartmentCard
-                        key={department.id}
+                        key={department.school_id}
                         department={department}
                       />
                     ))}
@@ -450,7 +424,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         department={department}
                       />
                     ))}
-                  </TabsContent>
+                  </TabsContent> */}
                 </Tabs>
               </CardContent>
             </Card>
@@ -462,34 +436,8 @@ export default function SchoolPage({ params }: SchoolPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="w-16 h-16 relative rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                          src={school.images[0]}
-                          alt="Post thumbnail"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-1">
-                          Student Experience at {school.name}
-                        </h4>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          A detailed look at campus life, academics, and student
-                          activities...
-                        </p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>By John Doe</span>
-                          <span>•</span>
-                          <span>2 days ago</span>
-                        </div>
-                      </div>
-                    </div>
+                  {relatedPosts.map((post) => (
+                    <PostCard post={post} key={post.id} />
                   ))}
                 </div>
               </CardContent>
@@ -512,9 +460,11 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                   <BookOpen className="h-4 w-4 mr-2" />
                   Request Information
                 </Button>
-                <Button variant="outline" className="w-full">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Visit Website
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href={school.website} target="_blank">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Visit Website
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -581,7 +531,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
               <CardHeader>
                 <CardTitle>Similar Schools</CardTitle>
               </CardHeader>
-              <CardContent>
+              {/* <CardContent>
                 <div className="space-y-4">
                   {similarSchools.map((similarSchool) => (
                     <Link
@@ -606,7 +556,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                     </Link>
                   ))}
                 </div>
-              </CardContent>
+              </CardContent> */}
             </Card>
 
             {/* Departments Information */}

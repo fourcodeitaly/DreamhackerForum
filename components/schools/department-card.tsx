@@ -1,4 +1,3 @@
-import { SchoolDepartment } from "@/lib/mock/school-departments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { SchoolDepartment } from "@/lib/db/departments/department-get";
 
 interface DepartmentCardProps {
   department: SchoolDepartment;
@@ -27,30 +27,32 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <Link href={`/departments/${department.id}`}>
+            <Link
+              href={`/schools/${department.school_id}/departments/${department.id}`}
+            >
               <CardTitle className="text-2xl font-bold hover:underline">
                 {department.name}
               </CardTitle>
             </Link>
-            <div className="flex gap-2 mt-2">
-              {department.qs_world_rank && (
+            {/* <div className="flex gap-2 mt-2">
+              {department.law_school_rank_us && (
                 <Badge variant="secondary">
-                  QS World Rank: #{department.qs_world_rank}
+                  Law School Rank: #{department.law_school_rank_us}
                 </Badge>
               )}
-              {department.us_news_rank_world && (
+              {department.business_school_rank_us && (
                 <Badge variant="secondary">
-                  US News World Rank: #{department.us_news_rank_world}
+                  Business School Rank: #{department.business_school_rank_us}
                 </Badge>
               )}
-              {department.us_rank && (
+              {department.medicine_school_rank_us && (
                 <Badge variant="secondary">
-                  US Rank: #{department.us_rank}
+                  Medical School Rank: #{department.medicine_school_rank_us}
                 </Badge>
               )}
-            </div>
+            </div> */}
           </div>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             {department.law_school_rank_us && (
               <Badge variant="outline">
                 Law School Rank: #{department.law_school_rank_us}
@@ -66,7 +68,7 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
                 Medical School Rank: #{department.medicine_school_rank_us}
               </Badge>
             )}
-          </div>
+          </div> */}
         </div>
       </CardHeader>
       <CardContent>
@@ -107,92 +109,44 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
                 <TableRow>
                   <TableHead>Requirement</TableHead>
                   <TableHead>Minimum</TableHead>
-                  <TableHead>Recommended</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">GPA</TableCell>
-                  <TableCell>
-                    {department.admission_requirements.gpa.minimum}
-                  </TableCell>
-                  <TableCell>
-                    {department.admission_requirements.gpa.recommended}
-                  </TableCell>
+                  <TableCell>{department.admission_requirements.gpa}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">GRE Verbal</TableCell>
-                  <TableCell>
-                    {department.admission_requirements.gre.verbal.minimum}
-                  </TableCell>
-                  <TableCell>
-                    {department.admission_requirements.gre.verbal.recommended}
-                  </TableCell>
+                  <TableCell>{department.admission_requirements.gre}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">
-                    GRE Quantitative
-                  </TableCell>
-                  <TableCell>
-                    {department.admission_requirements.gre.quantitative.minimum}
-                  </TableCell>
-                  <TableCell>
-                    {
-                      department.admission_requirements.gre.quantitative
-                        .recommended
-                    }
-                  </TableCell>
+                  <TableCell className="font-medium">GRE</TableCell>
+                  <TableCell>{department.admission_requirements.gre}</TableCell>
                 </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    GRE Analytical Writing
-                  </TableCell>
-                  <TableCell>
-                    {
-                      department.admission_requirements.gre.analytical_writing
-                        .minimum
-                    }
-                  </TableCell>
-                  <TableCell>
-                    {
-                      department.admission_requirements.gre.analytical_writing
-                        .recommended
-                    }
-                  </TableCell>
-                </TableRow>
+
                 <TableRow>
                   <TableCell className="font-medium">TOEFL</TableCell>
                   <TableCell>
-                    {department.admission_requirements.toefl.minimum}
-                  </TableCell>
-                  <TableCell>
-                    {department.admission_requirements.toefl.recommended}
+                    {department.admission_requirements.toefl}
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">IELTS</TableCell>
-                  <TableCell>
-                    {department.admission_requirements.ielts.minimum}
-                  </TableCell>
-                  <TableCell>
-                    {department.admission_requirements.ielts.recommended}
-                  </TableCell>
+                  <TableCell>Updated Soon</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">GMAT</TableCell>
-                  <TableCell>
-                    {department.admission_requirements.gmat.minimum}
-                  </TableCell>
-                  <TableCell>
-                    {department.admission_requirements.gmat.recommended}
-                  </TableCell>
+                  <TableCell>Updated Soon</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </div>
 
           <div className="flex justify-end">
-            <Link href={`/departments/${department.id}`}>
+            <Link
+              href={`/schools/${department.school_id}/departments/${department.id}`}
+            >
               <Button variant="outline">
                 View Full Profile
                 <ArrowRight className="ml-2 h-4 w-4" />
