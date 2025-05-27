@@ -14,8 +14,6 @@ interface SchoolListProps {
 export function SchoolList({ schools }: SchoolListProps) {
   const { t } = useTranslation();
 
-  console.log(schools);
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {schools.map((school) => (
