@@ -7,6 +7,7 @@ import { RunningCat } from "@/components/ui/running-cat";
 import { Suspense } from "react";
 import { PostListSkeleton } from "@/components/layout/skeletons";
 import { ServerEnvChecker } from "@/components/layout/server-env-checker";
+import { QuickSchoolsView } from "@/components/school/quick-schools-view";
 import {
   getPinnedPosts,
   getPosts,
@@ -197,6 +198,7 @@ export default async function Posts({
             <div className="hidden md:block space-y-6">
               <FeaturedPosts posts={featuredPosts} />
               <TopContributors topContributors={topContributors} />
+              <QuickSchoolsView />
             </div>
           </div>
         </div>
