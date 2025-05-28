@@ -120,7 +120,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                   </div>
                   <div className="text-white">
                     <h1 className="text-4xl font-bold mb-2">{school.name}</h1>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
                       <Badge
                         variant="secondary"
                         className="bg-yellow-100 text-yellow-800"
@@ -200,11 +200,11 @@ export default function SchoolPage({ params }: SchoolPageProps) {
             <Card>
               <CardContent className="p-6">
                 <Tabs defaultValue="academics" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="academics">Academics</TabsTrigger>
                     <TabsTrigger value="admissions">Admissions</TabsTrigger>
                     <TabsTrigger value="campus">Campus Life</TabsTrigger>
-                    <TabsTrigger value="costs">Costs & Aid</TabsTrigger>
+                    {/* <TabsTrigger value="costs">Costs & Aid</TabsTrigger> */}
                   </TabsList>
 
                   <TabsContent value="academics" className="mt-6">

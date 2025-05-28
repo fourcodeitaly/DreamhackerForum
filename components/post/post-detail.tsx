@@ -497,9 +497,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
           onClick={handleShare}
         >
           <Share2 className="h-5 w-5 text-muted-foreground" />
-          <span className="text-muted-foreground hidden md:block">
-            {t("share")}
-          </span>
+          <span className="text-muted-foreground">{t("share")}</span>
         </Button>
       </CardFooter>
     </Card>

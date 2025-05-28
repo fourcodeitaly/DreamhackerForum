@@ -115,10 +115,6 @@ export function MultilingualPostForm({
     setImages((prev) => [...prev, ...files]);
   };
 
-  useEffect(() => {
-    console.log(category);
-  }, [category]);
-
   const handleRemoveImage = async (index: number) => {
     // Check if it's an existing image
     if (index < existingImages.length) {

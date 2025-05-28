@@ -52,7 +52,7 @@ export async function getPostById(
             'id', c.id,
             'name', c.name
           ) as category,
-          (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count,
+          (SELECT COUNT(*) FROM comments WHERE post_id = p.id AND (status IS NULL OR status != 'deleted')) as comments_count,
           (
             SELECT json_agg(
               json_build_object(

@@ -192,14 +192,14 @@ export function CommentItem({
                 <span className="font-light text-xs">
                   {comment.author?.name || t("anonymousUser")}
                 </span>
-                {comment.author?.role === "admin" && (
+                {/* {comment.author?.role === "admin" && (
                   <Badge
                     variant="outline"
                     className="text-xs px-1 py-0 h-5 bg-primary/5"
                   >
                     {t("admin")}
                   </Badge>
-                )}
+                )} */}
                 ・
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span>{formatRelativeTime(comment.created_at)}</span>

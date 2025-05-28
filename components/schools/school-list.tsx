@@ -53,7 +53,13 @@ export default function SchoolsList({
       limit: 10,
       offset: newOffset,
     });
-    setSchools([...schools, ...moreSchools]);
+
+    setSchools([
+      ...schools,
+      ...moreSchools.filter(
+        (school) => !schools.some((s) => s.id === school.id)
+      ),
+    ]);
     setOffset(newOffset);
     setHasMore(moreSchools.length === 10);
     setIsLoadingMore(false);
@@ -92,18 +98,25 @@ export default function SchoolsList({
                   />
                 </div>
                 <div className="flex-grow">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2">{school.name}</h3>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        <span>{school.location}</span>
-                        <span>•</span>
-                        <Building2 className="h-4 w-4" />
-                        <span className="capitalize">{school.type}</span>
-                        <span>•</span>
-                        <Calendar className="h-4 w-4" />
-                        <span>Founded {school.founded}</span>
+                      <h3 className="text-lg md:text-xl font-bold mb-2 text-wrap">
+                        {school.name}
+                      </h3>
+                      <div className="flex flex-col md:flex-row items-start md:items-center gap-2 text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          <span className="text-wrap text-sm md:text-md">
+                            {school.location}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="hidden md:block">•</span>
+                          <Building2 className="h-4 w-4" />
+                          <span className="capitalize text-nowrap text-sm md:text-md">
+                            {school.type}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">

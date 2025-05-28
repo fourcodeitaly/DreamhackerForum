@@ -27,14 +27,14 @@ export function MobileNavButton() {
       position: "bottom-20",
     },
     {
-      title: t("scholarshipInformation").split(")")[1],
+      title: t("schools").split(")")[1],
       icon: <GraduationCap className="h-6 w-6 text-white" />,
-      href: "/scholarships",
+      href: "/schools",
       color: "bg-yellow-400 hover:bg-yellow-500",
       position: "bottom-36",
     },
     {
-      title: t("events"),
+      title: t("events").split(")")[1],
       icon: <Calendar className="h-6 w-6 text-white" />,
       href: "/events",
       color: "bg-red-400 hover:bg-red-500",
@@ -43,7 +43,7 @@ export function MobileNavButton() {
   ];
 
   return (
-    <div className="fixed bottom-20 right-10 z-50 md:hidden">
+    <div className="fixed bottom-10 right-10 z-50 md:hidden">
       <div className="relative">
         {/* Secondary Buttons */}
         <AnimatePresence>
