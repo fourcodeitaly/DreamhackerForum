@@ -170,6 +170,11 @@ export default function SchoolsPage({ searchParams }: SchoolsPageProps) {
                               alt={school.name}
                               fill
                               className="object-contain"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src =
+                                  "https://marketplace.canva.com/EAGLvNcMY10/1/0/1600w/canva-white-and-blue-illustrative-class-logo-mjY8ushmYT4.jpg";
+                              }}
                             />
                           </div>
                           <div className="flex-grow">

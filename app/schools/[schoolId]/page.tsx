@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,11 +26,17 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { DepartmentCard } from "@/components/schools/department-card";
-import { getSchoolById } from "@/lib/db/schools/school-get";
-import { getDepartmentBySchoolId } from "@/lib/db/departments/department-get";
+import { getSchoolById, School } from "@/lib/db/schools/school-get";
+import {
+  getDepartmentBySchoolId,
+  SchoolDepartment,
+} from "@/lib/db/departments/department-get";
 import { getPostsByTags } from "@/lib/db/posts/post-get";
 import { PostCard } from "@/components/post/post-card";
 import Link from "next/link";
+import { use, useEffect, useState } from "react";
+import { Post } from "@/lib/db/posts/posts-modify";
+import Loading from "@/app/posts/[id]/loading";
 
 export const dynamic = "force-dynamic";
 
@@ -38,11 +46,30 @@ interface SchoolPageProps {
   }>;
 }
 
-export default async function SchoolPage({ params }: SchoolPageProps) {
-  const { schoolId } = await params;
-  const school = await getSchoolById(schoolId);
-  const relatedPosts = (await getPostsByTags([school?.tag_id || ""])).posts;
-  const departments = await getDepartmentBySchoolId(schoolId);
+export default function SchoolPage({ params }: SchoolPageProps) {
+  const { schoolId } = use(params);
+  const [school, setSchool] = useState<School | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<Post[]>([]);
+  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSchool = async () => {
+      setIsLoading(true);
+      const school = await getSchoolById(schoolId);
+      const relatedPosts = (await getPostsByTags([school?.tag_id || ""])).posts;
+      const departments = await getDepartmentBySchoolId(schoolId);
+      setSchool(school);
+      setRelatedPosts(relatedPosts);
+      setDepartments(departments);
+      setIsLoading(false);
+    };
+    fetchSchool();
+  }, [schoolId]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   if (!school) {
     return (
@@ -77,6 +104,11 @@ export default async function SchoolPage({ params }: SchoolPageProps) {
             alt={school.name}
             fill
             className="object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src =
+                "https://marketplace.canva.com/EAGLvNcMY10/1/0/1600w/canva-white-and-blue-illustrative-class-logo-mjY8ushmYT4.jpg";
+            }}
           />
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-0 flex items-center">
@@ -89,6 +121,11 @@ export default async function SchoolPage({ params }: SchoolPageProps) {
                       alt={school.name}
                       fill
                       className="object-contain p-4"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://marketplace.canva.com/EAGLvNcMY10/1/0/1600w/canva-white-and-blue-illustrative-class-logo-mjY8ushmYT4.jpg";
+                      }}
                     />
                   </div>
                   <div className="text-white">
