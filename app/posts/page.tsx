@@ -120,7 +120,7 @@ export default async function Posts({
   const upcomingEvents = await getEvents();
 
   const schools = await getSchoolByNationOrderByRank({
-    nationCode: "us",
+    nationCode: "all",
     limit: 5,
     offset: 0,
   });
