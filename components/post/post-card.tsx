@@ -142,7 +142,7 @@ export function PostCard({ post }: PostCardProps) {
               </div>
               <div className="flex items-center">
                 <Bookmark className="h-3 w-3 mr-1 text-yellow-700" />
-                {post.comments_count || 0}
+                {post.saved_count || 0}
               </div>
             </div>
             <div className="text-xs text-muted-foreground border-[1px] rounded-full px-2 py-1 border-muted-foreground ml-2">

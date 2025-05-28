@@ -58,7 +58,10 @@ export default async function PostPage({ params }: PostPageProps) {
 
             <div className="mt-8">
               <Suspense fallback={<Skeleton className="h-48" />}>
-                <CommentSection postId={id} />
+                <CommentSection
+                  postId={id}
+                  commentsCount={post.comments_count || 0}
+                />
               </Suspense>
             </div>
             <div className="lg:hidden mt-12">

@@ -47,6 +47,7 @@ export type Post = {
     image_url?: string;
   };
   event?: Event;
+  saved_count?: number;
 };
 
 // Type definitions

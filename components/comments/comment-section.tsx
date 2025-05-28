@@ -14,11 +14,13 @@ import type { Comment, CommentSortType } from "@/lib/types/comment";
 interface CommentSectionProps {
   postId: string;
   initialComments?: Comment[];
+  commentsCount?: number;
 }
 
 export function CommentSection({
   postId,
   initialComments = [],
+  commentsCount = 0,
 }: CommentSectionProps) {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
@@ -127,7 +129,7 @@ export function CommentSection({
           <MessageSquare className="h-6 w-6 text-primary" />
           <h2 className="md:text-2xl font-bold">{t("comments")}</h2>
           <span className="ml-2 rounded-full bg-secondary px-2.5 py-0.5 text-sm font-medium">
-            {comments.length}
+            {commentsCount}
           </span>
         </div>
 
