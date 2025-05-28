@@ -82,7 +82,14 @@ export const getSchoolByNationOrderByRank = async ({
       LEFT JOIN campus_life cl ON s.id = cl.school_id
       ${nationCode ? "WHERE s.nationcode = $1" : ""}
       GROUP BY s.id, cl.student_clubs, cl.sports_teams
-      ORDER BY s.us_news_rank_world ASC
+      ORDER BY 
+  CAST(
+    CASE 
+      WHEN s.qs_world_rank ~ '-' THEN SPLIT_PART(s.qs_world_rank, '-', 1)::integer
+      WHEN s.qs_world_rank ~ '\\+$' THEN REPLACE(s.qs_world_rank, '+', '')::integer
+      ELSE s.qs_world_rank::integer
+    END AS INTEGER
+  ) ASC
       LIMIT $2 OFFSET $3`,
       [nationCode, limit, offset]
     );
@@ -113,7 +120,7 @@ export const getSchoolById = async (id: string): Promise<School | null> => {
         LEFT JOIN campus_life cl ON s.id = cl.school_id
         WHERE s.id = $1
         GROUP BY s.id, cl.student_clubs, cl.sports_teams
-        ORDER BY s.us_news_rank_world ASC`,
+        ORDER BY s.qs_world_rank ASC`,
       [id]
     );
 

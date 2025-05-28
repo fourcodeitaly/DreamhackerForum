@@ -125,7 +125,7 @@ export default function SchoolsList({
                         className="bg-yellow-100 text-yellow-800"
                       >
                         <Trophy className="h-4 w-4 mr-1" />
-                        Rank #{school.us_news_rank_world}
+                        Rank #{school.qs_world_rank}
                       </Badge>
                       <Button variant="outline" size="icon">
                         <Star className="h-4 w-4" />

@@ -2,10 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  getSchoolByNationOrderByRank,
-  School,
-} from "@/lib/db/schools/school-get";
+import { School } from "@/lib/db/schools/school-get";
 
 export async function QuickSchoolsView({ schools }: { schools: School[] }) {
   return (
@@ -38,7 +35,7 @@ export async function QuickSchoolsView({ schools }: { schools: School[] }) {
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Trophy className="h-3 w-3 text-yellow-500" />
                     <span className="text-yellow-600">
-                      #{school.us_news_rank_world}
+                      #{school.qs_world_rank}
                     </span>
                   </div>
                 </div>

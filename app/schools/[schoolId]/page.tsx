@@ -126,7 +126,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         className="bg-yellow-100 text-yellow-800"
                       >
                         <Trophy className="h-4 w-4 mr-1" />
-                        Rank #{school.us_news_rank_world}
+                        Rank #{school.qs_world_rank}
                       </Badge>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
