@@ -408,7 +408,10 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                 <CardTitle>Departments</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue={departments[0].id} className="space-y-4">
+                <Tabs
+                  defaultValue={departments[0]?.id || "all"}
+                  className="space-y-4"
+                >
                   <TabsList className="flex flex-wrap gap-2 pb-2 h-fit">
                     {departments.map((department) => (
                       <TabsTrigger

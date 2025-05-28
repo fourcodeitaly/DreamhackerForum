@@ -12,6 +12,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Suspense } from "react";
+import { Button } from "@/components/ui/button";
 
 export function CategoryNavigation({ className }: { className?: string }) {
   const { t } = useTranslation();
@@ -115,24 +116,57 @@ export function CategoryNavigation({ className }: { className?: string }) {
     //   ],
     // },
     {
+      id: "schools",
+      name: t("schools"),
+      categories: [
+        { id: "schools", name: t("allSchools") },
+        { id: "us", name: t("usTag") },
+        { id: "uk", name: t("ukTag") },
+        { id: "de", name: t("deTag") },
+        { id: "fr", name: t("frTag") },
+        { id: "ca", name: t("caTag") },
+        { id: "au", name: t("auTag") },
+        { id: "sg", name: t("sgTag") },
+        { id: "hk", name: t("hkTag") },
+        { id: "cn", name: t("cnTag") },
+        { id: "jp", name: t("jpTag") },
+        { id: "kr", name: t("krTag") },
+        { id: "tw", name: t("twTag") },
+      ],
+    },
+    {
       id: "events",
       name: t("events"),
       categories: [{ id: "all-events", name: t("allEvents") }],
     },
-    // {
-    //   id: "scholarship",
-    //   name: t("scholarship"),
-    //   categories: [
-    //     {
-    //       id: "c34d416e-1bed-4474-a020-e83032e2b15d",
-    //       name: t("allScholarships"),
-    //     },
-    //   ],
-    // },
     {
-      id: "schools",
-      name: t("schools"),
-      categories: [{ id: "schools", name: t("allSchools") }],
+      id: "scholarship",
+      name: t("scholarship"),
+      categories: [
+        {
+          id: "c34d416e-1bed-4474-a020-e83032e2b15d",
+          name: t("allScholarships"),
+        },
+      ],
+    },
+
+    {
+      id: "internship",
+      name: t("internship"),
+      categories: [
+        { id: "internship", name: t("allInternship") },
+        // { id: "internship", name: t("usInternship") },
+        // { id: "internship", name: t("ukInternship") },
+        // { id: "internship", name: t("caInternship") },
+        // { id: "internship", name: t("hkInternship") },
+        // { id: "internship", name: t("sgInternship") },
+        // { id: "internship", name: t("jpInternship") },
+        // { id: "internship", name: t("seInternship") },
+        // { id: "internship", name: t("deInternship") },
+        // { id: "internship", name: t("esInternship") },
+        // { id: "internship", name: t("huInternship") },
+        // { id: "internship", name: t("itInternship") },
+      ],
     },
   ];
 
@@ -140,50 +174,80 @@ export function CategoryNavigation({ className }: { className?: string }) {
     <Suspense>
       <NavigationMenu>
         <NavigationMenuList className={cn(className)}>
-          {categoryGroups.map((group) => (
-            <NavigationMenuItem key={group.id}>
-              <NavigationMenuTrigger className="bg-transparent">
-                {group.name.split(")")[1]}
-              </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid w-full gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                  {group.categories.map((category) => {
-                    let href;
-                    if (group.id === "tags") {
-                      href = `/posts?tag=${category.id}`;
-                    } else if (category.id.includes("resources")) {
-                      href = `/resources?category=${category.id}`;
-                    } else if (group.id === "scholarship") {
-                      href = `/posts?tag=${category.id}`;
-                    } else if (group.id === "schools") {
-                      href = `/schools`;
-                    } else if (group.id === "events") {
-                      href = `/events`;
-                    } else {
-                      href = `/posts?category=${category.id}`;
-                    }
+          {categoryGroups.map((group) => {
+            // If there's only one category, render a button instead
+            if (group.categories.length === 1) {
+              const category = group.categories[0];
+              let href;
+              if (group.id === "tags") {
+                href = `/posts?tag=${category.id}`;
+              } else if (category.id.includes("resources")) {
+                href = `/resources?category=${category.id}`;
+              } else if (group.id === "scholarship") {
+                href = `/posts?tag=${category.id}`;
+              } else if (group.id === "schools") {
+                href = `/schools?location=${category.id}`;
+              } else if (group.id === "events") {
+                href = `/events`;
+              } else {
+                href = `/posts?category=${category.id}`;
+              }
 
-                    return (
-                      <li key={category.id}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={href}
-                            className={cn(
-                              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            )}
-                          >
-                            <div className="text-sm font-medium leading-none">
-                              {category.name.split(")")[1]}
-                            </div>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          ))}
+              return (
+                <li key={group.id}>
+                  <Button variant="ghost" className="h-10 px-4 py-2" asChild>
+                    <Link href={href}>{group.name.split(")")[1]}</Link>
+                  </Button>
+                </li>
+              );
+            }
+
+            // Otherwise render the navigation menu item
+            return (
+              <NavigationMenuItem key={group.id}>
+                <NavigationMenuTrigger className="bg-transparent">
+                  {group.name.split(")")[1]}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-full gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {group.categories.map((category) => {
+                      let href;
+                      if (group.id === "tags") {
+                        href = `/posts?tag=${category.id}`;
+                      } else if (category.id.includes("resources")) {
+                        href = `/resources?category=${category.id}`;
+                      } else if (group.id === "scholarship") {
+                        href = `/posts?tag=${category.id}`;
+                      } else if (group.id === "schools") {
+                        href = `/schools?location=${category.id}`;
+                      } else if (group.id === "events") {
+                        href = `/events`;
+                      } else {
+                        href = `/posts?category=${category.id}`;
+                      }
+
+                      return (
+                        <li key={category.id}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={href}
+                              className={cn(
+                                "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                              )}
+                            >
+                              <div className="text-sm font-medium leading-none">
+                                {category.name.split(")")[1]}
+                              </div>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            );
+          })}
         </NavigationMenuList>
       </NavigationMenu>
     </Suspense>

@@ -386,6 +386,8 @@ export const translations = {
     esTag: "(Tag) Spain",
     huTag: "(Tag) Hungary",
     vnTag: "(Tag) Vietnam",
+    krTag: "(Tag) South Korea",
+    twTag: "(Tag) Taiwan",
 
     // Recent Activities
     recentActivities: "Recent Activities",
@@ -411,6 +413,22 @@ export const translations = {
     chScholarship: "(Scholarship) CH Scholarship",
     ukScholarship: "(Scholarship) UK Scholarship",
     frScholarship: "(Scholarship) FR Scholarship",
+
+    // Internship
+    internship: "(Internship) Internship",
+    allInternship: "(Internship) All Internship",
+    usInternship: "(Internship) US Internship",
+    ukInternship: "(Internship) UK Internship",
+    caInternship: "(Internship) CA Internship",
+    hkInternship: "(Internship) HK Internship",
+    sgInternship: "(Internship) SG Internship",
+    jpInternship: "(Internship) JP Internship",
+    seInternship: "(Internship) SE Internship",
+    deInternship: "(Internship) DE Internship",
+    esInternship: "(Internship) ES Internship",
+    huInternship: "(Internship) HU Internship",
+    itInternship: "(Internship) IT Internship",
+    chInternship: "(Internship) CH Internship",
   },
 
   // Vietnamese translations
@@ -779,6 +797,11 @@ export const translations = {
     esTag: "(Tag) Tây Ban Nha",
     huTag: "(Tag) Hungary",
     vnTag: "(Tag) Việt Nam",
+    krTag: "(Tag) Hàn Quốc",
+    twTag: "(Tag) Đài Loan",
+    noTag: "(Tag) Na Uy",
+    inTag: "(Tag) Ấn Độ",
+    ptTag: "(Tag) Bồ Đào Nha",
 
     // Recent Activities
     recentActivities: "Hoạt động gần đây",
@@ -804,5 +827,21 @@ export const translations = {
     chScholarship: "(Học bổng) Học bổng Thụy Sĩ",
     ukScholarship: "(Học bổng) Học bổng Anh",
     frScholarship: "(Học bổng) Học bổng Pháp",
+
+    // Internship
+    internship: "(Internship) Thực tập",
+    allInternship: "(Internship) Tất cả thực tập",
+    usInternship: "(Internship) Thực tập Mỹ",
+    ukInternship: "(Internship) Thực tập Anh",
+    caInternship: "(Internship) Thực tập Canada",
+    hkInternship: "(Internship) Thực tập Hong Kong",
+    sgInternship: "(Internship) Thực tập Singapore",
+    jpInternship: "(Internship) Thực tập Nhật Bản",
+    seInternship: "(Internship) Thực tập Thụy Điển",
+    deInternship: "(Internship) Thực tập Đức",
+    esInternship: "(Internship) Thực tập Tây Ban Nhật",
+    huInternship: "(Internship) Thực tập Hungary",
+    itInternship: "(Internship) Thực tập Ý",
+    chInternship: "(Internship) Thực tập Thụy Sĩ",
   },
 };

@@ -22,6 +22,9 @@ export function PostCard({ post }: PostCardProps) {
   const hasScholarshipTag = post.tags?.some(
     (tag) => tag.id === "c34d416e-1bed-4474-a020-e83032e2b15d"
   );
+  const hasInternshipTag = post.tags?.some(
+    (tag) => tag.id === "8dbc5297-53da-482b-b895-0345d5143bbd"
+  );
 
   return (
     <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
@@ -37,6 +40,16 @@ export function PostCard({ post }: PostCardProps) {
             </h2>
           </Link>
           <div className="flex gap-2 items-center">
+            {hasInternshipTag && (
+              <Link href={`/internships`}>
+                <Badge
+                  variant="default"
+                  className="bg-green-700 hover:bg-green-800 text-nowrap"
+                >
+                  {t("internship").split(")")[1]}
+                </Badge>
+              </Link>
+            )}
             {hasScholarshipTag && (
               <Link href={`/scholarships`}>
                 <Badge

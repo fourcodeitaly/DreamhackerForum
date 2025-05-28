@@ -25,6 +25,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { createPostAction, updatePostAction } from "@/app/actions";
 import type { Post } from "@/lib/db/posts/posts-modify";
+import { PresetSelector } from "../ui/present-selector";
 
 interface MultilingualPostFormProps {
   initialData?: Post;
@@ -54,13 +55,33 @@ export function MultilingualPostForm({
   });
 
   const tagsList = [
+    { name: t("scholarshipsTag"), id: "c34d416e-1bed-4474-a020-e83032e2b15d" },
+    { name: t("internship"), id: "8dbc5297-53da-482b-b895-0345d5143bbd" },
     { name: t("usTag"), id: "75d74626-55fe-47be-bc03-7e6531d19249" },
     { name: t("ukTag"), id: "65df2188-2c7a-43e0-affc-bf0d4ac924f5" },
     { name: t("caTag"), id: "e4e9fb41-5a05-470c-925b-f91b1a00d962" },
     { name: t("auTag"), id: "40e5e7f7-fc8c-4e17-9297-02e4c04623f4" },
     { name: t("cnTag"), id: "4b1a14a4-a5a9-46af-968f-2d1d75f470e5" },
     { name: t("vnTag"), id: "4e1e7c2a-5250-4758-b7db-58497c6a3081" },
-    { name: t("scholarshipsTag"), id: "c34d416e-1bed-4474-a020-e83032e2b15d" },
+    { name: t("sgTag"), id: "83f2e16c-5c5d-459f-ab3d-301efefa78ad" },
+    { name: t("deTag"), id: "705da86e-4ea8-4d96-a33d-16b8d4d4bf8f" },
+    { name: t("frTag"), id: "3a3b7c21-9f07-40bb-944b-b72fe89ef8c9" },
+    { name: t("nlTag"), id: "7b98881d-f4de-40f6-81e0-4ec9e7f4dff4" },
+    { name: t("esTag"), id: "4c9579a3-8ac8-43bb-8fbb-32280ba0bb91" },
+    { name: t("hkTag"), id: "379ec624-0d31-4026-aa48-38396f542fe5" },
+    { name: t("jpTag"), id: "d87db404-09f1-4f92-ada4-16e8baa73856" },
+    { name: t("seTag"), id: "8c589bbf-0cce-4d26-a28c-d17c8942155e" },
+    { name: t("chTag"), id: "43428091-acb5-478d-b351-975725896454" },
+    { name: t("itTag"), id: "4edebb77-56a0-451e-92cb-5c3cda094349" },
+    { name: t("krTag"), id: "38cce86f-9566-4672-97a8-892cb30242eb" },
+    { name: t("dkTag"), id: "1160cfeb-35fd-4ad0-b03e-5b35a6d32d22" },
+    { name: t("noTag"), id: "9a5bb1e8-c7f8-49ee-af34-fbdf53d5b4f2" },
+    { name: t("fiTag"), id: "442e3a3f-75db-4a0e-8ec2-6a161c00e2b9" },
+    { name: t("huTag"), id: "ef5fe957-7903-4629-8f2b-a7035d4dc8b7" },
+    { name: t("ieTag"), id: "f38ab0c6-88ee-4587-bfe7-2eee9585b1ca" },
+    { name: t("inTag"), id: "6e1f2209-e06b-40f4-8bf5-ea6ebeabdfb1" },
+    { name: t("ptTag"), id: "d14583f2-da16-4c10-9b26-08107149a674" },
+    { name: t("twTag"), id: "9816ef27-5053-4f59-9270-773a3d0a0a86" },
   ];
 
   const [category, setCategory] = useState(initialData?.category_id || "");
@@ -93,6 +114,10 @@ export function MultilingualPostForm({
     setImagePreviews((prev) => [...prev, ...newPreviews]);
     setImages((prev) => [...prev, ...files]);
   };
+
+  useEffect(() => {
+    console.log(category);
+  }, [category]);
 
   const handleRemoveImage = async (index: number) => {
     // Check if it's an existing image
@@ -398,80 +423,84 @@ export function MultilingualPostForm({
   // Category groups for the select dropdown
   const categoryGroups = [
     {
-      label: t("mbaPrograms"),
+      name: t("mbaPrograms"),
       options: [
-        { value: "mba-school-information", label: t("mbaSchoolInformation") },
-        { value: "mba-rankings", label: t("mbaRankings") },
-        { value: "mba-application-faq", label: t("mbaApplicationFAQ") },
+        { id: "mba-school-information", name: t("mbaSchoolInformation") },
+        { id: "mba-rankings", name: t("mbaRankings") },
+        { id: "mba-application-faq", name: t("mbaApplicationFAQ") },
         {
-          value: "mba-application-strategy",
-          label: t("mbaApplicationStrategy"),
+          id: "mba-application-strategy",
+          name: t("mbaApplicationStrategy"),
         },
-        { value: "mba-resume", label: t("mbaResume") },
+        { id: "mba-resume", name: t("mbaResume") },
         {
-          value: "mba-recommendation-letter",
-          label: t("mbaRecommendationLetter"),
+          id: "mba-recommendation-letter",
+          name: t("mbaRecommendationLetter"),
         },
-        { value: "mba-essay-writing", label: t("mbaEssayWriting") },
-        { value: "mba-interviews", label: t("mbaInterviews") },
-        { value: "mba-application-summary", label: t("mbaApplicationSummary") },
+        { id: "mba-essay-writing", name: t("mbaEssayWriting") },
+        { id: "mba-interviews", name: t("mbaInterviews") },
+        { id: "mba-application-summary", name: t("mbaApplicationSummary") },
       ],
     },
     {
-      label: t("masterPrograms"),
+      name: t("masterPrograms"),
       options: [
         {
-          value: "master-school-introduction",
-          label: t("masterSchoolIntroduction"),
+          id: "master-school-introduction",
+          name: t("masterSchoolIntroduction"),
         },
         {
-          value: "master-major-ranking",
-          label: t("masterMajorRanking"),
+          id: "master-major-ranking",
+          name: t("masterMajorRanking"),
         },
         {
-          value: "master-business-application-faq",
-          label: t("masterApplicationFAQ"),
+          id: "master-business-application-faq",
+          name: t("masterApplicationFAQ"),
         },
         {
-          value: "master-recommendation-letter",
-          label: t("masterRecommendationLetter"),
+          id: "master-recommendation-letter",
+          name: t("masterRecommendationLetter"),
         },
-        { value: "master-ps-resume", label: t("masterPsResume") },
+        { id: "master-ps-resume", name: t("masterPsResume") },
         {
-          value: "master-business-interview",
-          label: t("masterBusinessInterview"),
-        },
-        {
-          value: "master-application-summary",
-          label: t("masterApplicationSummary"),
+          id: "master-business-interview",
+          name: t("masterBusinessInterview"),
         },
         {
-          value: "master-scholarship",
-          label: t("masterScholarship"),
+          id: "master-application-summary",
+          name: t("masterApplicationSummary"),
+        },
+        {
+          id: "master-scholarship",
+          name: t("masterScholarship"),
         },
       ],
     },
     {
-      label: t("phdPrograms"),
+      name: t("phdPrograms"),
       options: [
         {
-          value: "phd-business-school-intro",
-          label: t("phdBusinessSchoolIntro"),
+          id: "phd-business-school-intro",
+          name: t("phdBusinessSchoolIntro"),
         },
-        { value: "phd-ranking", label: t("phdRanking") },
-        { value: "phd-application-faq", label: t("phdApplicationFAQ") },
+        { id: "phd-ranking", name: t("phdRanking") },
+        { id: "phd-application-faq", name: t("phdApplicationFAQ") },
         {
-          value: "phd-recommendation-letter",
-          label: t("phdRecommendationLetter"),
+          id: "phd-recommendation-letter",
+          name: t("phdRecommendationLetter"),
         },
-        { value: "phd-application-summary", label: t("phdApplicationSummary") },
-        { value: "phd-study-experience", label: t("phdStudyExperience") },
-        { value: "phd-interview", label: t("phdInterview") },
+        { id: "phd-application-summary", name: t("phdApplicationSummary") },
+        { id: "phd-study-experience", name: t("phdStudyExperience") },
+        { id: "phd-interview", name: t("phdInterview") },
         {
-          value: "phd-scholarship",
-          label: t("phdScholarship"),
+          id: "phd-scholarship",
+          name: t("phdScholarship"),
         },
       ],
+    },
+    {
+      name: t("internship"),
+      options: [{ id: "internship", name: t("allInternship") }],
     },
   ];
 
@@ -479,7 +508,7 @@ export function MultilingualPostForm({
     <Card>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="category">{t("category")}</Label>
             <Select value={category} onValueChange={setCategory} required>
               <SelectTrigger>
@@ -487,18 +516,18 @@ export function MultilingualPostForm({
               </SelectTrigger>
               <SelectContent>
                 {categoryGroups.map((group) => (
-                  <SelectGroup key={group.label}>
-                    <SelectLabel>{group.label}</SelectLabel>
+                  <SelectGroup key={group.name}>
+                    <SelectLabel>{group.name}</SelectLabel>
                     {group.options.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -617,26 +646,67 @@ export function MultilingualPostForm({
             </Tabs>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="tags">{t("tags").split(")")[1]}</Label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {tags.map((tag) => (
-                <div
-                  key={tag.id}
-                  className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full"
-                >
-                  <span>{tag.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    className="hover:text-destructive"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 w-full">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="category">{t("category")}</Label>
+              <PresetSelector
+                onSelect={(preset) => {
+                  setCategory(preset.id);
+                }}
+                defaultValue={{
+                  id: category,
+                  name:
+                    categoryGroups
+                      .find((group) =>
+                        group.options.some((option) => option.id === category)
+                      )
+                      ?.options.find((option) => option.id === category)
+                      ?.name || "",
+                }}
+                presets={categoryGroups.flatMap((group) =>
+                  group.options.map((option) => ({
+                    id: option.id,
+                    name: option.name,
+                  }))
+                )}
+              />
+              {/* <PresetSelector presets={tagsList} /> */}
             </div>
-            <Select value={currentTag} onValueChange={handleAddTag}>
+
+            <div className="space-y-2">
+              <Label htmlFor="tags">{t("tags").split(")")[1]}</Label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {tags.map((tag) => (
+                  <div
+                    key={tag.id}
+                    className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full"
+                  >
+                    <span>
+                      {tag.name.includes(")")
+                        ? tag.name.split(")")[1]
+                        : tag.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(tag)}
+                      className="hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <PresetSelector
+                onSelect={(preset) => {
+                  handleAddTag(preset.id);
+                }}
+                presets={tagsList.map((tag) => ({
+                  id: tag.id,
+                  name: tag.name.split(")")[1],
+                }))}
+              />
+            </div>
+            {/* <Select value={currentTag} onValueChange={handleAddTag}>
               <SelectTrigger>
                 <SelectValue placeholder={t("addTagsPlaceholder")} />
               </SelectTrigger>
@@ -650,7 +720,7 @@ export function MultilingualPostForm({
                   ))}
                 </SelectGroup>
               </SelectContent>
-            </Select>
+            </Select> */}
           </div>
 
           {/* Original Link Field */}
