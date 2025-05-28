@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, MessageSquare, Bookmark, Award } from "lucide-react";
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { toCamelCase } from "@/utils/snake-case";
-import { formatRelativeTime } from "@/utils/utils";
+import { cn, formatRelativeTime } from "@/utils/utils";
 
 interface PostCardProps {
   post: Post;
@@ -126,8 +126,15 @@ export function PostCard({ post }: PostCardProps) {
           <div className="flex gap-2 justify-between items-center">
             <div className="flex justify-end text-xs text-muted-foreground gap-4">
               <div className="flex items-center">
-                <Heart className="h-3 w-3 mr-1 text-red-700" />
-                {post.comments_count || 0}
+                <Heart
+                  className={cn(
+                    "h-3 w-3 mr-1",
+                    post.liked
+                      ? "fill-red-500 text-red-500"
+                      : "text-muted-foreground"
+                  )}
+                />
+                {post.likes_count || 0}
               </div>
               <div className="flex items-center">
                 <MessageSquare className="h-3 w-3 mr-1 text-green-700" />

@@ -1,6 +1,4 @@
 import { queryOne } from "../postgres";
-import { getPosts } from "../posts/post-get";
-import type { Post } from "../posts/posts-modify";
 
 export async function getCategory(
   categoryId: string

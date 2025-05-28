@@ -61,6 +61,10 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
                           image.image_url.includes("event-image")
                         )?.image_url
                       }
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "https://freeillustrations.xyz/wp-content/uploads/2021/01/Meeting-Illustrations@4x.png";
+                      }}
                       alt={event.title}
                       className="w-full h-full object-cover"
                     />

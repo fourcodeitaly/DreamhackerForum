@@ -39,7 +39,6 @@ import { Markdown } from "@/components/markdown"; // Import the Markdown compone
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
-import { Event } from "@/lib/db/events/event-modify";
 
 interface PostDetailProps {
   post: Post;
@@ -53,7 +52,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
 
   const [post, setPost] = useState<Post>(rawPost);
   const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
+  const [likesCount, setLikesCount] = useState<number>(0);
   const [saved, setSaved] = useState<boolean>(false);
   const [currentLanguage, setCurrentLanguage] = useState<"en" | "zh" | "vi">(
     "en"
@@ -65,7 +64,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
       const normalizedPost = normalizePostData(rawPost);
       setPost(normalizedPost);
       setLiked(normalizedPost.liked || false);
-      setLikesCount(normalizedPost.likes_count || 0);
+      setLikesCount(Number(normalizedPost.likes_count || "0"));
       setSaved(normalizedPost.saved || false);
       setCurrentLanguage(language);
     }
@@ -148,15 +147,39 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
     return post.title || "";
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (!user) return;
 
-    if (liked) {
-      setLikesCount((prev) => prev - 1);
-    } else {
-      setLikesCount((prev) => prev + 1);
-    }
+    // Optimistically update UI
     setLiked(!liked);
+    setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
+
+    try {
+      const response = await fetch(`/api/posts/${post.id}/like`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        // Revert optimistic update on error
+        setLiked(liked);
+        setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
+        throw new Error("Failed to update like status");
+      }
+
+      const data = await response.json();
+      // Update with actual server data
+      setLiked(data.liked);
+    } catch (error) {
+      console.error("Error liking post:", error);
+      toast({
+        title: t("error"),
+        description: t("errorLikingPost"),
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSave = async () => {

@@ -80,6 +80,7 @@ export default async function Posts({
   // Fetch category if categoryId is provided
   const categoryData = categoryId ? await getCategory(categoryId) : null;
   const categoryName = categoryData?.name?.en || "All Posts";
+  const user = await getServerUser();
 
   // Fetch posts based on parameters
   let result: { posts: Post[]; total: number } | null = null;
@@ -87,10 +88,21 @@ export default async function Posts({
   if (tag) {
     tagInfo = await getTagById(tag);
     if (tagInfo) {
-      result = await getPostsByTags([tagInfo.id], pageNumber, postsPerPage);
+      result = await getPostsByTags(
+        [tagInfo.id],
+        pageNumber,
+        postsPerPage,
+        user?.id
+      );
     }
   } else {
-    result = await getPosts(pageNumber, postsPerPage, false, categoryId);
+    result = await getPosts(
+      pageNumber,
+      postsPerPage,
+      false,
+      categoryId,
+      user?.id
+    );
   }
 
   const initialPosts = result?.posts ?? [];
@@ -102,7 +114,6 @@ export default async function Posts({
   // Fetch top contributors (category-specific if category is provided)
   const topContributors = await getTopContributors();
 
-  const user = await getServerUser();
   const isAdmin = user?.role === "admin";
 
   // Fetch upcoming events

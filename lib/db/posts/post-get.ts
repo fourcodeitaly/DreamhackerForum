@@ -110,15 +110,27 @@ export async function getPostById(
             )
             FROM events e 
             WHERE p.event_id = e.id
-          ) as event
+          ) as event,
+        (
+            SELECT COUNT(*) 
+            FROM post_likes pl
+            WHERE pl.post_id = p.id
+        ) as likes_count,
+        (
+            SELECT EXISTS (
+            SELECT 1 
+            FROM post_likes pl
+            WHERE pl.post_id = p.id AND pl.user_id = $2
+        )) as liked
         FROM posts p
         LEFT JOIN users u ON p.user_id = u.id
         LEFT JOIN categories c ON p.category_id = c.id
         LEFT JOIN events e ON p.event_id = e.id
+        LEFT JOIN post_likes pl ON p.id = pl.post_id AND pl.user_id = $2
         WHERE p.id = $1
       `;
 
-    const post = await queryOne<Post>(sql, [postId]);
+    const post = await queryOne<Post>(sql, [postId, userId]);
 
     if (!post) return null;
 
@@ -131,27 +143,7 @@ export async function getPostById(
     `;
     const tags = await query<{ name: string; id: string }>(tagsSql, [postId]);
 
-    // // Get like count
-    // const likesSql = `SELECT COUNT(*) as count FROM post_likes WHERE post_id = $1`;
-    // const likesResult = await queryOne<{ count: string }>(likesSql, [postId]);
-    // const likesCount = Number.parseInt(likesResult?.count || "0");
-
-    // // Get comment count
-    // const commentsSql = `SELECT COUNT(*) as count FROM comments WHERE post_id = $1`;
-    // const commentsResult = await queryOne<{ count: string }>(commentsSql, [
-    //   postId,
-    // ]);
-    // const commentsCount = Number.parseInt(commentsResult?.count || "0");
-
-    // // Check if user has liked the post
-    // let liked = false;
-    // if (userId) {
-    //   const likedSql = `SELECT 1 FROM post_likes WHERE post_id = $1 AND user_id = $2`;
-    //   const likedResult = await queryOne(likedSql, [postId, userId]);
-    //   liked = !!likedResult;
-    // }
-
-    // // Check if user has saved the post
+    // Check if user has saved the post
     let saved = false;
     if (userId) {
       const savedSql = `SELECT 1 FROM saved_posts WHERE post_id = $1 AND user_id = $2`;
@@ -163,9 +155,6 @@ export async function getPostById(
     return {
       ...post,
       tags: tags,
-      // likes_count: likesCount,
-      // comments_count: commentsCount,
-      // liked,
       saved,
     };
   } catch (error) {
@@ -313,7 +302,12 @@ export async function getPosts(
             )
             FROM events e
             WHERE p.event_id = e.id
-          ) as event
+          ) as event,
+          (
+            SELECT COUNT(*) 
+            FROM post_likes pl
+            WHERE pl.post_id = p.id
+          ) as likes_count
         FROM posts p
         LEFT JOIN users u ON p.user_id = u.id
         LEFT JOIN categories c ON p.category_id = c.id
@@ -378,6 +372,8 @@ export async function getPosts(
       tagsByPostId[tag.post_id].push({ name: tag.name, id: tag.id });
     });
 
+    // Get like counts for all posts
+
     // // Get like counts for all posts
     // const likesSql = `
     //     SELECT post_id, COUNT(*) as count
@@ -430,9 +426,8 @@ export async function getPosts(
     const enrichedPosts = posts.map((post) => ({
       ...post,
       tags: tagsByPostId[post.id] || [],
-      // likes_count: likesByPostId[post.id] || 0,
       comments_count: Number(post.comments_count) || 0,
-      // liked: likedPostIds.includes(post.id),
+      liked: likedPostIds.includes(post.id),
       saved: savedPostIds.includes(post.id),
     }));
 
