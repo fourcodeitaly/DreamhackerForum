@@ -15,10 +15,10 @@ import {
 } from "@/lib/db/posts/post-get";
 import { getTopContributors } from "@/lib/db/users-get";
 import { getCategory } from "@/lib/db/category/category-get";
-import { PlusCircle, Calendar } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getServerUser } from "@/lib/supabase/server";
-import { getTagById, getTags, Tag } from "@/lib/db/tags/tags-get";
+import { getTagById, Tag } from "@/lib/db/tags/tags-get";
 import { Post } from "@/lib/db/posts/posts-modify";
 import { EventSlideshow } from "@/components/ui/event-slideshow";
 import { getEvents } from "@/lib/db/events/event-get";
