@@ -7,18 +7,19 @@ import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
 
 const LOCATIONS = [
-  { code: "us", name: "United States" },
-  { code: "uk", name: "United Kingdom" },
-  { code: "ca", name: "Canada" },
-  { code: "au", name: "Australia" },
-  { code: "sg", name: "Singapore" },
-  { code: "hk", name: "Hong Kong" },
-  { code: "cn", name: "China" },
-  { code: "jp", name: "Japan" },
-  { code: "kr", name: "South Korea" },
-  { code: "tw", name: "Taiwan" },
-  { code: "de", name: "Germany" },
-  { code: "fr", name: "France" },
+  { code: "all", name: "allNation" },
+  { code: "us", name: "us" },
+  { code: "uk", name: "uk" },
+  { code: "ca", name: "ca" },
+  { code: "au", name: "au" },
+  { code: "sg", name: "sg" },
+  { code: "hk", name: "hk" },
+  { code: "cn", name: "cn" },
+  { code: "jp", name: "jp" },
+  { code: "kr", name: "kr" },
+  { code: "tw", name: "tw" },
+  { code: "de", name: "de" },
+  { code: "fr", name: "fr" },
 ];
 
 export function SchoolNationFilter({ location }: { location: string }) {
@@ -44,7 +45,7 @@ export function SchoolNationFilter({ location }: { location: string }) {
                     variant={location === loc.code ? "default" : "outline"}
                     className="w-full justify-start"
                   >
-                    {t(loc.code)}
+                    {t(loc.name)}
                   </Button>
                 </Link>
               ))}

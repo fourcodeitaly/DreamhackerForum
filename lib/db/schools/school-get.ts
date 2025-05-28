@@ -60,11 +60,16 @@ export const getSchoolByNationOrderByRank = async ({
   limit = 10,
   offset = 0,
 }: {
-  nationCode: string;
+  nationCode?: string;
   limit?: number;
   offset?: number;
 }): Promise<School[]> => {
   try {
+    const params =
+      nationCode !== "all" ? [limit, offset, nationCode] : [limit, offset];
+
+    const whereClause = nationCode !== "all" ? "WHERE s.nationcode = $3" : "";
+
     const schools = await query<School>(
       `SELECT s.*, 
         cl.student_clubs, cl.sports_teams,
@@ -80,7 +85,7 @@ export const getSchoolByNationOrderByRank = async ({
         ) as tuition
       FROM schools s
       LEFT JOIN campus_life cl ON s.id = cl.school_id
-      ${nationCode ? "WHERE s.nationcode = $1" : ""}
+      ${whereClause}
       GROUP BY s.id, cl.student_clubs, cl.sports_teams
       ORDER BY 
   CAST(
@@ -90,8 +95,8 @@ export const getSchoolByNationOrderByRank = async ({
       ELSE s.qs_world_rank::integer
     END AS INTEGER
   ) ASC
-      LIMIT $2 OFFSET $3`,
-      [nationCode, limit, offset]
+      LIMIT $1 OFFSET $2`,
+      params
     );
 
     return schools;

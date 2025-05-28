@@ -448,6 +448,7 @@ export const translations = {
     nl: "Netherlands",
     dk: "Denmark",
     fi: "Finland",
+    allNation: "All",
 
     // Schools
     overview: "Overview",
@@ -905,6 +906,7 @@ export const translations = {
     nl: "Hà Lan",
     dk: "Đan Mạch",
     fi: "Phần Lan",
+    allNation: "Tất cả",
 
     // Schools
     overview: "Tổng quan",

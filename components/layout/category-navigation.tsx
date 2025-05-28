@@ -103,7 +103,7 @@ export function CategoryNavigation({ className }: { className?: string }) {
       id: "schools",
       name: t("schools"),
       categories: [
-        // { id: "us", name: t("allSchools") },
+        { id: "all", name: t("allSchools") },
         { id: "us", name: t("usTag") },
         { id: "uk", name: t("ukTag") },
         { id: "de", name: t("deTag") },

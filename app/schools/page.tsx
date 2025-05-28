@@ -10,7 +10,7 @@ export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
   const { location } = await searchParams;
 
   const schools = await getSchoolByNationOrderByRank({
-    nationCode: location?.toString() || "us",
+    nationCode: location?.toString(),
     limit: 10,
     offset: 0,
   });
