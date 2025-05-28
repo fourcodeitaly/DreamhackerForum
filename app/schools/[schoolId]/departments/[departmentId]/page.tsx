@@ -492,7 +492,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                 <Button variant="outline" className="w-full" asChild>
                   <Link href={`/schools/${school.id}`}>
                     <Building2 className="h-4 w-4 mr-2" />
-                    View School Profile
+                    Profile
                   </Link>
                 </Button>
               </CardContent>

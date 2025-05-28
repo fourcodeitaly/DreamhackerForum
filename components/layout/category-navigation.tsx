@@ -99,27 +99,11 @@ export function CategoryNavigation({ className }: { className?: string }) {
         { id: "phd-interview", name: t("phdInterview") },
       ],
     },
-    // {
-    //   id: "resources",
-    //   name: t("resources"),
-    //   categories: [
-    //     { id: "all-resources", name: t("resourcesAllResources") },
-    //     { id: "visa-resources", name: t("resourcesVisaResources") },
-    //     { id: "interview-resources", name: t("resourcesInterviewResources") },
-    //     { id: "language-resources", name: t("resourcesLanguageResources") },
-    //     {
-    //       id: "application-resources",
-    //       name: t("resourcesApplicationResources"),
-    //     },
-    //     { id: "cultural-resources", name: t("resourcesCulturalResources") },
-    //     { id: "financial-resources", name: t("resourcesFinancialResources") },
-    //   ],
-    // },
     {
       id: "schools",
       name: t("schools"),
       categories: [
-        { id: "us", name: t("allSchools") },
+        // { id: "us", name: t("allSchools") },
         { id: "us", name: t("usTag") },
         { id: "uk", name: t("ukTag") },
         { id: "de", name: t("deTag") },

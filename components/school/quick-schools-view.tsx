@@ -2,15 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
+import {
+  getSchoolByNationOrderByRank,
+  School,
+} from "@/lib/db/schools/school-get";
 
-export async function QuickSchoolsView() {
-  const schools = await getSchoolByNationOrderByRank({
-    nationCode: "us",
-    limit: 5,
-    offset: 0,
-  });
-
+export async function QuickSchoolsView({ schools }: { schools: School[] }) {
   return (
     <Card>
       <CardHeader>

@@ -406,6 +406,7 @@ export function MultilingualPostForm({
             description: result.message || t("errorCreatingPost"),
             variant: "destructive",
           });
+          setIsLoading(false);
         }
       }
     } catch (error) {
@@ -415,7 +416,6 @@ export function MultilingualPostForm({
         description: isEditing ? t("errorEditingPost") : t("errorCreatingPost"),
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };

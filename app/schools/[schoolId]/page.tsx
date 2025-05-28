@@ -83,16 +83,6 @@ export default function SchoolPage({ params }: SchoolPageProps) {
     );
   }
 
-  // const lawDepartments = departments.filter(
-  //   (dept) => dept.law_school_rank_us !== null
-  // );
-  // const businessDepartments = departments.filter(
-  //   (dept) => dept.business_school_rank_us !== null
-  // );
-  // const medicalDepartments = departments.filter(
-  //   (dept) => dept.medicine_school_rank_us !== null
-  // );
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       {/* Hero Section */}

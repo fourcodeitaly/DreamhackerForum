@@ -1,9 +1,6 @@
 "use server";
 
-import {
-  getDepartmentBySchoolId,
-  SchoolDepartment,
-} from "../departments/department-get";
+import { SchoolDepartment } from "../departments/department-get";
 import { query } from "../postgres";
 
 export interface School {

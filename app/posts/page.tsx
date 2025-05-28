@@ -22,6 +22,7 @@ import { getTagById, getTags, Tag } from "@/lib/db/tags/tags-get";
 import { Post } from "@/lib/db/posts/posts-modify";
 import { EventSlideshow } from "@/components/ui/event-slideshow";
 import { getEvents } from "@/lib/db/events/event-get";
+import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
 
 export const dynamic = "force-dynamic";
 
@@ -107,6 +108,12 @@ export default async function Posts({
   // Fetch upcoming events
   const upcomingEvents = await getEvents();
 
+  const schools = await getSchoolByNationOrderByRank({
+    nationCode: "us",
+    limit: 5,
+    offset: 0,
+  });
+
   return (
     <div className="container mx-auto p-4">
       {/* Only show in development */}
@@ -175,30 +182,10 @@ export default async function Posts({
         {/* Right sidebar - Sticky */}
         <div className="lg:w-1/5">
           <div className="sticky top-20 space-y-6">
-            {/* <div className="block md:hidden mb-4">
-              <Accordion type="single" collapsible>
-                <AccordionItem value="featured">
-                  <AccordionTrigger className="text-lg font-semibold">
-                    Featured Posts
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <FeaturedPosts posts={featuredPosts} />
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="contributors">
-                  <AccordionTrigger className="text-lg font-semibold">
-                    Top Contributors
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <TopContributors topContributors={topContributors} />
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div> */}
             <div className="hidden md:block space-y-6">
               <FeaturedPosts posts={featuredPosts} />
               <TopContributors topContributors={topContributors} />
-              <QuickSchoolsView />
+              <QuickSchoolsView schools={schools} />
             </div>
           </div>
         </div>

@@ -523,7 +523,7 @@ export default function DepartmentPage({ params }: DepartmentPageProps) {
                 <Link href={`/schools/${school.id}`}>
                   <Button variant="outline" className="w-full">
                     <Building2 className="h-4 w-4 mr-2" />
-                    View School Profile
+                    Profile
                   </Button>
                 </Link>
               </CardContent>
