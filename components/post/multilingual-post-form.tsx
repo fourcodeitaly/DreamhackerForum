@@ -26,6 +26,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { createPostAction, updatePostAction } from "@/app/actions";
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { PresetSelector } from "../ui/present-selector";
+import { getTags } from "@/lib/db/tags/tags-get";
 
 interface MultilingualPostFormProps {
   initialData?: Post;
@@ -54,35 +55,35 @@ export function MultilingualPostForm({
     vi: initialData?.content?.vi || "",
   });
 
-  const tagsList = [
-    { name: t("scholarshipsTag"), id: "c34d416e-1bed-4474-a020-e83032e2b15d" },
-    { name: t("internship"), id: "8dbc5297-53da-482b-b895-0345d5143bbd" },
-    { name: t("usTag"), id: "75d74626-55fe-47be-bc03-7e6531d19249" },
-    { name: t("ukTag"), id: "65df2188-2c7a-43e0-affc-bf0d4ac924f5" },
-    { name: t("caTag"), id: "e4e9fb41-5a05-470c-925b-f91b1a00d962" },
-    { name: t("auTag"), id: "40e5e7f7-fc8c-4e17-9297-02e4c04623f4" },
-    { name: t("cnTag"), id: "4b1a14a4-a5a9-46af-968f-2d1d75f470e5" },
-    { name: t("vnTag"), id: "4e1e7c2a-5250-4758-b7db-58497c6a3081" },
-    { name: t("sgTag"), id: "83f2e16c-5c5d-459f-ab3d-301efefa78ad" },
-    { name: t("deTag"), id: "705da86e-4ea8-4d96-a33d-16b8d4d4bf8f" },
-    { name: t("frTag"), id: "3a3b7c21-9f07-40bb-944b-b72fe89ef8c9" },
-    { name: t("nlTag"), id: "7b98881d-f4de-40f6-81e0-4ec9e7f4dff4" },
-    { name: t("esTag"), id: "4c9579a3-8ac8-43bb-8fbb-32280ba0bb91" },
-    { name: t("hkTag"), id: "379ec624-0d31-4026-aa48-38396f542fe5" },
-    { name: t("jpTag"), id: "d87db404-09f1-4f92-ada4-16e8baa73856" },
-    { name: t("seTag"), id: "8c589bbf-0cce-4d26-a28c-d17c8942155e" },
-    { name: t("chTag"), id: "43428091-acb5-478d-b351-975725896454" },
-    { name: t("itTag"), id: "4edebb77-56a0-451e-92cb-5c3cda094349" },
-    { name: t("krTag"), id: "38cce86f-9566-4672-97a8-892cb30242eb" },
-    { name: t("dkTag"), id: "1160cfeb-35fd-4ad0-b03e-5b35a6d32d22" },
-    { name: t("noTag"), id: "9a5bb1e8-c7f8-49ee-af34-fbdf53d5b4f2" },
-    { name: t("fiTag"), id: "442e3a3f-75db-4a0e-8ec2-6a161c00e2b9" },
-    { name: t("huTag"), id: "ef5fe957-7903-4629-8f2b-a7035d4dc8b7" },
-    { name: t("ieTag"), id: "f38ab0c6-88ee-4587-bfe7-2eee9585b1ca" },
-    { name: t("inTag"), id: "6e1f2209-e06b-40f4-8bf5-ea6ebeabdfb1" },
-    { name: t("ptTag"), id: "d14583f2-da16-4c10-9b26-08107149a674" },
-    { name: t("twTag"), id: "9816ef27-5053-4f59-9270-773a3d0a0a86" },
-  ];
+  // const tagsList = [
+  //   { name: t("scholarshipsTag"), id: "c34d416e-1bed-4474-a020-e83032e2b15d" },
+  //   { name: t("internship"), id: "8dbc5297-53da-482b-b895-0345d5143bbd" },
+  //   { name: t("usTag"), id: "75d74626-55fe-47be-bc03-7e6531d19249" },
+  //   { name: t("ukTag"), id: "65df2188-2c7a-43e0-affc-bf0d4ac924f5" },
+  //   { name: t("caTag"), id: "e4e9fb41-5a05-470c-925b-f91b1a00d962" },
+  //   { name: t("auTag"), id: "40e5e7f7-fc8c-4e17-9297-02e4c04623f4" },
+  //   { name: t("cnTag"), id: "4b1a14a4-a5a9-46af-968f-2d1d75f470e5" },
+  //   { name: t("vnTag"), id: "4e1e7c2a-5250-4758-b7db-58497c6a3081" },
+  //   { name: t("sgTag"), id: "83f2e16c-5c5d-459f-ab3d-301efefa78ad" },
+  //   { name: t("deTag"), id: "705da86e-4ea8-4d96-a33d-16b8d4d4bf8f" },
+  //   { name: t("frTag"), id: "3a3b7c21-9f07-40bb-944b-b72fe89ef8c9" },
+  //   { name: t("nlTag"), id: "7b98881d-f4de-40f6-81e0-4ec9e7f4dff4" },
+  //   { name: t("esTag"), id: "4c9579a3-8ac8-43bb-8fbb-32280ba0bb91" },
+  //   { name: t("hkTag"), id: "379ec624-0d31-4026-aa48-38396f542fe5" },
+  //   { name: t("jpTag"), id: "d87db404-09f1-4f92-ada4-16e8baa73856" },
+  //   { name: t("seTag"), id: "8c589bbf-0cce-4d26-a28c-d17c8942155e" },
+  //   { name: t("chTag"), id: "43428091-acb5-478d-b351-975725896454" },
+  //   { name: t("itTag"), id: "4edebb77-56a0-451e-92cb-5c3cda094349" },
+  //   { name: t("krTag"), id: "38cce86f-9566-4672-97a8-892cb30242eb" },
+  //   { name: t("dkTag"), id: "1160cfeb-35fd-4ad0-b03e-5b35a6d32d22" },
+  //   { name: t("noTag"), id: "9a5bb1e8-c7f8-49ee-af34-fbdf53d5b4f2" },
+  //   { name: t("fiTag"), id: "442e3a3f-75db-4a0e-8ec2-6a161c00e2b9" },
+  //   { name: t("huTag"), id: "ef5fe957-7903-4629-8f2b-a7035d4dc8b7" },
+  //   { name: t("ieTag"), id: "f38ab0c6-88ee-4587-bfe7-2eee9585b1ca" },
+  //   { name: t("inTag"), id: "6e1f2209-e06b-40f4-8bf5-ea6ebeabdfb1" },
+  //   { name: t("ptTag"), id: "d14583f2-da16-4c10-9b26-08107149a674" },
+  //   { name: t("twTag"), id: "9816ef27-5053-4f59-9270-773a3d0a0a86" },
+  // ];
 
   const [category, setCategory] = useState(initialData?.category_id || "");
   const [tags, setTags] = useState<{ name: string; id: string }[]>(
@@ -104,6 +105,16 @@ export function MultilingualPostForm({
   );
   const [isTranslatingTitle, setIsTranslatingTitle] = useState(false);
   const [isTranslatingContent, setIsTranslatingContent] = useState(false);
+  const [tagsList, setTagsList] = useState<{ name: string; id: string }[]>([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      const tags = await getTags();
+      console.log(tags);
+      setTagsList(tags);
+    };
+    fetchTags();
+  }, []);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -698,10 +709,11 @@ export function MultilingualPostForm({
                 }}
                 presets={tagsList.map((tag) => ({
                   id: tag.id,
-                  name: tag.name.split(")")[1],
+                  name: tag.name,
                 }))}
               />
             </div>
+
             {/* <Select value={currentTag} onValueChange={handleAddTag}>
               <SelectTrigger>
                 <SelectValue placeholder={t("addTagsPlaceholder")} />
