@@ -43,7 +43,7 @@ export async function QuickSchoolsView({ schools }: { schools: School[] }) {
             </Link>
           ))}
           <Link
-            href="/schools"
+            href="/schools?location=all"
             className="block text-center text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             View all schools →

@@ -1,22 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useTranslation } from "@/hooks/use-translation"
-import { ChevronDown, Flame, Clock, MessageSquare } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useTranslation } from "@/hooks/use-translation";
+import { ChevronDown, Flame, Clock, MessageSquare } from "lucide-react";
 
 export function SortFilter() {
-  const { t } = useTranslation()
-  const [sortOption, setSortOption] = useState("newest")
+  const { t } = useTranslation();
+  const [sortOption, setSortOption] = useState("newest");
 
   const sortOptions = [
     { id: "newest", label: t("newest"), icon: Clock },
-    { id: "popular", label: t("popular"), icon: Flame },
-    { id: "mostCommented", label: t("mostCommented"), icon: MessageSquare },
-  ]
+    // { id: "popular", label: t("popular"), icon: Flame },
+    // { id: "mostCommented", label: t("mostCommented"), icon: MessageSquare },
+  ];
 
-  const currentOption = sortOptions.find((option) => option.id === sortOption)
+  const currentOption = sortOptions.find((option) => option.id === sortOption);
 
   return (
     <div className="flex items-center space-x-2">
@@ -35,7 +40,11 @@ export function SortFilter() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           {sortOptions.map((option) => (
-            <DropdownMenuItem key={option.id} onClick={() => setSortOption(option.id)} className="flex items-center">
+            <DropdownMenuItem
+              key={option.id}
+              onClick={() => setSortOption(option.id)}
+              className="flex items-center"
+            >
               <option.icon className="mr-2 h-4 w-4" />
               {option.label}
             </DropdownMenuItem>
@@ -43,5 +52,5 @@ export function SortFilter() {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
+  );
 }

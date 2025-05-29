@@ -62,7 +62,7 @@ export default function Header() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            {/* <SearchBar className="w-64" /> */}
+            <SearchBar />
             <LanguageToggle />
             <ModeToggle />
             <NotificationButton />
@@ -87,7 +87,6 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t dark:border-gray-800">
           <div className="container mx-auto px-4 py-4 space-y-4">
-            <SearchBar className="w-full" />
             <nav className="flex-col space-y-4 flex-wrap hidden md:flex">
               {/* {navLinks.map((link) => {
                 if (!isAdmin && link.href === "/posts?page=1&nullPosts=true") {
@@ -114,6 +113,7 @@ export default function Header() {
               <div className="flex space-x-2">
                 <LanguageToggle />
                 <ModeToggle />
+                <SearchBar className="w-full" />
               </div>
               <AuthStatus />
             </div>
