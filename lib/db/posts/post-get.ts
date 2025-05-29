@@ -950,6 +950,7 @@ export async function getPostsByTags(
           const savedResult = await queryOne(savedSql, [post.id, userId]);
           return {
             ...post,
+            tags: tagsByPostId[post.id] || [],
             saved: !!savedResult,
           };
         })
@@ -957,15 +958,12 @@ export async function getPostsByTags(
       return { posts: savedPosts, total };
     }
 
-    posts.forEach((post) => {
-      post.tags = tagsByPostId[post.id] || [];
-      post.tags = post.tags.map((tag) => ({
-        id: tag.id,
-        name: tag.name,
-      }));
-    });
+    const enrichedPosts = posts.map((post) => ({
+      ...post,
+      tags: tagsByPostId[post.id] || [],
+    }));
 
-    return { posts, total };
+    return { posts: enrichedPosts, total };
   } catch (error) {
     console.error("Error in queryByTags:", error);
     return { posts: [], total: 0 };
