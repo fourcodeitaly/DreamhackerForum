@@ -127,9 +127,6 @@ export default async function Posts({
 
   return (
     <div className="container mx-auto p-4">
-      {/* Only show in development */}
-      {process.env.NODE_ENV === "development" && <ServerEnvChecker />}
-
       {/* Upcoming Events Section */}
       <div className="mb-8">
         <EventSlideshow events={upcomingEvents.events} />
