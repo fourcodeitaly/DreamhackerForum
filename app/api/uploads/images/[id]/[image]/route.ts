@@ -32,7 +32,6 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("Error serving image:", error);
     return NextResponse.json({ error: "Error serving image" }, { status: 500 });
   }
 }

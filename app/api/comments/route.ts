@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getUserFromSession } from "@/utils/auth-utils";
 import {
   getCommentsByPostId,
   createComment,
   commentSort,
 } from "@/lib/db/comments/comments";
 import type { CommentSortType } from "@/lib/types/comment";
+import { getServerSession } from "next-auth";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,7 +20,8 @@ export async function GET(request: Request) {
   }
 
   // Get current user for like status
-  const user = await getUserFromSession();
+  const session = await getServerSession();
+  const user = session?.user;
 
   try {
     // Get comments using the new PostgreSQL function
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
     const { comments: processedComments, pagination } = await commentSort(
       comments,
       postId,
-      user,
+      user?.id,
       parentId,
       sort as CommentSortType,
       page,
@@ -54,7 +55,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const user = await getUserFromSession();
+  const session = await getServerSession();
+  const user = session?.user;
 
   if (!user) {
     return NextResponse.json(

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { getUserFromSession } from "@/utils/auth-utils";
 import {
   getCommentById,
   updateComment,
   deleteComment,
 } from "@/lib/db/comments/comments";
+import { getServerSession } from "next-auth";
 
 // Get a single comment with its replies
 export async function GET(
@@ -12,7 +12,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const user = await getUserFromSession();
+  const session = await getServerSession();
+  const user = session?.user;
 
   try {
     const comment = await getCommentById(id, user?.id);
@@ -37,7 +38,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const user = await getUserFromSession();
+  const session = await getServerSession();
+  const user = session?.user;
 
   if (!user) {
     return NextResponse.json(
@@ -87,7 +89,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const user = await getUserFromSession();
+  const session = await getServerSession();
+  const user = session?.user;
 
   if (!user) {
     return NextResponse.json(

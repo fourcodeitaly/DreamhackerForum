@@ -1,6 +1,6 @@
 "use server";
 
-import { query, queryOne } from "./postgres";
+import { query, queryOne } from "../postgres";
 
 export interface Contributor {
   id: string;
@@ -276,6 +276,13 @@ export async function getUserByEmail(email: string): Promise<User | null> {
     LEFT JOIN user_ranks r ON u.rank_id = r.id
     WHERE u.email = $1`,
     [email]
+  );
+}
+
+export async function getUsers(page: number, limit: number): Promise<User[]> {
+  return query<User>(
+    `SELECT * FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+    [limit, (page - 1) * limit]
   );
 }
 

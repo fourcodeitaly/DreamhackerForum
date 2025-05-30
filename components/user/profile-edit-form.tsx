@@ -30,7 +30,7 @@ import { Edit, Upload, X } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { updateProfile } from "@/app/actions/profile";
 import Image from "next/image";
-import { User } from "@/lib/db/users-get";
+import { User } from "@/lib/db/users/users-get";
 import { useTranslation } from "@/hooks/use-translation";
 const profileFormSchema = z.object({
   name: z.string().min(2, {

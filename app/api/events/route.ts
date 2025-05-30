@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getEvents } from "@/lib/db/events/event-get";
 import { createEvent } from "@/lib/db/events/event-modify";
-import { getServerUser } from "@/lib/supabase/server";
+import { getServerSession } from "next-auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -44,16 +44,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getServerUser();
+    const user = await getServerSession();
 
-    if (!user || user.role !== "admin") {
+    if (!user || user.user?.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const data = await request.json();
     const event = await createEvent({
       ...data,
-      created_user_id: user.id,
+      created_user_id: user.user?.id,
     });
 
     if (!event) {

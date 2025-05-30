@@ -6,7 +6,7 @@ import {
   removeSavedPost,
 } from "@/lib/db/posts/posts-modify";
 import { queryOne } from "@/lib/db/postgres";
-import { getServerUser } from "@/lib/supabase/server";
+import { getServerSession } from "next-auth";
 
 export async function GET(
   request: Request,
@@ -76,7 +76,8 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-    const user = await getServerUser();
+    const session = await getServerSession();
+    const user = session?.user;
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },

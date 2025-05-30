@@ -1,29 +1,28 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "../lib/supabase/server";
+import { getServerSession } from "next-auth";
+
+import { queryOne } from "@/lib/db/postgres";
 
 export async function getAuthenticatedUser(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
+  const session = await getServerSession();
 
-  if (!supabase) {
+  if (!session) {
     return { user: null, error: "Database connection failed" };
   }
 
   try {
     // Get session from cookie
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = session.user;
 
     if (!user) {
       return { user: null, error: "Not authenticated" };
     }
 
     // Get user data from database
-    const { data: userData, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    const { data: userData, error } = await queryOne(
+      "SELECT * FROM users WHERE id = $1",
+      [user.id]
+    );
 
     if (error || !userData) {
       console.error("User fetch error:", error);

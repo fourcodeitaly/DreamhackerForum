@@ -39,10 +39,10 @@ export function AuthStatus() {
       ) : (
         <div className="flex space-x-2">
           <Button variant="outline" size="sm" asChild>
-            <Link href="/login">{t("login")}</Link>
+            <Link href="/auth/signin">{t("login")}</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href="/register">{t("register")}</Link>
+            <Link href="/auth/register">{t("register")}</Link>
           </Button>
         </div>
       )}

@@ -1,4 +1,4 @@
-import type { User } from "@/lib/db/users-get";
+import type { User } from "@/lib/db/users/users-get";
 
 export type CommentVoteType = 1 | -1 | 0; // 1 for upvote, -1 for downvote, 0 for no vote
 

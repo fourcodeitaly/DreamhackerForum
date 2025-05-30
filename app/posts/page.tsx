@@ -4,26 +4,22 @@ import { FeaturedPosts } from "@/components/post/featured-posts";
 import { TopContributors } from "@/components/user/top-contributors";
 import { PostsSidebar } from "@/components/layout/posts-sidebar";
 import { RunningCat } from "@/components/ui/running-cat";
-import { Suspense } from "react";
-import { PostListSkeleton } from "@/components/layout/skeletons";
-import { ServerEnvChecker } from "@/components/layout/server-env-checker";
 import { QuickSchoolsView } from "@/components/school/quick-schools-view";
 import {
   getPinnedPosts,
   getPosts,
   getPostsByTags,
 } from "@/lib/db/posts/post-get";
-import { getTopContributors } from "@/lib/db/users-get";
+import { getTopContributors } from "@/lib/db/users/users-get";
 import { getCategory } from "@/lib/db/category/category-get";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getServerUser } from "@/lib/supabase/server";
-import { getTagById, Tag } from "@/lib/db/tags/tags-get";
-import { Post } from "@/lib/db/posts/posts-modify";
+import { getTagById } from "@/lib/db/tags/tags-get";
 import { EventSlideshow } from "@/components/ui/event-slideshow";
 import { getEvents } from "@/lib/db/events/event-get";
 import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 export const dynamic = "force-dynamic";
 
 const categories: { id: string; name: string }[] = [
@@ -78,8 +74,8 @@ export default async function Posts({
   const postsPerPage = 10;
 
   // Fetch category if categoryId is provided
-
-  const user = await getServerUser();
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
 
   const [
     categoryData,

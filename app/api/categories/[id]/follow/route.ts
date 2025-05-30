@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getServerUser } from "@/lib/supabase/server";
 import {
   followCategory,
   unfollowCategory,
@@ -8,13 +7,14 @@ import {
   getCategoryFollowStatus,
   getCategoryFollowers,
 } from "@/lib/db/follows/follows-get";
+import { getServerSession } from "next-auth";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getServerUser();
+    const user = await getServerSession();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -24,7 +24,7 @@ export async function GET(
 
     const url = new URL(request.url);
     const type = url.searchParams.get("type");
-    const isFollowed = await getCategoryFollowStatus(user.id, params.id);
+    const isFollowed = await getCategoryFollowStatus(user.user?.id, params.id);
 
     if (type === "followers") {
       const followers = await getCategoryFollowers(params.id);
@@ -47,7 +47,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getServerUser();
+    const user = await getServerSession();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -63,8 +63,8 @@ export async function POST(
 
     const success =
       action === "follow"
-        ? await followCategory(user.id, params.id)
-        : await unfollowCategory(user.id, params.id);
+        ? await followCategory(user.user?.id, params.id)
+        : await unfollowCategory(user.user?.id, params.id);
 
     if (!success) {
       return NextResponse.json(

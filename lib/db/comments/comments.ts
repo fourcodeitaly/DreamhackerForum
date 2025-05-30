@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, transaction } from "../postgres";
-import type { User } from "../users-get";
+import type { User } from "../users/users-get";
 import type {
   Comment,
   CommentSortType,
@@ -10,7 +10,7 @@ import type {
 export const commentSort = async (
   comments: Comment[],
   postId: string,
-  user?: User,
+  userId?: string,
   parentId?: string | null,
   sort: CommentSortType = "top",
   page = 1,

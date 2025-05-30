@@ -7,15 +7,10 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import type { User } from "@/lib/db/users-get";
-import { createClientSupabaseClient } from "@/lib/supabase/client";
-import {
-  getUserData,
-  loginUser,
-  registerUser,
-  resendConfirmationEmailServer,
-  logoutUser,
-} from "@/app/actions/auth";
+import { useSession, signIn, signOut } from "next-auth/react";
+import type { User } from "@/lib/db/users/users-get";
+import { useRouter } from "next/navigation";
+import { getUserById } from "@/lib/db/users/users-get";
 
 interface AuthContextType {
   user: User | null;
@@ -29,15 +24,16 @@ interface AuthContextType {
     username: string;
   }) => Promise<any>;
   logout: () => Promise<void>;
-  resendConfirmationEmail: (email: string) => Promise<void>;
   isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { data: session } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   // Derived state
   const isAuthenticated = !!user;
@@ -48,73 +44,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         setIsLoading(true);
 
-        // Check if we have server-rendered auth data
-        const authDataScript = document.getElementById("auth-data");
-        if (authDataScript) {
-          try {
-            const serverAuthData = JSON.parse(
-              authDataScript.textContent || "{}"
-            );
-            if (serverAuthData.isAuthenticated) {
-              const { user: userData, error } = await getUserData(
-                serverAuthData.userId
-              );
-              if (userData && !error) {
-                setUser(userData);
-                setIsLoading(false);
-                return;
-              }
-            }
-          } catch (e) {
-            console.error("Error parsing server auth data:", e);
-          }
-        }
-
-        // Fall back to client-side auth check
-        const supabase = createClientSupabaseClient();
-        if (!supabase) {
-          console.error("Failed to create Supabase client");
-          setUser(null);
-          setIsLoading(false);
-          return;
-        }
-
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (user) {
-          const { user: userData, error } = await getUserData(user.id);
-          if (userData && !error) {
-            setUser(userData);
-          } else {
-            console.warn("User authenticated but no profile found");
-            setUser(null);
-          }
+        if (session?.user) {
+          const user = await getUserById(session.user.id);
+          setUser(user);
         } else {
           setUser(null);
         }
 
-        // Set up auth state listener
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, session) => {
-          if (session?.user) {
-            const { user: userData, error } = await getUserData(
-              session.user.id
-            );
-            if (userData && !error) {
-              setUser(userData);
-            } else {
-              setUser(null);
-            }
-          } else {
-            setUser(null);
-          }
-        });
-
         setIsLoading(false);
-        return () => subscription.unsubscribe();
       } catch (error) {
         console.error("Error initializing auth:", error);
         setUser(null);
@@ -123,15 +60,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     initAuth();
-  }, []);
+  }, [session]);
 
   const login = async (credentials: { email: string; password: string }) => {
-    const { user: userData, error } = await loginUser(credentials);
-    if (error) {
-      throw new Error(error);
+    const result = await signIn("credentials", {
+      email: credentials.email,
+      password: credentials.password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      throw new Error(result.error);
     }
-    if (userData) setUser(userData);
-    return userData;
+
+    router.refresh();
+    return result;
   };
 
   const register = async (userData: {
@@ -140,20 +83,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string;
     username: string;
   }) => {
-    const { data, error } = await registerUser(userData);
-    if (error) throw new Error(error);
-    return data;
-  };
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
 
-  const resendConfirmationEmail = async (email: string) => {
-    const { error } = await resendConfirmationEmailServer(email);
-    if (error) throw new Error(error);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+
+    return response.json();
   };
 
   const logout = async () => {
-    const { error } = await logoutUser();
-    if (error) throw new Error(error);
+    await signOut({ redirect: false });
     setUser(null);
+    router.refresh();
   };
 
   return (
@@ -165,7 +114,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
-        resendConfirmationEmail,
         isLoading,
       }}
     >

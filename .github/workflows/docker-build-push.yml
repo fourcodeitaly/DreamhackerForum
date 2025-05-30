@@ -38,7 +38,5 @@ jobs:
             AWS_POSTGRES_DB=${{ secrets.AWS_POSTGRES_DB }}
             AWS_POSTGRES_USER=${{ secrets.AWS_POSTGRES_USER }}
             AWS_POSTGRES_PASSWORD=${{ secrets.AWS_POSTGRES_PASSWORD }}
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
             USE_AWS=${{ secrets.USE_AWS }}

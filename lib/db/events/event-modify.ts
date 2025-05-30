@@ -1,7 +1,7 @@
 "use server";
 
 import { queryOne, transaction } from "../postgres";
-import { getServerUser } from "@/lib/supabase/server";
+import { getServerSession } from "next-auth";
 
 export interface Event {
   id: string;
@@ -208,7 +208,8 @@ export async function removeEventFromPosts(eventId: string): Promise<boolean> {
 export async function deleteEvent(eventId: string): Promise<boolean> {
   try {
     return await transaction(async (client) => {
-      const user = await getServerUser();
+      const session = await getServerSession();
+      const user = session?.user;
 
       if (!user) {
         throw new Error("User not found");

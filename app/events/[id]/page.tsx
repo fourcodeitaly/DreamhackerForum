@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getEventById } from "@/lib/db/events/event-get";
-import { getServerUser } from "@/lib/supabase/server";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 interface EventDetailPageProps {
@@ -31,7 +31,8 @@ export default async function EventDetailPage({
 }: EventDetailPageProps) {
   const { id } = await params;
   const event = await getEventById(id);
-  const user = await getServerUser();
+  const session = await getServerSession();
+  const user = session?.user;
   const canEdit = user?.role === "admin" || user?.id === event?.created_user_id;
 
   const eventImage = event?.images?.find((image) =>

@@ -5,14 +5,14 @@ import { UserActivity } from "@/components/user/user-activity";
 import { FollowList } from "@/components/user/follow-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notFound } from "next/navigation";
-import { getUserByUsername, getUserStats } from "@/lib/db/users-get";
+import { getUserByUsername, getUserStats } from "@/lib/db/users/users-get";
 import { getSavedPosts, getUserPosts } from "@/lib/db/posts/post-get";
 import {
   getUserFollowers,
   getUserFollowing,
   getUserFollowStatus,
 } from "@/lib/db/follows/follows-get";
-import { getServerUser } from "@/lib/supabase/server";
+import { getServerSession } from "next-auth";
 
 export default async function ProfilePage({
   params,
@@ -20,7 +20,8 @@ export default async function ProfilePage({
   params: { username: string };
 }) {
   const { username } = await params;
-  const currentUser = await getServerUser();
+  const session = await getServerSession();
+  const currentUser = session?.user;
 
   // Get user data
   const user = await getUserByUsername(username);

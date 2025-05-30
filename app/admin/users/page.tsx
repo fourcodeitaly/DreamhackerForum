@@ -1,29 +1,27 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isUserAdmin } from "@/lib/db/users-get";
 import { AdminUsersList } from "@/components/admin/users-list";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../api/auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   // Check if user is authenticated and is admin
-  const supabase = await createServerSupabaseClient();
-  if (!supabase) {
-    redirect("/login");
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/");
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = session.user;
   if (!user) {
     redirect("/login");
   }
 
-  const isAdmin = await isUserAdmin(user.id);
+  const isAdmin = user.role === "admin";
   if (!isAdmin) {
-    redirect("/");
+    redirect("/login");
   }
 
   return (

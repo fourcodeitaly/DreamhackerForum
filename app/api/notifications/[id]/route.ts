@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getServerUser } from "@/lib/supabase/server";
 import {
   markNotificationAsRead,
   deleteNotification,
 } from "@/lib/db/notification";
+import { getServerSession } from "next-auth";
 
 // PATCH /api/notifications/[id] - Mark notification as read
 export async function PATCH(
@@ -12,7 +12,8 @@ export async function PATCH(
 ) {
   const { id } = await params;
   try {
-    const user = await getServerUser();
+    const session = await getServerSession();
+    const user = session?.user;
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -43,7 +44,8 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-    const user = await getServerUser();
+    const session = await getServerSession();
+    const user = session?.user;
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

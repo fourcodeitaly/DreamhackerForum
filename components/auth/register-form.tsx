@@ -1,77 +1,70 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useAuth } from "@/hooks/use-auth"
-import { useTranslation } from "@/hooks/use-translation"
-import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { useToast } from "@/components/ui/use-toast"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
 
 export function RegisterForm() {
-  const { t } = useTranslation()
-  const { register } = useAuth()
-  const router = useRouter()
-  const { toast } = useToast()
+  const { t } = useTranslation();
+  const { register } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const [name, setName] = useState("")
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [agreeTerms, setAgreeTerms] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
-    if (password !== confirmPassword) {
-      toast({
-        title: t("validationError"),
-        description: t("passwordsDoNotMatch"),
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (!agreeTerms) {
-      toast({
-        title: t("validationError"),
-        description: t("mustAgreeTerms"),
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsLoading(true)
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const name = formData.get("name") as string;
+    const username = formData.get("username") as string;
 
     try {
-      // The register function now relies on the database trigger to create the user profile
-      await register({ name, username, email, password })
-      router.push("/")
-      toast({
-        title: t("registrationSuccess"),
-        description: t("accountCreated"),
-      })
-    } catch (err: any) {
-      console.error("Registration error:", err)
-      toast({
-        title: t("registrationError"),
-        description: err.message || t("errorCreatingAccount"),
-        variant: "destructive",
-      })
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          username,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      // Redirect to sign in page after successful registration
+      router.push("/auth/signin");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Registration failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card>
@@ -79,22 +72,21 @@ export function RegisterForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">{t("fullName")}</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Input id="name" name="name" required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="username">{t("username")}</Label>
-            <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <Input id="username" name="username" required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -105,8 +97,7 @@ export function RegisterForm() {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
                 required
               />
               <Button
@@ -116,8 +107,14 @@ export function RegisterForm() {
                 className="absolute right-0 top-0 h-full px-3"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                <span className="sr-only">{showPassword ? t("hidePassword") : t("showPassword")}</span>
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+                <span className="sr-only">
+                  {showPassword ? t("hidePassword") : t("showPassword")}
+                </span>
               </Button>
             </div>
           </div>
@@ -127,8 +124,7 @@ export function RegisterForm() {
             <Input
               id="confirmPassword"
               type={showPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              name="confirmPassword"
               required
             />
           </div>
@@ -141,11 +137,17 @@ export function RegisterForm() {
             />
             <Label htmlFor="terms" className="text-sm font-normal">
               {t("agreeToTerms")}{" "}
-              <Link href="/terms" className="text-blue-600 hover:underline dark:text-blue-400">
+              <Link
+                href="/terms"
+                className="text-blue-600 hover:underline dark:text-blue-400"
+              >
                 {t("termsOfService")}
               </Link>{" "}
               {t("and")}{" "}
-              <Link href="/privacy" className="text-blue-600 hover:underline dark:text-blue-400">
+              <Link
+                href="/privacy"
+                className="text-blue-600 hover:underline dark:text-blue-400"
+              >
                 {t("privacyPolicy")}
               </Link>
             </Label>
@@ -164,5 +166,5 @@ export function RegisterForm() {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

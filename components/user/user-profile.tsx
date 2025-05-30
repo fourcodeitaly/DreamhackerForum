@@ -10,7 +10,7 @@ import { Calendar, MapPin, Settings, Star } from "lucide-react";
 import Link from "next/link";
 import { ProfileEditForm } from "@/components/user/profile-edit-form";
 import { FollowButton } from "@/components/ui/follow-button";
-import { User } from "@/lib/db/users-get";
+import { User } from "@/lib/db/users/users-get";
 
 interface UserProfileProps {
   user: User;

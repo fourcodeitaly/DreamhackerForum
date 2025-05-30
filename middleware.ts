@@ -1,79 +1,55 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-
-  // Create a Supabase client configured to use cookies
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-  const supabase = createServerClient(supabaseUrl, supabaseKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) =>
-          request.cookies.set(name, value)
-        );
-        supabaseResponse = NextResponse.next({
-          request,
-        });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
-        );
-      },
-    },
-  });
-
-  // Refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
-
   // Redirect root path to posts page
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/posts?page=1", request.url));
   }
 
-  // Admin-only routes
-  const adminRoutes = [
+  // Protected routes that require authentication
+  const protectedRoutes = [
+    "/dashboard",
+    "/profile",
     "/admin",
     "/admin/users",
     "/create-post",
     "/posts/:path*/edit",
   ];
 
-  // Check if the current route is an admin route
-  const isAdminRoute = adminRoutes.some((route) => {
+  // Check if the current route is a protected route
+  const isProtectedRoute = protectedRoutes.some((route) => {
     if (route.includes(":path*")) {
       // Handle dynamic routes
       const pattern = route.replace(":path*", "[^/]+");
       const regex = new RegExp(`^${pattern}$`);
       return regex.test(request.nextUrl.pathname);
     }
-    return route === request.nextUrl.pathname;
+    return request.nextUrl.pathname.startsWith(route);
   });
 
-  if (isAdminRoute) {
-    // Get the session
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  if (isProtectedRoute) {
+    // Check NextAuth.js session
+    const token = await getToken({ req: request });
 
-    // If no session and trying to access admin route, redirect to login
-    if (!user) {
-      const redirectUrl = new URL("/login", request.url);
-      redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+    // If no session, redirect to login
+    if (!token) {
+      const redirectUrl = new URL("/auth/signin", request.url);
+      redirectUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
       return NextResponse.redirect(redirectUrl);
+    }
+
+    // For admin routes, check if user has admin role
+    if (request.nextUrl.pathname.startsWith("/admin")) {
+      const isAdmin = token.role === "admin";
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
     }
   }
 
-  return supabaseResponse;
+  return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more
@@ -85,7 +61,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public (public files)
+     * - api/auth (NextAuth.js API routes)
      */
-    "/((?!_next/static|_next/image|favicon.ico|public).*)",
+    "/((?!_next/static|_next/image|favicon.ico|public|api/auth).*)",
   ],
 };

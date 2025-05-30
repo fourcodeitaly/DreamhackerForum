@@ -15,13 +15,16 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/utils/utils";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { getServerUser } from "@/lib/supabase/server";
+import { getServerSession } from "next-auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
-  const [{ events }, user] = await Promise.all([getEvents(), getServerUser()]);
-  const isAdmin = user?.role === "admin";
+  const [{ events }, session] = await Promise.all([
+    getEvents(),
+    getServerSession(),
+  ]);
+  const isAdmin = session?.user?.role === "admin";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">

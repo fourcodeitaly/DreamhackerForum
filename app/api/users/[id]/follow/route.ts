@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getServerUser } from "@/lib/supabase/server";
 import { followUser, unfollowUser } from "@/lib/db/follows/follows-modify";
 import {
   getUserFollowStatus,
@@ -7,6 +6,7 @@ import {
   getUserFollowing,
 } from "@/lib/db/follows/follows-get";
 import { createNotification } from "@/lib/db/notification";
+import { getServerSession } from "next-auth";
 
 export async function GET(
   request: Request,
@@ -14,7 +14,8 @@ export async function GET(
 ) {
   const { id } = await params;
   try {
-    const user = await getServerUser();
+    const session = await getServerSession();
+    const user = session?.user;
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -53,7 +54,8 @@ export async function POST(
 ) {
   const { id } = await params;
   try {
-    const user = await getServerUser();
+    const session = await getServerSession();
+    const user = session?.user;
 
     if (!user) {
       return NextResponse.json(

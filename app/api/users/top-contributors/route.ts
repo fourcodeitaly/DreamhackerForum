@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getTopContributors } from "@/lib/db/users-get";
+import { getTopContributors } from "@/lib/db/users/users-get";
 
 export async function GET() {
   try {

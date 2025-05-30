@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
-import { getServerUser } from "@/lib/supabase/server";
 import {
   getNotifications,
   createNotification,
   type Notification,
 } from "@/lib/db/notification";
+import { getServerSession } from "next-auth";
 
 // GET /api/notifications - Get use3r's notifications
 export async function GET(request: Request) {
   try {
-    const user = await getServerUser();
+    const user = await getServerSession();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const type = searchParams.get("type");
     const isRead = searchParams.get("is_read");
 
-    const result = await getNotifications(user.id, {
+    const result = await getNotifications(user.user?.id, {
       page,
       limit,
       type: type || undefined,
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 // POST /api/notifications - Create a new notification
 export async function POST(request: Request) {
   try {
-    const user = await getServerUser();
+    const user = await getServerSession();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

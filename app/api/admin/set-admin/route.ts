@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { setUserAsAdmin, isUserAdmin } from "@/lib/db/users-get";
+import { setUserAsAdmin } from "@/lib/db/users/users-get";
+import { getServerSession } from "next-auth";
 
 export async function POST(request: NextRequest) {
   try {
     // Create Supabase client
-    const supabase = await createServerSupabaseClient();
-    if (!supabase) {
+    const session = await getServerSession();
+    if (!session) {
       return NextResponse.json(
         { success: false, message: "Database connection error" },
         { status: 500 }
@@ -14,9 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current user session
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = session.user;
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
@@ -25,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if current user is admin
-    const isAdmin = await isUserAdmin(user.id);
+    const isAdmin = user.role === "admin";
     if (!isAdmin) {
       return NextResponse.json(
         { success: false, message: "Forbidden: Admin access required" },

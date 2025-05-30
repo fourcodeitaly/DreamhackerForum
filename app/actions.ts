@@ -6,7 +6,8 @@ import { revalidatePath } from "next/cache";
 import { query, queryOne } from "@/lib/db/postgres";
 import { localAuth } from "@/lib/auth/local-auth";
 import { notifyFollowersNewPost } from "@/lib/db/notification";
-import { getServerUser } from "@/lib/supabase/server";
+import { getServerSession } from "next-auth";
+
 export async function createPostAction(formData: {
   userId: string;
   title: MultilingualContent;
@@ -18,7 +19,7 @@ export async function createPostAction(formData: {
   isPinned?: boolean;
 }): Promise<{ success: boolean; post?: Post; message?: string }> {
   try {
-    const user = await getServerUser();
+    const user = await getServerSession();
 
     if (!user) {
       return { success: false, message: "User not found" };
@@ -43,7 +44,7 @@ export async function createPostAction(formData: {
     await notifyFollowersNewPost(
       post.id,
       formData.userId,
-      `${user.name} has created a new post`
+      `${user.user?.name} has created a new post`
     );
 
     revalidatePath("/");

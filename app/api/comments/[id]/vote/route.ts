@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getUserFromSession } from "@/utils/auth-utils";
 import { handleCommentVote } from "@/lib/db/comments/comments";
+import { getServerSession } from "next-auth";
 
 export async function POST(
   request: Request,
@@ -9,7 +9,8 @@ export async function POST(
   const { id } = await params;
   const commentId = id;
 
-  const user = await getUserFromSession();
+  const session = await getServerSession();
+  const user = session?.user;
   if (!user) {
     return NextResponse.json(
       { error: "Authentication required" },

@@ -1,8 +1,8 @@
 import type React from "react";
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isUserAdmin } from "@/lib/db/users-get";
 import { AdminSidebar } from "@/components/admin/sidebar";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function AdminLayout({
   children,
@@ -10,19 +10,15 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   // Check if user is authenticated and is admin
-  const supabase = await createServerSupabaseClient();
-  if (!supabase) {
-    redirect("/login");
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/");
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/login");
-  }
+  const user = session.user;
 
-  const isAdmin = await isUserAdmin(user.id);
+  const isAdmin = user.role === "admin";
   if (!isAdmin) {
     redirect("/");
   }
