@@ -30,7 +30,7 @@ export function PostCard({ post }: PostCardProps) {
     <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="p-4">
         <div className="flex place-items-start gap-2 justify-between">
-          <Link href={`/posts/${post.id}`} className="block" prefetch={false}>
+          <Link href={`/posts/${post.id}`} className="block">
             <h2 className="text-sm font-medium hover:underline mb-2">
               <span className="mr-2">🔥</span>
               {postTitle}
@@ -75,10 +75,7 @@ export function PostCard({ post }: PostCardProps) {
         <div className="flex flex-col md:flex-row gap-4 text-xs text-muted-foreground justify-between">
           <div className="flex items-center gap-2 flex-wrap">
             {post.category && (
-              <Link
-                href={`/posts?category=${post.category.id}`}
-                prefetch={false}
-              >
+              <Link href={`/posts?category=${post.category.id}`}>
                 <Badge
                   variant="outline"
                   className="hover:bg-accent text-muted-foreground text-xs whitespace-nowrap min-w-[80px]"
@@ -89,7 +86,7 @@ export function PostCard({ post }: PostCardProps) {
             )}
             {post.tags && post.tags.length > 1 ? (
               <>
-                <Link href={`/posts?tag=${post.tags[0].id}`} prefetch={false}>
+                <Link href={`/posts?tag=${post.tags[0].id}`}>
                   <Badge
                     variant="outline"
                     className="hover:bg-accent text-muted-foreground text-xs cursor-pointer line-clamp-1"
@@ -100,7 +97,7 @@ export function PostCard({ post }: PostCardProps) {
                   </Badge>
                 </Link>
                 {post.tags.length > 1 && (
-                  <Link href={`/posts/${post.id}`} prefetch={false}>
+                  <Link href={`/posts/${post.id}`}>
                     <Badge
                       variant="outline"
                       className="hover:bg-accent text-muted-foreground text-xs cursor-pointer line-clamp-1"
