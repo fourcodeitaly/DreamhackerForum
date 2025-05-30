@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
-import { Calendar, MapPin, Settings } from "lucide-react";
+import { Calendar, MapPin, Settings, Star } from "lucide-react";
 import Link from "next/link";
 import { ProfileEditForm } from "@/components/user/profile-edit-form";
 import { FollowButton } from "@/components/ui/follow-button";
@@ -27,18 +27,35 @@ export function UserProfile({ user }: UserProfileProps) {
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex flex-col items-center md:items-start">
-            <Avatar className="h-24 w-24 md:h-32 md:w-32">
-              <AvatarImage
-                src={
-                  user.image_url ||
-                  "https://i.pinimg.com/280x280_RS/5e/b4/db/5eb4dbcf9466c57fd8e566a6088bf626.jpg"
-                }
-                alt={user.name}
-              />
-              <AvatarFallback className="text-2xl">
-                {user.name[0]}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar
+                className={`h-24 w-24 md:h-32 md:w-32 border-4 ${
+                  user.rank?.frame_color
+                    ? `border-[${user.rank.frame_color}]`
+                    : "border-muted"
+                }`}
+              >
+                <AvatarImage
+                  src={
+                    user.image_url ||
+                    "https://i.pinimg.com/280x280_RS/5e/b4/db/5eb4dbcf9466c57fd8e566a6088bf626.jpg"
+                  }
+                  alt={user.name}
+                />
+                <AvatarFallback className="text-2xl">
+                  {user.name[0]}
+                </AvatarFallback>
+              </Avatar>
+              {user.rank && (
+                <Badge
+                  className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-2 py-1"
+                  style={{ backgroundColor: user.rank.frame_color }}
+                >
+                  <Star className="w-3 h-3 mr-1" />
+                  {user.rank.name}
+                </Badge>
+              )}
+            </div>
 
             {isCurrentUser ? (
               <div className="mt-4 flex space-x-2">
@@ -67,14 +84,11 @@ export function UserProfile({ user }: UserProfileProps) {
               <p className="text-muted-foreground">@{user.username}</p>
             </div>
 
-            {/* <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
-              {user.badges &&
-                user.badges.map((badge: any) => (
-                  <Badge key={badge.id} variant="outline" className="px-2 py-1">
-                    {badge.name}
-                  </Badge>
-                ))}
-            </div> */}
+            {user.rank && (
+              <div className="mt-2 text-sm text-muted-foreground">
+                {t("totalPoints", { points: user.total_points })}
+              </div>
+            )}
 
             <div className="mt-2 space-y-2">
               {user.bio && <p>{user.bio}</p>}

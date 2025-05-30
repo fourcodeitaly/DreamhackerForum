@@ -56,14 +56,17 @@ export default function SchoolPage({ params }: SchoolPageProps) {
   useEffect(() => {
     const fetchSchool = async () => {
       setIsLoading(true);
-      const school = await getSchoolById(schoolId);
-      const relatedPosts = (await getPostsByTags([school?.tag_id || ""])).posts;
-      const departments = await getDepartmentBySchoolId(schoolId);
+      const [school, departments] = await Promise.all([
+        getSchoolById(schoolId),
+        getDepartmentBySchoolId(schoolId),
+      ]);
       setSchool(school);
-      setRelatedPosts(relatedPosts);
       setDepartments(departments);
       setIsLoading(false);
+      const relatedPosts = await getPostsByTags([school?.tag_id || ""]);
+      setRelatedPosts(relatedPosts.posts);
     };
+
     fetchSchool();
   }, [schoolId]);
 

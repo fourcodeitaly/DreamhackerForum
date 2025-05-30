@@ -10,9 +10,18 @@ export interface Contributor {
   post_count: number;
   comment_count: number;
   total_likes: number;
+  total_points: number;
+  rank?: Rank;
 }
 
 export type UserRole = "user" | "admin";
+
+export interface Rank {
+  id: string;
+  name: string;
+  min_points: number;
+  frame_color: string;
+}
 
 export type User = {
   id: string;
@@ -31,6 +40,8 @@ export type User = {
   postsCount: number;
   commentsCount: number;
   likesReceived: number;
+  total_points: number;
+  rank?: Rank;
 };
 
 interface UserStats {
@@ -168,6 +179,7 @@ export async function getTopContributors(limit = 3): Promise<Contributor[]> {
           u.username,
           u.name,
           u.image_url,
+          u.total_points,
           COUNT(DISTINCT p.id) as post_count,
           COUNT(DISTINCT c.id) as comment_count,
           (
@@ -187,18 +199,26 @@ export async function getTopContributors(limit = 3): Promise<Contributor[]> {
         FROM users u
         LEFT JOIN posts p ON u.id = p.user_id
         LEFT JOIN comments c ON u.id = c.user_id
-        GROUP BY u.id, u.username, u.name, u.image_url
+        GROUP BY u.id, u.username, u.name, u.image_url, u.total_points
       )
       SELECT 
-        id,
-        username,
-        name,
-        image_url,
-        post_count,
-        comment_count,
-        total_likes
-      FROM user_stats
-      ORDER BY (post_count * 2 + comment_count + total_likes) DESC
+        us.*,
+        json_build_object(
+          'id', r.id,
+          'name', r.name,
+          'min_points', r.min_points,
+          'frame_color', r.frame_color
+        ) as rank
+      FROM user_stats us
+      LEFT JOIN user_ranks r ON r.min_points <= us.total_points
+      WHERE r.id = (
+        SELECT id
+        FROM user_ranks
+        WHERE min_points <= us.total_points
+        ORDER BY min_points DESC
+        LIMIT 1
+      )
+      ORDER BY us.total_points DESC
       LIMIT $1
     `;
 
@@ -212,16 +232,24 @@ export async function getTopContributors(limit = 3): Promise<Contributor[]> {
 export async function getUserById(id: string): Promise<User | null> {
   return queryOne<User>(
     `SELECT 
-      id,
-      email,
-      name,
-      username,
-      image_url,
-      role,
-      joined_at as created_at,
-      updated_at
-    FROM users 
-    WHERE id = $1`,
+      u.id,
+      u.email,
+      u.name,
+      u.username,
+      u.image_url,
+      u.role,
+      u.joined_at as created_at,
+      u.updated_at,
+      u.total_points,
+      json_build_object(
+        'id', r.id,
+        'name', r.name,
+        'min_points', r.min_points,
+        'frame_color', r.frame_color
+      ) as rank
+    FROM users u
+    LEFT JOIN user_ranks r ON u.rank_id = r.id
+    WHERE u.id = $1`,
     [id]
   );
 }
@@ -229,16 +257,24 @@ export async function getUserById(id: string): Promise<User | null> {
 export async function getUserByEmail(email: string): Promise<User | null> {
   return queryOne<User>(
     `SELECT 
-      id,
-      email,
-      name,
-      username,
-      image_url,
-      role,
-      joined_at as created_at,
-      updated_at
-    FROM users 
-    WHERE email = $1`,
+      u.id,
+      u.email,
+      u.name,
+      u.username,
+      u.image_url,
+      u.role,
+      u.joined_at as created_at,
+      u.updated_at,
+      u.total_points,
+      json_build_object(
+        'id', r.id,
+        'name', r.name,
+        'min_points', r.min_points,
+        'frame_color', r.frame_color
+      ) as rank
+    FROM users u
+    LEFT JOIN user_ranks r ON u.rank_id = r.id
+    WHERE u.email = $1`,
     [email]
   );
 }

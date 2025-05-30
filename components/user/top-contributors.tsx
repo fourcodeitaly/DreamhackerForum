@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, MessageSquare, ThumbsUp } from "lucide-react";
+import { Trophy, MessageSquare, ThumbsUp, Star } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 
 interface Contributor {
@@ -14,6 +14,13 @@ interface Contributor {
   post_count: number;
   comment_count: number;
   total_likes: number;
+  total_points: number;
+  rank?: {
+    id: string;
+    name: string;
+    min_points: number;
+    frame_color: string;
+  };
 }
 
 export function TopContributors({
@@ -44,9 +51,9 @@ export function TopContributors({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center text-lg">
-          <Trophy className="mr-2 h-4 w-4 text-yellow-500" />
-          {t("topContributors", { count: 5 })}
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
+          {t("topContributors")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -58,7 +65,13 @@ export function TopContributors({
               className="flex items-center space-x-4 p-2 rounded-md hover:bg-muted transition-colors"
             >
               <div className="relative">
-                <Avatar className="h-10 w-10 border-2 border-background">
+                <Avatar
+                  className={`h-10 w-10 border-2 ${
+                    user.rank?.frame_color
+                      ? `border-[${user.rank.frame_color}]`
+                      : "border-background"
+                  }`}
+                >
                   <AvatarImage
                     src={
                       user.image_url ||
@@ -87,6 +100,20 @@ export function TopContributors({
               <div>
                 <div className="text-sm">{user.name || user.username}</div>
                 <div className="flex items-center space-x-2 mt-1">
+                  {user.rank && (
+                    <Badge
+                      className="text-xs"
+                      style={{ backgroundColor: user.rank.frame_color }}
+                    >
+                      <Star
+                        className={`w-3 h-3 mr-1 ${
+                          user.rank.name === "Captain" &&
+                          "animate-spin transition-all duration-1000"
+                        }`}
+                      />
+                      {user.rank.name}
+                    </Badge>
+                  )}
                   <div className="flex items-center text-xs">
                     <MessageSquare className="mr-1 h-3 w-3" />
                     {user.post_count}

@@ -161,16 +161,14 @@ export default async function Posts({
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            <Suspense fallback={<PostListSkeleton />}>
-              <PostList
-                posts={initialPosts}
-                totalPosts={totalPosts}
-                currentPage={pageNumber}
-                pathname={
-                  tag ? `/posts?tag=${tag}` : `/posts?category=${categoryId}`
-                }
-              />
-            </Suspense>
+            <PostList
+              posts={initialPosts}
+              totalPosts={totalPosts}
+              currentPage={pageNumber}
+              pathname={
+                tag ? `/posts?tag=${tag}` : `/posts?category=${categoryId}`
+              }
+            />
           </div>
         </div>
 
