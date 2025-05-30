@@ -7,6 +7,7 @@ import {
 } from "@/lib/db/follows/follows-get";
 import { createNotification } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(
   request: Request,
@@ -14,7 +15,7 @@ export async function GET(
 ) {
   const { id } = await params;
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const user = session?.user;
     if (!user) {
       return NextResponse.json(
@@ -54,7 +55,7 @@ export async function POST(
 ) {
   const { id } = await params;
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user) {

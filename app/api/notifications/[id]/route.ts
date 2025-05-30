@@ -4,6 +4,7 @@ import {
   deleteNotification,
 } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 // PATCH /api/notifications/[id] - Mark notification as read
 export async function PATCH(
@@ -12,7 +13,7 @@ export async function PATCH(
 ) {
   const { id } = await params;
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const user = session?.user;
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -44,7 +45,7 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const user = session?.user;
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

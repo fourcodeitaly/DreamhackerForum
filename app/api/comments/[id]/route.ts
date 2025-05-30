@@ -5,6 +5,7 @@ import {
   deleteComment,
 } from "@/lib/db/comments/comments";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 // Get a single comment with its replies
 export async function GET(
@@ -12,7 +13,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   try {
@@ -38,7 +39,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   if (!user) {
@@ -89,7 +90,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   if (!user) {

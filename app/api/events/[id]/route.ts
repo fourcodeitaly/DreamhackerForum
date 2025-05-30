@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getEventById } from "@/lib/db/events/event-get";
 import { updateEvent, deleteEvent } from "@/lib/db/events/event-modify";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function GET(
   request: NextRequest,
@@ -13,7 +14,7 @@ export async function GET(
     const event = await getEventById(id);
 
     if (event?.is_published) {
-      const session = await getServerSession();
+      const session = await getServerSession(authOptions);
       const user = session?.user;
       if (!user || user.role !== "admin" || user.id !== event.created_user_id) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -39,7 +40,7 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user || user.role !== "admin") {
@@ -94,7 +95,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user) {

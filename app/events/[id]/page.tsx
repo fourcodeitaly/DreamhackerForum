@@ -19,6 +19,7 @@ import { notFound } from "next/navigation";
 import { getEventById } from "@/lib/db/events/event-get";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 interface EventDetailPageProps {
   params: {
@@ -31,7 +32,7 @@ export default async function EventDetailPage({
 }: EventDetailPageProps) {
   const { id } = await params;
   const event = await getEventById(id);
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
   const canEdit = user?.role === "admin" || user?.id === event?.created_user_id;
 

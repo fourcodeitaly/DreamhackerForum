@@ -5,11 +5,12 @@ import {
   type Notification,
 } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 // GET /api/notifications - Get use3r's notifications
 export async function GET(request: Request) {
   try {
-    const user = await getServerSession();
+    const user = await getServerSession(authOptions);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
 // POST /api/notifications - Create a new notification
 export async function POST(request: Request) {
   try {
-    const user = await getServerSession();
+    const user = await getServerSession(authOptions);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

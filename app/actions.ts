@@ -7,6 +7,7 @@ import { query, queryOne } from "@/lib/db/postgres";
 import { localAuth } from "@/lib/auth/local-auth";
 import { notifyFollowersNewPost } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 export async function createPostAction(formData: {
   userId: string;
@@ -19,7 +20,7 @@ export async function createPostAction(formData: {
   isPinned?: boolean;
 }): Promise<{ success: boolean; post?: Post; message?: string }> {
   try {
-    const user = await getServerSession();
+    const user = await getServerSession(authOptions);
 
     if (!user) {
       return { success: false, message: "User not found" };

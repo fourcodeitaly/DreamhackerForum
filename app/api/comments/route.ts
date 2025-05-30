@@ -6,6 +6,7 @@ import {
 } from "@/lib/db/comments/comments";
 import type { CommentSortType } from "@/lib/types/comment";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
   }
 
   // Get current user for like status
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   try {
@@ -55,7 +56,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   if (!user) {

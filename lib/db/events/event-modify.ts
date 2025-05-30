@@ -1,5 +1,6 @@
 "use server";
 
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { queryOne, transaction } from "../postgres";
 import { getServerSession } from "next-auth";
 
@@ -208,7 +209,7 @@ export async function removeEventFromPosts(eventId: string): Promise<boolean> {
 export async function deleteEvent(eventId: string): Promise<boolean> {
   try {
     return await transaction(async (client) => {
-      const session = await getServerSession();
+      const session = await getServerSession(authOptions);
       const user = session?.user;
 
       if (!user) {

@@ -16,13 +16,14 @@ import { cn } from "@/utils/utils";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
   const [{ events }, session] = await Promise.all([
     getEvents(),
-    getServerSession(),
+    getServerSession(authOptions),
   ]);
   const isAdmin = session?.user?.role === "admin";
 

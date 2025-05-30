@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getEvents } from "@/lib/db/events/event-get";
 import { createEvent } from "@/lib/db/events/event-modify";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET(request: NextRequest) {
   try {
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getServerSession();
+    const user = await getServerSession(authOptions);
 
     if (!user || user.user?.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

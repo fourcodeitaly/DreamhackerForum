@@ -7,6 +7,7 @@ import {
 } from "@/lib/db/posts/posts-modify";
 import { queryOne } from "@/lib/db/postgres";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function GET(
   request: Request,
@@ -76,8 +77,9 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const user = session?.user;
+
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { handleCommentVote } from "@/lib/db/comments/comments";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(
   request: Request,
@@ -9,7 +10,7 @@ export async function POST(
   const { id } = await params;
   const commentId = id;
 
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
   if (!user) {
     return NextResponse.json(

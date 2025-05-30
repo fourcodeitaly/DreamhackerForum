@@ -15,6 +15,7 @@ import { TopContributors } from "@/components/user/top-contributors";
 import { getTopContributors } from "@/lib/db/users/users-get";
 import { FeaturedPosts } from "@/components/post/featured-posts";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 interface PostPageProps {
   params: {
@@ -25,7 +26,7 @@ interface PostPageProps {
 export default async function PostPage({ params }: PostPageProps) {
   try {
     const { id } = await params;
-    const user = await getServerSession();
+    const user = await getServerSession(authOptions);
 
     // Get the post, related posts, and top contributors
     const [post, relatedPosts, topContributors, featuredPosts] =

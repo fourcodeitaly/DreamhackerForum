@@ -8,13 +8,14 @@ import {
   getCategoryFollowers,
 } from "@/lib/db/follows/follows-get";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getServerSession();
+    const user = await getServerSession(authOptions);
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -47,7 +48,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await getServerSession();
+    const user = await getServerSession(authOptions);
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },

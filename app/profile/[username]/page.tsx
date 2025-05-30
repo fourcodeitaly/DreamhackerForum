@@ -13,6 +13,7 @@ import {
   getUserFollowStatus,
 } from "@/lib/db/follows/follows-get";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function ProfilePage({
   params,
@@ -20,7 +21,7 @@ export default async function ProfilePage({
   params: { username: string };
 }) {
   const { username } = await params;
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const currentUser = session?.user;
 
   // Get user data

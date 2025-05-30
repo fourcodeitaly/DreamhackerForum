@@ -12,20 +12,9 @@ import { AlertCircle } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 
 export function AdminCheck({ children }: { children: React.ReactNode }) {
-  const { isAdmin, isAuthenticated, isLoading, user } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    // If authentication is done loading and user is not authenticated, redirect to login
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.push("/login");
-      } else if (!isAdmin) {
-        router.push("/");
-      }
-    }
-  }, [isLoading, isAuthenticated, isAdmin, router, user]);
 
   // If still loading, show nothing
   if (isLoading) {
