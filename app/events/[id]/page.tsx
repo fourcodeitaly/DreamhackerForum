@@ -273,7 +273,7 @@ export default async function EventDetailPage({
                 <CardTitle>Organizer Information</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
                   {event.organizer_logo && (
                     <div className="flex items-center justify-center p-4">
                       <img
