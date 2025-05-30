@@ -129,7 +129,7 @@ export default async function Posts({
                 variant="default"
                 className="w-full justify-start mb-6"
               >
-                <a href="/create-post">
+                <a href="/posts/create">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Create Post
                 </a>

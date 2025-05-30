@@ -25,13 +25,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Edit, Upload, X } from "lucide-react";
+import { Check, Edit, Loader2, Save, Upload, X } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
-import { updateProfile } from "@/app/actions/profile";
+import { updateProfile } from "@/lib/db/users/users-update";
 import Image from "next/image";
 import { User } from "@/lib/db/users/users-get";
 import { useTranslation } from "@/hooks/use-translation";
+
 const profileFormSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -53,7 +53,9 @@ interface ProfileEditFormProps {
 
 export function ProfileEditForm({ user }: ProfileEditFormProps) {
   const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     user.image_url || null
   );
@@ -84,13 +86,12 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
   };
 
   async function onSubmit(data: ProfileFormValues) {
-    return;
-    setIsSubmitting(true);
+    setSubmitStatus("submitting");
     try {
       const result = await updateProfile(user.id, {
         name: data.name,
-        bio: data.bio,
-        location: data.location,
+        // bio: data.bio,
+        // location: data.location,
         image: data.image,
       });
 
@@ -103,20 +104,19 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
         description: "Your profile has been updated successfully.",
       });
 
-      setOpen(false);
       router.refresh();
+      setSubmitStatus("success");
     } catch (error) {
       console.error("Error updating profile:", error);
-      // toast({
-      //   title: "Error",
-      //   description:
-      //     error instanceof Error
-      //       ? error.message
-      //       : "There was an error updating your profile. Please try again.",
-      //   variant: "destructive",
-      // });
-    } finally {
-      setIsSubmitting(false);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "There was an error updating your profile. Please try again.",
+        variant: "destructive",
+      });
+      setSubmitStatus("error");
     }
   }
 
@@ -188,7 +188,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="bio"
               render={({ field }) => (
@@ -219,10 +219,32 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <DialogFooter>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? t("saving") : t("saveChanges")}
+              <Button
+                type="submit"
+                disabled={submitStatus === "submitting"}
+                className={`${
+                  submitStatus === "success"
+                    ? "bg-green-700"
+                    : submitStatus === "error"
+                    ? "bg-red-700"
+                    : ""
+                }`}
+              >
+                {submitStatus === "submitting" ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : submitStatus === "success" ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    {t("saved")}
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    {t("saveChanges")}
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </form>

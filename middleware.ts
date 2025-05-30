@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     "/profile",
     "/admin",
     "/admin/users",
-    "/create-post",
+    "/posts/create",
     "/posts/:path*/edit",
   ];
 
