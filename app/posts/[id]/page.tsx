@@ -13,8 +13,8 @@ import { CommentSection } from "@/components/comments/comment-section";
 import { PostsSidebar } from "@/components/layout/posts-sidebar";
 import { TopContributors } from "@/components/user/top-contributors";
 import { getTopContributors } from "@/lib/db/users-get";
-import { getUserFromSession } from "@/utils/auth-utils";
 import { FeaturedPosts } from "@/components/post/featured-posts";
+import { getServerUser } from "@/lib/supabase/server";
 
 interface PostPageProps {
   params: {
@@ -25,16 +25,16 @@ interface PostPageProps {
 export default async function PostPage({ params }: PostPageProps) {
   try {
     const { id } = await params;
-    const user = await getUserFromSession();
+    const user = await getServerUser();
 
     // Get the post, related posts, and top contributors
-    const [post, relatedPosts, topContributors] = await Promise.all([
-      getPostById(id, user?.id),
-      getRelatedPosts(id),
-      getTopContributors(),
-    ]);
-
-    const featuredPosts = await getPinnedPosts();
+    const [post, relatedPosts, topContributors, featuredPosts] =
+      await Promise.all([
+        getPostById(id, user?.id),
+        getRelatedPosts(id),
+        getTopContributors(),
+        getPinnedPosts(),
+      ]);
 
     if (!post) {
       notFound();

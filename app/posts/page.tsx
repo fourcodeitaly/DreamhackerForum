@@ -78,52 +78,39 @@ export default async function Posts({
   const postsPerPage = 10;
 
   // Fetch category if categoryId is provided
-  const categoryData = categoryId ? await getCategory(categoryId) : null;
-  const categoryName = categoryData?.name?.en || "All Posts";
+
   const user = await getServerUser();
 
-  // Fetch posts based on parameters
-  let result: { posts: Post[]; total: number } | null = null;
-  let tagInfo: Tag | null = null;
-  if (tag) {
-    tagInfo = await getTagById(tag);
-    if (tagInfo) {
-      result = await getPostsByTags(
-        [tagInfo.id],
-        pageNumber,
-        postsPerPage,
-        user?.id
-      );
-    }
-  } else {
-    result = await getPosts(
-      pageNumber,
-      postsPerPage,
-      false,
-      categoryId,
-      user?.id
-    );
-  }
+  const [
+    categoryData,
+    featuredPosts,
+    topContributors,
+    schools,
+    upcomingEvents,
+    result,
+    tagInfo,
+  ] = await Promise.all([
+    categoryId ? getCategory(categoryId) : null,
+    getPinnedPosts(),
+    getTopContributors(),
+    getSchoolByNationOrderByRank({
+      nationCode: "all",
+      limit: 5,
+      offset: 0,
+    }),
+    getEvents(),
+    tag
+      ? getPostsByTags([tag], pageNumber, postsPerPage, user?.id)
+      : getPosts(pageNumber, postsPerPage, false, categoryId, user?.id),
+    tag ? getTagById(tag) : null,
+  ]);
+
+  const categoryName = categoryData?.name?.en || "All Posts";
 
   const initialPosts = result?.posts ?? [];
   const totalPosts = result?.total ?? 0;
 
-  // Fetch featured posts
-  const featuredPosts = await getPinnedPosts();
-
-  // Fetch top contributors (category-specific if category is provided)
-  const topContributors = await getTopContributors();
-
   const isAdmin = user?.role === "admin";
-
-  // Fetch upcoming events
-  const upcomingEvents = await getEvents();
-
-  const schools = await getSchoolByNationOrderByRank({
-    nationCode: "all",
-    limit: 5,
-    offset: 0,
-  });
 
   return (
     <div className="container mx-auto p-4">
