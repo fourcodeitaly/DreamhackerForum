@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,12 +15,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { SchoolDepartment } from "@/lib/db/departments/department-get";
-
+import { useTranslation } from "@/hooks/use-translation";
 interface DepartmentCardProps {
   department: SchoolDepartment;
 }
 
 export function DepartmentCard({ department }: DepartmentCardProps) {
+  const { t } = useTranslation();
   const acceptanceRate =
     (department.number_of_admissions / department.number_of_applications) * 100;
 
@@ -75,22 +78,30 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
         <div className="space-y-6">
           {/* Admission Statistics */}
           <div>
-            <h3 className="text-lg font-semibold mb-2">Admission Statistics</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t("admissionStatistics")}
+            </h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Applications</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("applications")}
+                </p>
                 <p className="text-2xl font-bold">
                   {department.number_of_applications.toLocaleString()}
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Admissions</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("admissions")}
+                </p>
                 <p className="text-2xl font-bold">
                   {department.number_of_admissions.toLocaleString()}
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Acceptance Rate</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("acceptanceRate")}
+                </p>
                 <p className="text-2xl font-bold">
                   {acceptanceRate.toFixed(1)}%
                 </p>
@@ -102,18 +113,20 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
           {/* Admission Requirements */}
           <div>
             <h3 className="text-lg font-semibold mb-4">
-              Admission Requirements
+              {t("admissionRequirements")}
             </h3>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Requirement</TableHead>
-                  <TableHead>Minimum</TableHead>
+                  <TableHead>{t("requirement")}</TableHead>
+                  <TableHead>{t("minimum")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">GPA</TableCell>
+                  <TableCell className="font-medium">
+                    {t("averageGpa")}
+                  </TableCell>
                   <TableCell>{department.admission_requirements.gpa}</TableCell>
                 </TableRow>
                 <TableRow>
@@ -126,18 +139,20 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
                 </TableRow>
 
                 <TableRow>
-                  <TableCell className="font-medium">TOEFL</TableCell>
+                  <TableCell className="font-medium">
+                    {t("averageToefl")}
+                  </TableCell>
                   <TableCell>
                     {department.admission_requirements.toefl}
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">IELTS</TableCell>
-                  <TableCell>Updated Soon</TableCell>
+                  <TableCell>{t("updateSoon")}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">GMAT</TableCell>
-                  <TableCell>Updated Soon</TableCell>
+                  <TableCell>{t("updateSoon")}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -148,7 +163,7 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
               href={`/schools/${department.school_id}/departments/${department.id}`}
             >
               <Button variant="outline">
-                View Full Profile
+                {t("viewFullProfile")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>

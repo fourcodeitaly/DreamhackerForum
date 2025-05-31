@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,9 +15,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getSchoolById } from "@/lib/db/schools/school-get";
-import { getDepartmentBySchoolId } from "@/lib/db/departments/department-get";
-
+import { getSchoolById, School } from "@/lib/db/schools/school-get";
+import {
+  getDepartmentBySchoolId,
+  SchoolDepartment,
+} from "@/lib/db/departments/department-get";
+import { useTranslation } from "@/hooks/use-translation";
+import { use, useEffect, useState } from "react";
 interface DepartmentPageProps {
   params: Promise<{
     departmentId: string;
@@ -23,10 +29,25 @@ interface DepartmentPageProps {
   }>;
 }
 
-export default async function DepartmentPage({ params }: DepartmentPageProps) {
-  const { departmentId, schoolId } = await params;
-  const departments = await getDepartmentBySchoolId(schoolId);
-  const school = await getSchoolById(schoolId);
+export default function DepartmentPage({ params }: DepartmentPageProps) {
+  const { t } = useTranslation();
+
+  const { departmentId, schoolId } = use(params);
+  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
+  const [school, setSchool] = useState<School | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [departments, school] = await Promise.all([
+        getDepartmentBySchoolId(schoolId),
+        getSchoolById(schoolId),
+      ]);
+      setDepartments(departments);
+      setSchool(school);
+    };
+    fetchData();
+  }, [departmentId, schoolId]);
+
   const department = departments.find((d) => d.id === departmentId);
 
   if (!department || !school) {
@@ -117,7 +138,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                       {department.number_of_applications.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      Applications
+                      {t("applications")}
                     </div>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
@@ -126,7 +147,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                       {department.number_of_admissions.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      Admissions
+                      {t("admissions")}
                     </div>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
@@ -135,14 +156,14 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                       {acceptanceRate.toFixed(1)}%
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      Acceptance Rate
+                      {t("acceptanceRate")}
                     </div>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
                     <Building2 className="h-6 w-6 mb-2 text-primary" />
                     <div className="text-2xl font-bold">{school.name}</div>
                     <div className="text-sm text-muted-foreground">
-                      Institution
+                      {t("institution")}
                     </div>
                   </div>
                 </div>
@@ -150,7 +171,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-semibold mb-2">
-                      About the Department
+                      {t("aboutTheDepartment")}
                     </h3>
                     <p className="text-muted-foreground">
                       The {department.name} at {school.name} is renowned for its
@@ -162,12 +183,16 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold mb-2">Key Features</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      {t("keyFeatures")}
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex items-start gap-3">
                         <GraduationCap className="h-5 w-5 text-primary mt-1" />
                         <div>
-                          <h4 className="font-medium">Academic Excellence</h4>
+                          <h4 className="font-medium">
+                            {t("academicExcellence")}
+                          </h4>
                           <p className="text-sm text-muted-foreground">
                             World-class faculty and cutting-edge research
                             facilities
@@ -177,7 +202,9 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                       <div className="flex items-start gap-3">
                         <Users className="h-5 w-5 text-primary mt-1" />
                         <div>
-                          <h4 className="font-medium">Diverse Community</h4>
+                          <h4 className="font-medium">
+                            {t("diverseCommunity")}
+                          </h4>
                           <p className="text-sm text-muted-foreground">
                             International student body and collaborative
                             environment
@@ -188,7 +215,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                         <BookOpen className="h-5 w-5 text-primary mt-1" />
                         <div>
                           <h4 className="font-medium">
-                            Research Opportunities
+                            {t("researchOpportunities")}
                           </h4>
                           <p className="text-sm text-muted-foreground">
                             Extensive research programs and funding
@@ -199,7 +226,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
                       <div className="flex items-start gap-3">
                         <Globe className="h-5 w-5 text-primary mt-1" />
                         <div>
-                          <h4 className="font-medium">Global Network</h4>
+                          <h4 className="font-medium">{t("globalNetwork")}</h4>
                           <p className="text-sm text-muted-foreground">
                             Strong industry connections and alumni network
                           </p>
@@ -214,7 +241,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
             {/* Rankings */}
             <Card>
               <CardHeader>
-                <CardTitle>Rankings & Recognition</CardTitle>
+                <CardTitle>{t("rankingsAndRecognition")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -282,31 +309,39 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
 
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold mb-4">
-                    Notable Achievements
+                    {t("notableAchievements")}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h4 className="font-medium mb-2">Research Excellence</h4>
+                      <h4 className="font-medium mb-2">
+                        {t("researchExcellence")}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Updated Soon
+                        {t("updateSoon")}
                       </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h4 className="font-medium mb-2">Student Success</h4>
+                      <h4 className="font-medium mb-2">
+                        {t("studentSuccess")}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Updated Soon
+                        {t("updateSoon")}
                       </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h4 className="font-medium mb-2">Industry Recognition</h4>
+                      <h4 className="font-medium mb-2">
+                        {t("industryRecognition")}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Updated Soon
+                        {t("updateSoon")}
                       </p>
                     </div>
                     <div className="p-4 bg-muted/50 rounded-lg">
-                      <h4 className="font-medium mb-2">Academic Innovation</h4>
+                      <h4 className="font-medium mb-2">
+                        {t("academicInnovation")}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
-                        Updated Soon
+                        {t("updateSoon")}
                       </p>
                     </div>
                   </div>
@@ -317,16 +352,16 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
             {/* Programs & Courses */}
             <Card>
               <CardHeader>
-                <CardTitle>Programs & Courses</CardTitle>
+                <CardTitle>{t("programsAndCourses")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
-                      Degree Programs
+                      {t("degreePrograms")}
                     </h3>
                     <div className="text-sm text-muted-foreground">
-                      Updated Soon
+                      {t("updateSoon")}
                     </div>
                     {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
@@ -350,10 +385,10 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
 
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
-                      Specializations
+                      {t("specialization")}
                     </h3>
                     <div className="text-sm text-muted-foreground">
-                      Updated Soon
+                      {t("updateSoon")}
                     </div>
                     {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
@@ -397,16 +432,16 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
             {/* Faculty & Research */}
             <Card>
               <CardHeader>
-                <CardTitle>Faculty & Research</CardTitle>
+                <CardTitle>{t("facultyAndResearch")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
-                      Research Areas
+                      {t("researchAreas")}
                     </h3>
                     <div className="text-sm text-muted-foreground">
-                      Updated Soon
+                      {t("updateSoon")}
                     </div>
                     {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
@@ -440,10 +475,10 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
 
                   <div>
                     <h3 className="text-lg font-semibold mb-4">
-                      Faculty Highlights
+                      {t("facultyHighlights")}
                     </h3>
                     <div className="text-sm text-muted-foreground">
-                      Updated Soon
+                      {t("updateSoon")}
                     </div>
                     {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
@@ -478,21 +513,21 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
             {/* Quick Actions */}
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle>{t("quickActions")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button className="w-full">
                   <GraduationCap className="h-4 w-4 mr-2" />
-                  Apply Now
+                  {t("applyNow")}
                 </Button>
                 <Button variant="outline" className="w-full">
                   <BookOpen className="h-4 w-4 mr-2" />
-                  Request Information
+                  {t("requestInformation")}
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
                   <Link href={`/schools/${school.id}`}>
                     <Building2 className="h-4 w-4 mr-2" />
-                    Profile
+                    {t("profile")}
                   </Link>
                 </Button>
               </CardContent>
@@ -501,7 +536,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
             {/* Related Departments */}
             <Card>
               <CardHeader>
-                <CardTitle>Related Departments</CardTitle>
+                <CardTitle>{t("relatedDepartments")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* {mockSchoolDepartments
@@ -538,7 +573,7 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
             {/* Contact Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
+                <CardTitle>{t("contactInformation")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-2">

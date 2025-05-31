@@ -37,6 +37,7 @@ import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { Post } from "@/lib/db/posts/posts-modify";
 import Loading from "@/app/posts/[id]/loading";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
   const [relatedPosts, setRelatedPosts] = useState<Post[]>([]);
   const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchSchool = async () => {
@@ -156,7 +158,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
             {/* Overview */}
             <Card>
               <CardHeader>
-                <CardTitle>Overview</CardTitle>
+                <CardTitle>{t("overview")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-6">
@@ -169,7 +171,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                       {school.total_students?.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      Students
+                      {t("students")}
                     </div>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
@@ -178,7 +180,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                       {school.acceptance_rate}%
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      Acceptance Rate
+                      {t("acceptanceRate")}
                     </div>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
@@ -187,13 +189,15 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                       ${school.tuition.international?.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      International Tuition
+                      {t("internationalTuition")}
                     </div>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 bg-muted/50 rounded-lg">
                     <Calendar className="h-6 w-6 mb-2 text-primary" />
                     <div className="text-2xl font-bold">{school.founded}</div>
-                    <div className="text-sm text-muted-foreground">Founded</div>
+                    <div className="text-sm text-muted-foreground">
+                      {t("founded")}
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -204,9 +208,13 @@ export default function SchoolPage({ params }: SchoolPageProps) {
               <CardContent className="p-6">
                 <Tabs defaultValue="academics" className="w-full">
                   <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="academics">Academics</TabsTrigger>
-                    <TabsTrigger value="admissions">Admissions</TabsTrigger>
-                    <TabsTrigger value="campus">Campus Life</TabsTrigger>
+                    <TabsTrigger value="academics">
+                      {t("academics")}
+                    </TabsTrigger>
+                    <TabsTrigger value="admissions">
+                      {t("admissions")}
+                    </TabsTrigger>
+                    <TabsTrigger value="campus">{t("campusLife")}</TabsTrigger>
                     {/* <TabsTrigger value="costs">Costs & Aid</TabsTrigger> */}
                   </TabsList>
 
@@ -227,19 +235,23 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         </div>
                       </div> */}
                       <div>
-                        <h4 className="font-medium mb-4">Academic Calendar</h4>
+                        <h4 className="font-medium mb-4">
+                          {t("academicCalendar")}
+                        </h4>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <div className="text-sm text-muted-foreground">
-                              Semester System
+                              {t("semesterSystem")}
                             </div>
-                            <div className="font-medium">Fall & Spring</div>
+                            <div className="font-medium">
+                              {t("fallAndSpring")}
+                            </div>
                           </div>
                           <div>
                             <div className="text-sm text-muted-foreground">
-                              Summer Session
+                              {t("summerSession")}
                             </div>
-                            <div className="font-medium">Available</div>
+                            <div className="font-medium">{t("available")}</div>
                           </div>
                         </div>
                       </div>
@@ -251,7 +263,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Average GPA
+                            {t("averageGpa")}
                           </div>
                           <div className="text-2xl font-bold">
                             {school.average_gpa}
@@ -259,7 +271,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         </div>
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Average GRE
+                            {t("averageGre")}
                           </div>
                           <div className="text-2xl font-bold">
                             {school.average_gre}
@@ -267,7 +279,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         </div>
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Average TOEFL
+                            {t("averageToefl")}
                           </div>
                           <div className="text-2xl font-bold">
                             {school.average_toefl}
@@ -275,7 +287,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         </div>
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Acceptance Rate
+                            {t("acceptanceRate")}
                           </div>
                           <div className="text-2xl font-bold">
                             {school.acceptance_rate}%
@@ -284,20 +296,24 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                       </div>
                       <div>
                         <h4 className="font-medium mb-4">
-                          Application Deadlines
+                          {t("applicationDeadlines")}
                         </h4>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <div className="text-sm text-muted-foreground">
-                              Early Decision
+                              {t("earlyDecision")}
                             </div>
-                            <div className="font-medium">Updated Soon</div>
+                            <div className="font-medium">
+                              {t("updatedSoon")}
+                            </div>
                           </div>
                           <div>
                             <div className="text-sm text-muted-foreground">
-                              Regular Decision
+                              {t("regularDecision")}
                             </div>
-                            <div className="font-medium">Updated Soon</div>
+                            <div className="font-medium">
+                              {t("updatedSoon")}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -309,7 +325,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Student Clubs
+                            {t("studentClubs")}
                           </div>
                           <div className="text-2xl font-bold">
                             {school.campus_life?.student_clubs}
@@ -317,7 +333,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         </div>
                         <div>
                           <div className="text-sm text-muted-foreground">
-                            Sports Teams
+                            {t("sportsTeams")}
                           </div>
                           <div className="text-2xl font-bold">
                             {school.campus_life?.sports_teams}
@@ -325,7 +341,9 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                         </div>
                       </div>
                       <div>
-                        <h4 className="font-medium mb-4">Housing Options</h4>
+                        <h4 className="font-medium mb-4">
+                          {t("housingOptions")}
+                        </h4>
                         <div className="flex flex-wrap gap-2">
                           {school.campus_life?.housing_options.map((option) => (
                             <Badge
@@ -398,7 +416,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
 
             <Card className="h-auto">
               <CardHeader>
-                <CardTitle>Departments</CardTitle>
+                <CardTitle>{t("departments")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs
@@ -465,7 +483,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
             {/* Related Posts */}
             <Card>
               <CardHeader>
-                <CardTitle>Related Posts</CardTitle>
+                <CardTitle>{t("relatedPosts")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -482,21 +500,21 @@ export default function SchoolPage({ params }: SchoolPageProps) {
             {/* Quick Actions */}
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle>{t("quickActions")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button className="w-full">
                   <GraduationCap className="h-4 w-4 mr-2" />
-                  Apply Now
+                  {t("applyNow")}
                 </Button>
                 <Button variant="outline" className="w-full">
                   <BookOpen className="h-4 w-4 mr-2" />
-                  Request Information
+                  {t("requestInformation")}
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
                   <Link href={school.website} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    Visit Website
+                    {t("visitWebsite")}
                   </Link>
                 </Button>
               </CardContent>
@@ -505,7 +523,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
             {/* Contact Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
+                <CardTitle>{t("contactInformation")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-2">
@@ -536,7 +554,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
             {/* Social Media */}
             <Card>
               <CardHeader>
-                <CardTitle>Social Media</CardTitle>
+                <CardTitle>{t("socialMedia")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-4">
@@ -562,7 +580,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
             {/* Similar Schools */}
             <Card>
               <CardHeader>
-                <CardTitle>Similar Schools</CardTitle>
+                <CardTitle>{t("similarSchools")}</CardTitle>
               </CardHeader>
               {/* <CardContent>
                 <div className="space-y-4">
