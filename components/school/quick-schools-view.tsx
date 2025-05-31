@@ -4,33 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  getSchoolByNationOrderByRank,
-  School,
-} from "@/lib/db/schools/school-get";
-import { getServerTranslation } from "@/lib/get-translation";
-import { useEffect } from "react";
+import { School } from "@/lib/db/schools/school-get";
 import { useTranslation } from "@/hooks/use-translation";
-import { useState } from "react";
-import { Skeleton } from "../ui/skeleton";
 
-export function QuickSchoolsView() {
+export function QuickSchoolsView({
+  initialSchools,
+}: {
+  initialSchools: School[];
+}) {
   const { t } = useTranslation();
-  const [schools, setSchools] = useState<School[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSchools = async () => {
-      const schools = await getSchoolByNationOrderByRank({
-        nationCode: "all",
-        limit: 5,
-        offset: 0,
-      });
-      setSchools(schools);
-      setIsLoading(false);
-    };
-    fetchSchools();
-  }, []);
+  const schools = initialSchools;
 
   return (
     <Card>
@@ -42,9 +25,7 @@ export function QuickSchoolsView() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {isLoading ? (
-            <Skeleton className="h-20 w-full" />
-          ) : schools.length > 0 ? (
+          {schools.length > 0 ? (
             schools.map((school) => (
               <Link
                 key={school.id}

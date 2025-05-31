@@ -1,45 +1,18 @@
-"use client";
-
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, MessageSquare, ThumbsUp, Star } from "lucide-react";
-import { useTranslation } from "@/hooks/use-translation";
-import { useEffect, useState } from "react";
-import { getTopContributors } from "@/lib/db/users/users-get";
-import { Skeleton } from "../ui/skeleton";
+import { Contributor } from "@/lib/db/users/users-get";
+import { getServerTranslation } from "@/lib/get-translation";
 
-interface Contributor {
-  id: string;
-  username: string;
-  name: string;
-  image_url: string | null;
-  post_count: number;
-  comment_count: number;
-  total_likes: number;
-  total_points: number;
-  rank?: {
-    id: string;
-    name: string;
-    min_points: number;
-    frame_color: string;
-  };
-}
-
-export function TopContributors() {
-  const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(true);
-  const [topContributors, setTopContributors] = useState<Contributor[]>([]);
-
-  useEffect(() => {
-    const fetchTopContributors = async () => {
-      const topContributors = await getTopContributors();
-      setTopContributors(topContributors);
-      setIsLoading(false);
-    };
-    fetchTopContributors();
-  }, []);
+export async function TopContributors({
+  initialTopContributors,
+}: {
+  initialTopContributors: Contributor[];
+}) {
+  const { t } = await getServerTranslation();
+  const topContributors = initialTopContributors;
 
   return (
     <Card>
@@ -51,9 +24,7 @@ export function TopContributors() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {isLoading ? (
-            <Skeleton className="h-20 w-full" />
-          ) : topContributors.length > 0 ? (
+          {topContributors.length > 0 ? (
             topContributors.map((user, index) => (
               <Link
                 key={user.id}

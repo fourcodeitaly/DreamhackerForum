@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,34 +9,13 @@ import { useTranslation } from "@/hooks/use-translation";
 
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { toCamelCase } from "@/utils/snake-case";
-import { getPinnedPosts } from "@/lib/db/posts/post-get";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/utils/utils";
 
-export function FeaturedPosts() {
+export function FeaturedPosts({ initialPosts }: { initialPosts: Post[] }) {
   const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const posts = await getPinnedPosts();
-      setPosts(posts);
-      setIsLoading(false);
-    };
-    fetchPosts();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="relative overflow-hidden rounded-xl bg-muted h-80 animate-pulse">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-8 w-8 border-4 border-t-primary rounded-full animate-spin" />
-        </div>
-      </div>
-    );
-  }
+  const posts = initialPosts;
 
   if (posts.length === 0) return null;
 

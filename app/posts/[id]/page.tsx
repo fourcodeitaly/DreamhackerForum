@@ -17,6 +17,7 @@ import { FeaturedPosts } from "@/components/post/featured-posts";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { QuickSchoolsView } from "@/components/school/quick-schools-view";
+import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
 
 interface PostPageProps {
   params: {
@@ -30,12 +31,17 @@ export default async function PostPage({ params }: PostPageProps) {
     const user = await getServerSession(authOptions);
 
     // Get the post, related posts, and top contributors
-    const [post, relatedPosts, topContributors, featuredPosts] =
+    const [post, relatedPosts, topContributors, featuredPosts, schools] =
       await Promise.all([
         getPostById(id, user?.user?.id),
         getRelatedPosts(id),
         getTopContributors(),
         getPinnedPosts(),
+        getSchoolByNationOrderByRank({
+          nationCode: "all",
+          limit: 5,
+          offset: 0,
+        }),
       ]);
 
     if (!post) {
@@ -80,9 +86,9 @@ export default async function PostPage({ params }: PostPageProps) {
           {/* Right sidebar - Sticky */}
           <div className="lg:w-1/5">
             <div className="sticky top-20 space-y-6 hidden md:block">
-              <FeaturedPosts />
-              <TopContributors />
-              <QuickSchoolsView />
+              <FeaturedPosts initialPosts={featuredPosts} />
+              <TopContributors initialTopContributors={topContributors} />
+              <QuickSchoolsView initialSchools={schools} />
             </div>
           </div>
         </div>
