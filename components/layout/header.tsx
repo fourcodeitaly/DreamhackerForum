@@ -113,7 +113,7 @@ export default function Header() {
               <div className="flex space-x-2">
                 <LanguageToggle />
                 <ModeToggle />
-                <SearchBar className="w-full" />
+                <SearchBar />
               </div>
               <AuthStatus />
             </div>

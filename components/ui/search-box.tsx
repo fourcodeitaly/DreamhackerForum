@@ -53,7 +53,9 @@ export function SearchBox({
                 <CommandItem
                   key={preset.id}
                   onSelect={() => {
-                    router.push(`/posts?tag=${preset.id}`);
+                    if (onSelect) {
+                      onSelect(preset);
+                    }
                     setOpen(false);
                   }}
                   className="cursor-pointer"

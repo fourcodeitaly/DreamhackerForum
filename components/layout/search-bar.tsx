@@ -5,33 +5,31 @@ import type React from "react";
 import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
-import { getTags } from "@/lib/db/tags/tags-get";
 import { SearchBox } from "../ui/search-box";
+import { getSchoolsIdAndName } from "@/lib/db/schools/school-get";
 
-interface SearchBarProps {
-  className?: string;
-}
-
-export function SearchBar({ className = "" }: SearchBarProps) {
+export function SearchBar() {
   const router = useRouter();
-  const [tagsList, setTagsList] = useState<{ name: string; id: string }[]>([]);
+  const [items, setItems] = useState<{ name: string; id: string }[]>([]);
 
   useEffect(() => {
-    const fetchTags = async () => {
-      const tags = await getTags();
-      setTagsList(tags);
+    const fetchItems = async () => {
+      let fetchedItems: { name: string; id: string }[] = [];
+      fetchedItems = await getSchoolsIdAndName();
+      setItems(fetchedItems);
     };
-    fetchTags();
+
+    fetchItems();
   }, []);
 
   return (
     <SearchBox
       onSelect={(preset) => {
-        router.push(`/posts?tag=${preset.id}`);
+        router.push("/schools/" + preset.id);
       }}
-      presets={tagsList.map((tag) => ({
-        id: tag.id,
-        name: tag.name,
+      presets={items.map((item) => ({
+        id: item.id,
+        name: item.name,
       }))}
     />
   );

@@ -45,6 +45,20 @@ export interface School {
   tag_id?: string;
 }
 
+export const getSchoolsIdAndName = async (): Promise<
+  { id: string; name: string }[]
+> => {
+  try {
+    const schools = await query<{ id: string; name: string }>(
+      "SELECT id, name FROM schools"
+    );
+    return schools;
+  } catch (error) {
+    console.error("Error fetching schools:", error);
+    return [];
+  }
+};
+
 export const getAllSchools = async () => {
   try {
     const schools = await query<School>("SELECT * FROM schools");
