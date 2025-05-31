@@ -16,6 +16,7 @@ import { getTopContributors } from "@/lib/db/users/users-get";
 import { FeaturedPosts } from "@/components/post/featured-posts";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { QuickSchoolsView } from "@/components/school/quick-schools-view";
 
 interface PostPageProps {
   params: {
@@ -79,8 +80,9 @@ export default async function PostPage({ params }: PostPageProps) {
           {/* Right sidebar - Sticky */}
           <div className="lg:w-1/5">
             <div className="sticky top-20 space-y-6 hidden md:block">
-              <FeaturedPosts posts={featuredPosts} />
-              <TopContributors topContributors={topContributors} />
+              <FeaturedPosts />
+              <TopContributors />
+              <QuickSchoolsView />
             </div>
           </div>
         </div>

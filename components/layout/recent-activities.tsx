@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Star } from "lucide-react";
@@ -5,12 +7,22 @@ import { getRecentActivities } from "@/lib/db/activities/activities-modify";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { toCamelCase } from "@/utils/snake-case";
-import { getServerTranslation } from "@/lib/get-translation";
+import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/hooks/use-language";
+import { Activity } from "@/lib/db/activities/activities-modify";
 
-export async function RecentActivities() {
-  const { t } = await getServerTranslation();
+export function RecentActivities() {
+  const { t } = useTranslation();
 
-  const activities = await getRecentActivities(5);
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      const activities = await getRecentActivities(5);
+      setActivities(activities);
+    };
+    fetchActivities();
+  }, []);
 
   return (
     <Card>

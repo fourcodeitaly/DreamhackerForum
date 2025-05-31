@@ -16,6 +16,7 @@ import Link from "next/link";
 import { getSchoolById, School } from "@/lib/db/schools/school-get";
 import { getDepartmentBySchoolId } from "@/lib/db/departments/department-get";
 import { getServerTranslation } from "@/lib/get-translation";
+import { FallbackImage } from "@/components/layout/fallback-image";
 
 interface DepartmentPageProps {
   params: Promise<{
@@ -56,10 +57,9 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
       {/* Hero Section */}
       <div className="relative">
         <div className="h-[300px] relative">
-          <Image
+          <FallbackImage
             src={school.logo}
             alt={department.name}
-            fill
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/50" />
@@ -68,10 +68,9 @@ export default async function DepartmentPage({ params }: DepartmentPageProps) {
               <div className="max-w-4xl">
                 <div className="flex items-center gap-6">
                   <div className="w-24 h-24 relative rounded-lg overflow-hidden flex-shrink-0 bg-white">
-                    <Image
+                    <FallbackImage
                       src={school.logo}
                       alt={school.name}
-                      fill
                       className="object-contain p-3"
                     />
                   </div>

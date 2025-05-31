@@ -79,23 +79,15 @@ export default async function Posts({
   const session = await getServerSession(authOptions);
   const user = session?.user;
 
-  const [
-    categoryData,
-    featuredPosts,
-    topContributors,
-    schools,
-    upcomingEvents,
-    result,
-    tagInfo,
-  ] = await Promise.all([
+  const [categoryData, upcomingEvents, result, tagInfo] = await Promise.all([
     categoryId ? getCategory(categoryId) : null,
-    getPinnedPosts(),
-    getTopContributors(),
-    getSchoolByNationOrderByRank({
-      nationCode: "all",
-      limit: 5,
-      offset: 0,
-    }),
+    // getPinnedPosts(),
+    // getTopContributors(),
+    // getSchoolByNationOrderByRank({
+    //   nationCode: "all",
+    //   limit: 5,
+    //   offset: 0,
+    // }),
     getEvents(),
     tag
       ? getPostsByTags([tag], pageNumber, postsPerPage, user?.id)
@@ -174,9 +166,9 @@ export default async function Posts({
         <div className="lg:w-1/5">
           <div className="sticky top-20 space-y-6">
             <div className="hidden md:block space-y-6">
-              <FeaturedPosts posts={featuredPosts} />
-              <TopContributors topContributors={topContributors} />
-              <QuickSchoolsView schools={schools} />
+              <FeaturedPosts />
+              <TopContributors />
+              <QuickSchoolsView />
             </div>
           </div>
         </div>

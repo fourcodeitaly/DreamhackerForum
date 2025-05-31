@@ -351,6 +351,7 @@ export const translations = {
     adminPrivilegesRemoved: "Admin privileges removed successfully",
     cannotRemoveOwnAdmin: "Cannot remove your own admin role",
     topContributors: "Top Contributors",
+    noContributorsFound: "No contributors found",
 
     // Add these to the English translations section
     translateTitleFromEnglish: "Translate title from English",
@@ -885,6 +886,7 @@ export const translations = {
     adminPrivilegesRemoved: "Đã xóa quyền quản trị viên thành công",
     cannotRemoveOwnAdmin: "Không thể xóa vai trò quản trị viên của chính bạn",
     topContributors: "Top đóng góp",
+    noContributorsFound: "Không tìm thấy đóng góp",
 
     // Add these to the Vietnamese translations section
     translateTitleFromEnglish: "Dịch tiêu đề từ tiếng Anh",

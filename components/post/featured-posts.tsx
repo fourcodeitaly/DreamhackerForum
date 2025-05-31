@@ -6,25 +6,27 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/use-translation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/utils/utils";
+
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { toCamelCase } from "@/utils/snake-case";
+import { getPinnedPosts } from "@/lib/db/posts/post-get";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/utils/utils";
 
-export function FeaturedPosts({ posts }: { posts: Post[] }) {
+export function FeaturedPosts() {
   const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    if (posts.length === 0) return;
-
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % posts.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [posts.length]);
+    const fetchPosts = async () => {
+      const posts = await getPinnedPosts();
+      setPosts(posts);
+      setIsLoading(false);
+    };
+    fetchPosts();
+  }, []);
 
   if (isLoading) {
     return (
