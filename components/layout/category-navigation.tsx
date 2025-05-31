@@ -120,7 +120,7 @@ export function CategoryNavigation({ className }: { className?: string }) {
     },
     {
       id: "events",
-      name: t("events"),
+      name: t("eventsTag"),
       categories: [{ id: "all-events", name: t("allEvents") }],
     },
     {

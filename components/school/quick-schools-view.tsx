@@ -3,14 +3,17 @@ import { Building2, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { School } from "@/lib/db/schools/school-get";
+import { getServerTranslation } from "@/lib/get-translation";
 
 export async function QuickSchoolsView({ schools }: { schools: School[] }) {
+  const { t } = await getServerTranslation();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Building2 className="h-5 w-5 text-primary" />
-          Top Schools
+          {t("topSchools")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -46,7 +49,7 @@ export async function QuickSchoolsView({ schools }: { schools: School[] }) {
             href="/schools?location=all"
             className="block text-center text-sm text-muted-foreground hover:text-primary transition-colors"
           >
-            View all schools →
+            {t("viewAllSchools")} →
           </Link>
         </div>
       </CardContent>

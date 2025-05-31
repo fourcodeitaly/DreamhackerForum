@@ -1,20 +1,13 @@
-"use client";
-
-import { usePathname } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "@/hooks/use-translation";
+import { getServerTranslation } from "@/lib/get-translation";
 import { TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useEffect } from "react";
 import { RecentActivities } from "./recent-activities";
 import { ScholarshipPosts } from "./scholarship-posts";
 import { CategoryNavigation } from "./category-navigation";
 
-export function PostsSidebar() {
-  const { t } = useTranslation();
-  const pathname = usePathname();
-
-  useEffect(() => {}, [pathname]);
+export async function PostsSidebar() {
+  const { t } = await getServerTranslation();
 
   // Mock data for trending topics
   const trendingTopics = [

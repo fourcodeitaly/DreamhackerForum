@@ -149,6 +149,9 @@ export const translations = {
     // Schools
     allSchools: "(School) All Schools",
     schools: "(School) Schools",
+    noDepartmentsFound: "No departments found",
+    topSchools: "Top Schools",
+    viewAllSchools: "View all schools",
 
     // MBA Categories
     allMbaPrograms: "(MBA) All MBA",
@@ -188,10 +191,29 @@ export const translations = {
     phdScholarship: "(PhD) Scholarship",
 
     // Events
-    events: "(Event) Events",
-    allEvents: "(Event) All Events",
-    upcomingEvents: "(Event) Upcoming Events",
+    eventsTag: "(Tag) Events",
+    events: "Events",
+    allEvents: "All Events",
+    upcomingEvents: "Upcoming Events",
+    noUpcomingEvents: "No upcoming events scheduled.",
     optionalEventId: "Optional event ID for reference",
+    virtual: "Virtual",
+    inPerson: "In-Person",
+    hybrid: "Hybrid",
+    online: "Online",
+    onCampus: "On-Campus",
+    offCampus: "Off-Campus",
+    createEvent: "Create Event",
+    calendarView: "Calendar View",
+    listView: "List View",
+    registrationDeadline: "Registration Deadline",
+    organizerInformation: "Organizer Information",
+    registration: "Registration",
+    registrationType: "Registration Type",
+    registrationFee: "Registration Fee",
+    registerNow: "Register Now",
+    share: "Share",
+    save: "Save",
 
     // Study Abroad Categories
     // studyAbroad: "Study Abroad",
@@ -216,8 +238,6 @@ export const translations = {
     likes: "Likes",
     comment: "Comment",
     comments: "Comments",
-    share: "Share",
-    save: "Save",
     saving: "Saving...",
     saveChanges: "Save changes",
     pinned: "Pinned",
@@ -669,6 +689,9 @@ export const translations = {
     // Schools
     allSchools: "(School) Tất cả trường",
     schools: "(School) Trường",
+    noDepartmentsFound: "Không có chuyên ngành",
+    topSchools: "Top trường",
+    viewAllSchools: "Xem tất cả trường",
 
     // MBA Categories
     allMbaPrograms: "(MBA) Tổng hợp MBA",
@@ -709,10 +732,30 @@ export const translations = {
     phdScholarship: "(Phd) Học bổng PhD",
 
     // Events
-    events: "(Sự kiện) Sự kiện",
-    allEvents: "(Sự kiện) Tất cả sự kiện",
-    upcomingEvents: "(Sự kiện) Sự kiện sắp tới",
+    eventsTag: "(Tag) Sự kiện",
+    events: "Sự kiện",
+    allEvents: "Tất cả sự kiện",
+    upcomingEvents: "Sự kiện sắp tới",
+    noUpcomingEvents: "Không có sự kiện sắp tới",
     optionalEventId: "ID sự kiện (tùy chọn)",
+    calendarView: "Xem theo lịch",
+    listView: "Xem theo danh sách",
+    createEvent: "Tạo sự kiện",
+    registrationDeadline: "Thời hạn đăng ký",
+    organizerInformation: "Thông tin tổ chức",
+    registration: "Đăng ký",
+    registrationType: "Loại đăng ký",
+    registrationFee: "Phí đăng ký",
+    registerNow: "Đăng ký ngay",
+    shareThisEvent: "Chia sẻ sự kiện này",
+    editEvent: "Chỉnh sửa sự kiện",
+    dateAndTime: "Thời gian",
+    location: "Địa điểm",
+    joinMeeting: "Tham gia cuộc họp",
+    organizer: "Tổ chức",
+    eventDetails: "Chi tiết sự kiện",
+    share: "Chia sẻ",
+    save: "Lưu",
 
     // Study Abroad Categories
     studyAbroad: "(Du học) Du học",
@@ -728,8 +771,6 @@ export const translations = {
     likes: "Thích",
     comment: "Bình luận",
     comments: "Bình luận",
-    share: "Chia sẻ",
-    save: "Lưu",
     saving: "Đang lưu...",
     saveChanges: "Lưu thay đổi",
     pinned: "Ghim",
@@ -790,7 +831,6 @@ export const translations = {
     bio: "Tiểu sử",
     bioDescription: "Mô tả ngắn gọn cho hồ sơ của bạn",
     bioPlaceholder: "Nói chúng tôi một chút về bạn",
-    location: "Vị trí",
     locationDescription: "Vị trí của bạn",
     locationPlaceholder: "Nhập vị trí của bạn",
 

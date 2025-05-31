@@ -1,10 +1,9 @@
-"use client";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, MessageSquare, ThumbsUp, Star } from "lucide-react";
-import { useTranslation } from "@/hooks/use-translation";
+import { getServerTranslation } from "@/lib/get-translation";
 
 interface Contributor {
   id: string;
@@ -23,12 +22,12 @@ interface Contributor {
   };
 }
 
-export function TopContributors({
+export async function TopContributors({
   topContributors,
 }: {
   topContributors: Contributor[];
 }) {
-  const { t } = useTranslation();
+  const { t } = await getServerTranslation();
 
   if (topContributors.length === 0) {
     return (
@@ -41,7 +40,7 @@ export function TopContributors({
         </CardHeader>
         <CardContent>
           <div className="text-center py-4 text-muted-foreground">
-            <p>No contributors found</p>
+            <p>{t("noContributorsFound")}</p>
           </div>
         </CardContent>
       </Card>

@@ -1,39 +1,19 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Award } from "lucide-react";
-import { useTranslation } from "@/hooks/use-translation";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { getPostsByTags } from "@/lib/db/posts/post-get";
-import { Post } from "@/lib/db/posts/posts-modify";
-import { useLanguage } from "@/hooks/use-language";
+import { getServerLanguage, getServerTranslation } from "@/lib/get-translation";
 
-export function ScholarshipPosts() {
-  const { t } = useTranslation();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { language } = useLanguage();
+export async function ScholarshipPosts() {
+  const language = await getServerLanguage();
+  const { t } = await getServerTranslation();
 
-  useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const scholarshipPosts = await getPostsByTags(
-          ["c34d416e-1bed-4474-a020-e83032e2b15d"],
-          1,
-          5
-        );
-        setPosts(scholarshipPosts.posts);
-      } catch (error) {
-        console.error("Error fetching recent activities:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivities();
-  }, []);
+  const posts = await getPostsByTags(
+    ["c34d416e-1bed-4474-a020-e83032e2b15d"],
+    1,
+    5
+  );
 
   return (
     <Card>
@@ -47,7 +27,7 @@ export function ScholarshipPosts() {
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div className="space-y-4">
-          {posts.map((post) => (
+          {posts.posts.map((post) => (
             <div key={post.id} className="space-y-1">
               <div className="flex items-center space-x-2">
                 <Star className="h-4 w-4 text-yellow-400 min-w-3" />

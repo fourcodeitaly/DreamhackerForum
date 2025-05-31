@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,12 +14,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { getSchoolById, School } from "@/lib/db/schools/school-get";
-import {
-  getDepartmentBySchoolId,
-  SchoolDepartment,
-} from "@/lib/db/departments/department-get";
-import { useTranslation } from "@/hooks/use-translation";
-import { use, useEffect, useState } from "react";
+import { getDepartmentBySchoolId } from "@/lib/db/departments/department-get";
+import { getServerTranslation } from "@/lib/get-translation";
+
 interface DepartmentPageProps {
   params: Promise<{
     departmentId: string;
@@ -29,24 +24,15 @@ interface DepartmentPageProps {
   }>;
 }
 
-export default function DepartmentPage({ params }: DepartmentPageProps) {
-  const { t } = useTranslation();
+export default async function DepartmentPage({ params }: DepartmentPageProps) {
+  const { t } = await getServerTranslation();
 
-  const { departmentId, schoolId } = use(params);
-  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
-  const [school, setSchool] = useState<School | null>(null);
+  const { departmentId, schoolId } = await params;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [departments, school] = await Promise.all([
-        getDepartmentBySchoolId(schoolId),
-        getSchoolById(schoolId),
-      ]);
-      setDepartments(departments);
-      setSchool(school);
-    };
-    fetchData();
-  }, [departmentId, schoolId]);
+  const [departments, school] = await Promise.all([
+    getDepartmentBySchoolId(schoolId),
+    getSchoolById(schoolId),
+  ]);
 
   const department = departments.find((d) => d.id === departmentId);
 

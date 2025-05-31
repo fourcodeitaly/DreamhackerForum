@@ -20,6 +20,7 @@ import { getEventById } from "@/lib/db/events/event-get";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerTranslation } from "@/lib/get-translation";
 
 interface EventDetailPageProps {
   params: {
@@ -30,6 +31,7 @@ interface EventDetailPageProps {
 export default async function EventDetailPage({
   params,
 }: EventDetailPageProps) {
+  const { t } = await getServerTranslation();
   const { id } = await params;
   const event = await getEventById(id);
   const session = await getServerSession(authOptions);
@@ -79,7 +81,7 @@ export default async function EventDetailPage({
                   variant="secondary"
                   className="bg-indigo-100 text-indigo-800"
                 >
-                  Virtual Event
+                  {t("virtual")}
                 </Badge>
               )}
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -95,7 +97,7 @@ export default async function EventDetailPage({
             <div className="flex flex-col gap-4 text-muted-foreground mb-8">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                {event.is_virtual ? "Virtual Event" : event.location}
+                {event.is_virtual ? t("virtual") : event.location}
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
@@ -111,15 +113,15 @@ export default async function EventDetailPage({
                 disabled={event.registration_deadline <= new Date()}
                 // onClick={() => window.open(event.registrationUrl, "_blank")}
               >
-                Register Now
+                {t("registerNow")}
               </Button>
               <Button variant="outline" size="lg" className="rounded-full">
                 <Share2 className="mr-2 h-4 w-4" />
-                Share
+                {t("share")}
               </Button>
               <Button variant="outline" size="lg" className="rounded-full">
                 <BookmarkPlus className="mr-2 h-4 w-4" />
-                Save
+                {t("save")}
               </Button>
             </div>
           </div>
@@ -171,7 +173,7 @@ export default async function EventDetailPage({
                         className="flex items-center gap-2"
                       >
                         <Edit className="h-4 w-4" />
-                        Edit Event
+                        {t("editEvent")}
                       </Link>
                     </Button>
                   )}
@@ -184,16 +186,16 @@ export default async function EventDetailPage({
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                      <h3 className="font-semibold mb-2">Date & Time</h3>
+                      <h3 className="font-semibold mb-2">{t("dateAndTime")}</h3>
                       <p className="text-muted-foreground">
                         {format(new Date(event.start_date), "PPP")} -{" "}
                         {format(new Date(event.end_date), "PPP")}
                       </p>
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-2">Location</h3>
+                      <h3 className="font-semibold mb-2">{t("location")}</h3>
                       <p className="text-muted-foreground">
-                        {event.is_virtual ? "Virtual Event" : event.location}
+                        {event.is_virtual ? t("virtual") : event.location}
                       </p>
                     </div>
                   </div>
@@ -203,14 +205,14 @@ export default async function EventDetailPage({
 
             <Card>
               <CardHeader>
-                <CardTitle>Event Details</CardTitle>
+                <CardTitle>{t("eventDetails")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex items-start space-x-3">
                     <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
-                      <h4 className="font-medium">Date & Time</h4>
+                      <h4 className="font-medium">{t("dateAndTime")}</h4>
                       <p className="text-sm text-muted-foreground">
                         {format(event.start_date, "EEEE, MMMM d, yyyy")}
                       </p>
@@ -224,9 +226,9 @@ export default async function EventDetailPage({
                   <div className="flex items-start space-x-3">
                     <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
-                      <h4 className="font-medium">Location</h4>
+                      <h4 className="font-medium">{t("location")}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {event.is_virtual ? "Virtual Event" : event.location}
+                        {event.is_virtual ? t("virtual") : event.location}
                       </p>
                       {event.is_virtual && event.virtual_meeting_link && (
                         <a
@@ -235,7 +237,7 @@ export default async function EventDetailPage({
                           rel="noopener noreferrer"
                           className="text-sm text-primary hover:underline"
                         >
-                          Join Meeting
+                          {t("joinMeeting")}
                         </a>
                       )}
                     </div>
@@ -244,7 +246,7 @@ export default async function EventDetailPage({
                   <div className="flex items-start space-x-3">
                     <Users className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
-                      <h4 className="font-medium">Organizer</h4>
+                      <h4 className="font-medium">{t("organizer")}</h4>
                       <p className="text-sm text-muted-foreground">
                         {event.organizer_name}
                       </p>
@@ -257,7 +259,9 @@ export default async function EventDetailPage({
                   <div className="flex items-start space-x-3">
                     <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
-                      <h4 className="font-medium">Registration Deadline</h4>
+                      <h4 className="font-medium">
+                        {t("registrationDeadline")}
+                      </h4>
                       <p className="text-sm text-muted-foreground">
                         {format(event.registration_deadline, "MMMM d, yyyy")} at{" "}
                         {format(event.registration_deadline, "h:mm a")}
@@ -270,7 +274,7 @@ export default async function EventDetailPage({
 
             <Card>
               <CardHeader>
-                <CardTitle>Organizer Information</CardTitle>
+                <CardTitle>{t("organizerInformation")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div>
@@ -337,13 +341,13 @@ export default async function EventDetailPage({
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle>Registration</CardTitle>
+                <CardTitle>{t("registration")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">
-                      Registration Type
+                      {t("registrationType")}
                     </span>
                     <Badge
                       variant="secondary"
@@ -363,7 +367,7 @@ export default async function EventDetailPage({
                   {event.registration_type === "paid" && (
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">
-                        Registration Fee
+                        {t("registrationFee")}
                       </span>
                       <span className="font-medium">
                         {event.registration_fee} {event.registration_currency}
@@ -372,7 +376,7 @@ export default async function EventDetailPage({
                   )}
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">
-                      Registration Deadline
+                      {t("registrationDeadline")}
                     </span>
                     <span className="font-medium">
                       {format(new Date(event.registration_deadline), "PPP")}
@@ -384,7 +388,7 @@ export default async function EventDetailPage({
                     size="lg"
                     disabled={event.registration_deadline <= new Date()}
                   >
-                    Register Now
+                    {t("registerNow")}
                   </Button>
                 </div>
               </CardContent>
@@ -392,17 +396,17 @@ export default async function EventDetailPage({
 
             <Card>
               <CardHeader>
-                <CardTitle>Share This Event</CardTitle>
+                <CardTitle>{t("shareThisEvent")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
                   <Button variant="outline" className="flex-1">
                     <Share2 className="mr-2 h-4 w-4" />
-                    Share
+                    {t("share")}
                   </Button>
                   <Button variant="outline" className="flex-1">
                     <BookmarkPlus className="mr-2 h-4 w-4" />
-                    Save
+                    {t("save")}
                   </Button>
                 </div>
               </CardContent>

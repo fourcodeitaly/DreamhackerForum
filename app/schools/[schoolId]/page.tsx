@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +24,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { DepartmentCard } from "@/components/schools/department-card";
-import { getSchoolById, School } from "@/lib/db/schools/school-get";
+import { getSchoolById } from "@/lib/db/schools/school-get";
 import {
   getDepartmentBySchoolId,
   SchoolDepartment,
@@ -34,10 +32,9 @@ import {
 import { getPostsByTags } from "@/lib/db/posts/post-get";
 import { PostCard } from "@/components/post/post-card";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
-import { Post } from "@/lib/db/posts/posts-modify";
-import Loading from "@/app/posts/[id]/loading";
-import { useTranslation } from "@/hooks/use-translation";
+import { getServerTranslation } from "@/lib/get-translation";
+import { notFound } from "next/navigation";
+import { FallbackImage } from "@/components/layout/fallback-image";
 
 export const dynamic = "force-dynamic";
 
@@ -47,46 +44,19 @@ interface SchoolPageProps {
   }>;
 }
 
-export default function SchoolPage({ params }: SchoolPageProps) {
-  const { schoolId } = use(params);
-  const [school, setSchool] = useState<School | null>(null);
-  const [relatedPosts, setRelatedPosts] = useState<Post[]>([]);
-  const [departments, setDepartments] = useState<SchoolDepartment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { t } = useTranslation();
+export default async function SchoolPage({ params }: SchoolPageProps) {
+  const { schoolId } = await params;
 
-  useEffect(() => {
-    const fetchSchool = async () => {
-      setIsLoading(true);
-      const [school, departments] = await Promise.all([
-        getSchoolById(schoolId),
-        getDepartmentBySchoolId(schoolId),
-      ]);
-      setSchool(school);
-      setDepartments(departments);
-      setIsLoading(false);
-      const relatedPosts = await getPostsByTags([school?.tag_id || ""]);
-      setRelatedPosts(relatedPosts.posts);
-    };
+  const [school, departments] = await Promise.all([
+    getSchoolById(schoolId),
+    getDepartmentBySchoolId(schoolId),
+  ]);
 
-    fetchSchool();
-  }, [schoolId]);
+  const relatedPosts = await getPostsByTags([school?.tag_id || ""]);
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  if (!school) notFound();
 
-  if (!school) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="py-8">
-            <div className="text-center">School not found</div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const { t } = await getServerTranslation();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -94,16 +64,10 @@ export default function SchoolPage({ params }: SchoolPageProps) {
       <div className="relative">
         {/* Hero Image */}
         <div className="h-[400px] relative">
-          <Image
+          <FallbackImage
             src={school.logo || "/placeholder.png"}
             alt={school.name}
-            fill
             className="object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src =
-                "https://marketplace.canva.com/EAGLvNcMY10/1/0/1600w/canva-white-and-blue-illustrative-class-logo-mjY8ushmYT4.jpg";
-            }}
           />
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-0 flex items-center">
@@ -111,16 +75,10 @@ export default function SchoolPage({ params }: SchoolPageProps) {
               <div className="max-w-4xl">
                 <div className="flex items-center gap-6">
                   <div className="w-32 h-32 relative rounded-lg overflow-hidden flex-shrink-0 bg-white">
-                    <Image
-                      src={school.logo}
+                    <FallbackImage
+                      src={school.logo || "/placeholder.png"}
                       alt={school.name}
-                      fill
                       className="object-contain p-4"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src =
-                          "https://marketplace.canva.com/EAGLvNcMY10/1/0/1600w/canva-white-and-blue-illustrative-class-logo-mjY8ushmYT4.jpg";
-                      }}
                     />
                   </div>
                   <div className="text-white">
@@ -345,15 +303,17 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                           {t("housingOptions")}
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                          {school.campus_life?.housing_options.map((option) => (
-                            <Badge
-                              key={option}
-                              variant="secondary"
-                              className="text-sm"
-                            >
-                              {option}
-                            </Badge>
-                          ))}
+                          {school.campus_life?.housing_options?.map(
+                            (option: string) => (
+                              <Badge
+                                key={option}
+                                variant="secondary"
+                                className="text-sm"
+                              >
+                                {option}
+                              </Badge>
+                            )
+                          )}
                         </div>
                       </div>
                     </div>
@@ -419,64 +379,35 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                 <CardTitle>{t("departments")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs
-                  defaultValue={departments[0]?.id || "all"}
-                  className="space-y-4"
-                >
-                  <TabsList className="flex flex-wrap gap-2 pb-2 h-fit">
-                    {departments.map((department) => (
-                      <TabsTrigger
-                        key={department.id}
-                        value={department.id}
-                        className="whitespace-nowrap"
-                        title={department.name}
-                      >
-                        {department.name}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
+                {departments.length > 0 ? (
+                  <Tabs
+                    defaultValue={departments[0]?.id || "all"}
+                    className="space-y-4"
+                  >
+                    <TabsList className="flex flex-wrap gap-2 pb-2 h-fit">
+                      {departments.map((department: SchoolDepartment) => (
+                        <TabsTrigger
+                          key={department.id}
+                          value={department.id}
+                          className="whitespace-nowrap"
+                          title={department.name}
+                        >
+                          {department.name}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
 
-                  {departments.map((department) => (
-                    <TabsContent key={department.id} value={department.id}>
-                      <DepartmentCard department={department} />
-                    </TabsContent>
-                  ))}
-                  {/* <TabsContent value="all" className="space-y-4">
-                    {departments.map((department) => (
-                      <DepartmentCard
-                        key={department.id}
-                        department={department}
-                      />
+                    {departments.map((department: SchoolDepartment) => (
+                      <TabsContent key={department.id} value={department.id}>
+                        <DepartmentCard department={department} />
+                      </TabsContent>
                     ))}
-                  </TabsContent> */}
-
-                  {/* <TabsContent value="law" className="space-y-4">
-                    {lawDepartments.map((department) => (
-                      <DepartmentCard
-                        key={department.school_id}
-                        department={department}
-                      />
-                    ))}
-                  </TabsContent>
-
-                  <TabsContent value="business" className="space-y-4">
-                    {businessDepartments.map((department) => (
-                      <DepartmentCard
-                        key={department.id}
-                        department={department}
-                      />
-                    ))}
-                  </TabsContent>
-
-                  <TabsContent value="medical" className="space-y-4">
-                    {medicalDepartments.map((department) => (
-                      <DepartmentCard
-                        key={department.id}
-                        department={department}
-                      />
-                    ))}
-                  </TabsContent> */}
-                </Tabs>
+                  </Tabs>
+                ) : (
+                  <div className="text-muted-foreground">
+                    <p>{t("updatedSoon")}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -487,7 +418,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {relatedPosts.map((post) => (
+                  {relatedPosts.posts.map((post) => (
                     <PostCard post={post} key={post.id} />
                   ))}
                 </div>
@@ -512,7 +443,7 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                   {t("requestInformation")}
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href={school.website} target="_blank">
+                  <Link href={school.website || ""} target="_blank">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     {t("visitWebsite")}
                   </Link>
@@ -529,12 +460,12 @@ export default function SchoolPage({ params }: SchoolPageProps) {
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
                   <a
-                    href={school.website}
+                    href={school.website || ""}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm hover:underline"
                   >
-                    {school.website}
+                    {school.website || ""}
                   </a>
                 </div>
                 <div className="flex items-center gap-2">

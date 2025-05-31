@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -7,12 +5,15 @@ import { cn } from "@/utils/utils";
 import { Clock, MapPin, ArrowRight, Users } from "lucide-react";
 import Link from "next/link";
 import { Event } from "@/lib/db/events/event-modify";
+import { getServerTranslation } from "@/lib/get-translation";
 
 interface EventListProps {
   events: Event[];
 }
 
-export function EventList({ events }: EventListProps) {
+export async function EventList({ events }: EventListProps) {
+  const { t } = await getServerTranslation();
+
   // Sort events by start date and get upcoming events
   const upcomingEvents = [...events]
     .sort(
@@ -27,7 +28,7 @@ export function EventList({ events }: EventListProps) {
       <CardHeader className="border-b bg-muted/50">
         <CardTitle className="text-xl flex items-center">
           <Clock className="h-5 w-5 mr-2" />
-          Upcoming Events
+          {t("upcomingEvents")}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -50,7 +51,7 @@ export function EventList({ events }: EventListProps) {
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
-                        {event.is_virtual ? "Virtual Event" : event.location}
+                        {event.is_virtual ? t("virtual") : event.location}
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4" />
@@ -81,7 +82,7 @@ export function EventList({ events }: EventListProps) {
                           variant="secondary"
                           className="bg-indigo-100 text-indigo-800"
                         >
-                          Virtual
+                          {t("virtual")}
                         </Badge>
                       )}
                     </div>
@@ -94,7 +95,7 @@ export function EventList({ events }: EventListProps) {
           {upcomingEvents.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No upcoming events scheduled.</p>
+              <p>{t("noUpcomingEvents")}</p>
             </div>
           )}
         </div>

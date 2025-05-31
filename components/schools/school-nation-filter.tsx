@@ -1,10 +1,8 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
-import { useTranslation } from "@/hooks/use-translation";
+import { getServerTranslation } from "@/lib/get-translation";
 
 const LOCATIONS = [
   { code: "all", name: "allNation" },
@@ -22,9 +20,14 @@ const LOCATIONS = [
   { code: "fr", name: "fr" },
 ];
 
-export function SchoolNationFilter({ location }: { location: string }) {
-  const { t } = useTranslation();
+interface SchoolNationFilterProps {
+  location: string;
+}
 
+export async function SchoolNationFilter({
+  location,
+}: SchoolNationFilterProps) {
+  const { t } = await getServerTranslation();
   return (
     <Card>
       <CardHeader>

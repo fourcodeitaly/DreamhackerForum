@@ -17,10 +17,12 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import { getServerTranslation } from "@/lib/get-translation";
 
 export const dynamic = "force-dynamic";
 
 export default async function EventsPage() {
+  const { t } = await getServerTranslation();
   const [{ events }, session] = await Promise.all([
     getEvents(),
     getServerSession(authOptions),
@@ -96,18 +98,18 @@ export default async function EventsPage() {
             <TabsList className="grid w-[400px] grid-cols-2">
               <TabsTrigger value="calendar" className="flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" />
-                Calendar View
+                {t("calendarView")}
               </TabsTrigger>
               <TabsTrigger value="list" className="flex items-center gap-2">
                 <List className="h-4 w-4" />
-                List View
+                {t("listView")}
               </TabsTrigger>
             </TabsList>
             {isAdmin && (
               <Button asChild>
                 <Link href="/events/create" className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
-                  Create Event
+                  {t("createEvent")}
                 </Link>
               </Button>
             )}

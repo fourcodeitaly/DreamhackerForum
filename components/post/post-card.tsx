@@ -1,24 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useLanguage } from "@/hooks/use-language";
-import { useTranslation } from "@/hooks/use-translation";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MessageSquare, Bookmark, Award } from "lucide-react";
 import type { Post } from "@/lib/db/posts/posts-modify";
 import { toCamelCase } from "@/utils/snake-case";
 import { cn, formatRelativeTime } from "@/utils/utils";
+import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/hooks/use-language";
 
 interface PostCardProps {
   post: Post;
 }
 
 export function PostCard({ post }: PostCardProps) {
-  const { language } = useLanguage();
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
-  const postTitle = post.title?.[language] || post.title?.en || "";
+  const postTitle =
+    post.title?.[language as keyof typeof post.title] || post.title?.en || "";
   const hasScholarshipTag = post.tags?.some(
     (tag) => tag.id === "c34d416e-1bed-4474-a020-e83032e2b15d"
   );

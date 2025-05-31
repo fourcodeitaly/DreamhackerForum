@@ -20,6 +20,7 @@ import { getEvents } from "@/lib/db/events/event-get";
 import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import { getServerTranslation } from "@/lib/get-translation";
 export const dynamic = "force-dynamic";
 
 const categories: { id: string; name: string }[] = [
@@ -67,6 +68,7 @@ export default async function Posts({
     tag?: string;
   };
 }) {
+  const { t } = await getServerTranslation();
   // Get current page from query parameters
   const { page, nullPosts, category, tag } = await searchParams;
   const pageNumber = page ? Number.parseInt(page) : 1;
@@ -148,7 +150,7 @@ export default async function Posts({
                   ? `Posts tagged with "${tagInfo?.name}"`
                   : categoryId
                   ? categoryName
-                  : "All Posts"}
+                  : t("allPosts")}
               </h1>
               {/* <SearchBar /> */}
             </div>
@@ -180,7 +182,7 @@ export default async function Posts({
         </div>
       </div>
 
-      <RunningCat />
+      {/* <RunningCat /> */}
     </div>
   );
 }
