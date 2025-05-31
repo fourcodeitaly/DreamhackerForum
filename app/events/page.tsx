@@ -93,6 +93,15 @@ export default async function EventsPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
+        {isAdmin && (
+          <Button asChild className="mb-4">
+            <Link href="/events/create" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              {t("createEvent")}
+            </Link>
+          </Button>
+        )}
+
         <Tabs defaultValue="calendar" className="space-y-8">
           <div className="flex justify-between items-center">
             <TabsList className="grid w-[400px] grid-cols-2">
@@ -105,14 +114,6 @@ export default async function EventsPage() {
                 {t("listView")}
               </TabsTrigger>
             </TabsList>
-            {isAdmin && (
-              <Button asChild>
-                <Link href="/events/create" className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  {t("createEvent")}
-                </Link>
-              </Button>
-            )}
           </div>
 
           <TabsContent value="calendar" className="space-y-8">

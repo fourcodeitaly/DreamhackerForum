@@ -144,7 +144,7 @@ export default async function Posts({
         <div className="lg:w-3/5">
           <div className="flex justify-between items-center">
             <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-md lg:text-2xl font-bold">
                 {tag
                   ? `Posts tagged with "${tagInfo?.name}"`
                   : categoryId

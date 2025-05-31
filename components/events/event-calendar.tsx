@@ -9,6 +9,7 @@ import { cn } from "@/utils/utils";
 import { Calendar as CalendarIcon, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Event } from "@/lib/db/events/event-modify";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface EventCalendarProps {
   events: Event[];
@@ -16,6 +17,7 @@ interface EventCalendarProps {
 
 export function EventCalendar({ events }: EventCalendarProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const { t } = useTranslation();
 
   // Get events for the selected date
   const selectedDateEvents = events.filter(
@@ -135,7 +137,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No events scheduled for this date.</p>
+                <p>{t("noEventsScheduledForThisDate")}</p>
               </div>
             )}
           </div>

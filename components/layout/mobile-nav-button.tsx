@@ -34,7 +34,7 @@ export function MobileNavButton() {
       position: "bottom-36",
     },
     {
-      title: t("events").split(")")[1],
+      title: t("eventsTag").split(")")[1],
       icon: <Calendar className="h-6 w-6 text-white" />,
       href: "/events",
       color: "bg-red-400 hover:bg-red-500",

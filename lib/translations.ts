@@ -217,6 +217,8 @@ export const translations = {
     shareThisEvent: "Share this event",
     eventDetails: "Event Details",
     dateAndTime: "Date and Time",
+    noEventsScheduledForThisDate:
+      "No events scheduled for this date. Check back later for updates.",
 
     // Study Abroad Categories
     // studyAbroad: "Study Abroad",
@@ -760,6 +762,8 @@ export const translations = {
     eventDetails: "Chi tiết sự kiện",
     share: "Chia sẻ",
     save: "Lưu",
+    noEventsScheduledForThisDate:
+      "Không có sự kiện được lên lịch cho ngày này. Vui lòng kiểm tra lại sau.",
 
     // Study Abroad Categories
     studyAbroad: "(Du học) Du học",
