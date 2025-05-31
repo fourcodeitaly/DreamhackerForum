@@ -87,75 +87,39 @@ export default async function CompareSchoolsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[300px]">School</TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <TableHead className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           Ranking
                           <ArrowUpDown className="h-4 w-4" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          Location
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          Type
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          Founded
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <TableHead className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           Total Students
                           <ArrowUpDown className="h-4 w-4" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <TableHead className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           Acceptance Rate
                           <ArrowUpDown className="h-4 w-4" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <TableHead className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           Average GPA
                           <ArrowUpDown className="h-4 w-4" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <TableHead className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           Average SAT
                           <ArrowUpDown className="h-4 w-4" />
                         </div>
                       </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          In-State Tuition
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          Out-of-State Tuition
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          Student Clubs
-                          <ArrowUpDown className="h-4 w-4" />
-                        </div>
-                      </TableHead>
-                      <TableHead className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          Sports Teams
+                      <TableHead className="text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          International Tuition
                           <ArrowUpDown className="h-4 w-4" />
                         </div>
                       </TableHead>
@@ -182,7 +146,7 @@ export default async function CompareSchoolsPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           <Badge
                             variant="secondary"
                             className="bg-yellow-100 text-yellow-800"
@@ -190,38 +154,20 @@ export default async function CompareSchoolsPage() {
                             #{school.ranking}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                          {school.location}
-                        </TableCell>
-                        <TableCell className="text-right capitalize">
-                          {school.type}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {school.founded}
-                        </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           {school.totalStudents.toLocaleString()}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           {school.acceptanceRate}%
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           {school.averageGPA}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           {school.averageSAT}
                         </TableCell>
-                        <TableCell className="text-right">
-                          ${school.tuition.inState.toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          ${school.tuition.outState.toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {school.campusLife.studentClubs}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {school.campusLife.sportsTeams}
+                        <TableCell className="text-center">
+                          {school.tuition.international}
                         </TableCell>
                       </TableRow>
                     ))}

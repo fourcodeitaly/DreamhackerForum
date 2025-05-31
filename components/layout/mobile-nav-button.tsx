@@ -29,7 +29,7 @@ export function MobileNavButton() {
     {
       title: t("schools").split(")")[1],
       icon: <GraduationCap className="h-6 w-6 text-white" />,
-      href: "/schools",
+      href: "/schools?location=all",
       color: "bg-yellow-400 hover:bg-yellow-500",
       position: "bottom-36",
     },
