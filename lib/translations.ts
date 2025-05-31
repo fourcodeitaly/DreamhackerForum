@@ -214,6 +214,9 @@ export const translations = {
     registerNow: "Register Now",
     share: "Share",
     save: "Save",
+    shareThisEvent: "Share this event",
+    eventDetails: "Event Details",
+    dateAndTime: "Date and Time",
 
     // Study Abroad Categories
     // studyAbroad: "Study Abroad",
