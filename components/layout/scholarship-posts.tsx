@@ -54,7 +54,7 @@ export function ScholarshipPosts() {
                   <Star className="h-4 w-4 text-yellow-400 min-w-3" />
                   <Link
                     href={`/posts/${post.id}`}
-                    className="text-sm text-gray-600 hover:text-gray-900 block"
+                    className="text-sm dark:text-gray-300 hover:text-primary block"
                   >
                     {post.title[language]}
                     {" ・ "}
