@@ -465,6 +465,9 @@ export const translations = {
     itInternship: "(Internship) IT Internship",
     chInternship: "(Internship) CH Internship",
 
+    // Undergraduate
+    undergraduate: "(Undergraduate) Undergraduate",
+
     us: "United States",
     uk: "United Kingdom",
     ca: "Canada",
@@ -693,6 +696,8 @@ export const translations = {
     toMarkdownDescription:
       "Chuyển sang định dạng markdown với AI, làm cho nội dung chuyên nghiệp hơn. Nhấn thêm emoji 🤗 trước khi chuyển đổi, làm nội dung sinh động hơn.",
     addEmoji: "emoji 🤗",
+    tagsDescription:
+      "Thêm thẻ để đánh dấu bài viết. Bạn có thể đánh tag tên quốc gia, tên trường học, học bổng và thực tập. Vui lòng sử dụng tiếng Anh.",
 
     // Categories
     nations: "Quốc gia",
@@ -1014,6 +1019,9 @@ export const translations = {
     huInternship: "(Internship) Thực tập Hungary",
     itInternship: "(Internship) Thực tập Ý",
     chInternship: "(Internship) Thực tập Thụy Sĩ",
+
+    // Undergraduate
+    undergraduate: "(Undergraduate) Đại học",
 
     us: "Mỹ",
     uk: "Anh",

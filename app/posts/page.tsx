@@ -20,6 +20,7 @@ import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerTranslation } from "@/lib/get-translation";
+import { toCamelCase } from "@/utils/snake-case";
 export const dynamic = "force-dynamic";
 
 const categories: { id: string; name: string }[] = [
@@ -79,7 +80,7 @@ export default async function Posts({
   const user = session?.user;
 
   const [
-    categoryData,
+    // categoryData,
     pinnedPosts,
     topContributors,
     schools,
@@ -87,7 +88,7 @@ export default async function Posts({
     result,
     tagInfo,
   ] = await Promise.all([
-    categoryId ? getCategory(categoryId) : null,
+    // categoryId ? getCategory(categoryId) : null,
     getPinnedPosts(),
     getTopContributors(),
     getSchoolByNationOrderByRank({
@@ -101,8 +102,6 @@ export default async function Posts({
       : getPosts(pageNumber, postsPerPage, false, categoryId, user?.id),
     tag ? getTagById(tag) : null,
   ]);
-
-  const categoryName = categoryData?.name?.en || "All Posts";
 
   const initialPosts = result?.posts ?? [];
   const totalPosts = result?.total ?? 0;
@@ -145,7 +144,7 @@ export default async function Posts({
                 {tag
                   ? `Posts tagged with "${tagInfo?.name}"`
                   : categoryId
-                  ? categoryName
+                  ? t(toCamelCase(`${categoryId}`))
                   : t("allPosts")}
               </h1>
               {/* <SearchBar /> */}

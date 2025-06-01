@@ -385,6 +385,14 @@ export function MultilingualPostForm({
   // Category groups for the select dropdown
   const categoryGroups = [
     {
+      name: t("internship"),
+      options: [{ id: "internship", name: t("internship") }],
+    },
+    {
+      name: t("undergraduate"),
+      options: [{ id: "undergraduate", name: t("undergraduate") }],
+    },
+    {
       name: t("mbaPrograms"),
       options: [
         { id: "mba-school-information", name: t("mbaSchoolInformation") },
@@ -459,10 +467,6 @@ export function MultilingualPostForm({
           name: t("phdScholarship"),
         },
       ],
-    },
-    {
-      name: t("internship"),
-      options: [{ id: "internship", name: t("allInternship") }],
     },
   ];
 
@@ -547,6 +551,9 @@ export function MultilingualPostForm({
             <div className="space-y-2">
               <Label htmlFor="tags" className="text-primary ">
                 {t("tags").split(")")[1]}
+                <p className="text-xs text-muted-foreground">
+                  {t("tagsDescription")}
+                </p>
               </Label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {tags.map((tag) => (
