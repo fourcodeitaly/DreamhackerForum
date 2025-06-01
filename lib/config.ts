@@ -9,8 +9,7 @@ const localConfig = {
   isAWS: false,
   ssl: process.env.SSL,
   groqApiKey: process.env.GROQ_API_KEY,
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  openaiApiKey: process.env.OPENAI_API_KEY,
 };
 
 const awsConfig = {
@@ -22,8 +21,7 @@ const awsConfig = {
   ssl: process.env.SSL,
   isAWS: true,
   groqApiKey: process.env.GROQ_API_KEY,
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  openaiApiKey: process.env.OPENAI_API_KEY,
 };
 
 export const config = isAWS === "true" ? awsConfig : localConfig;

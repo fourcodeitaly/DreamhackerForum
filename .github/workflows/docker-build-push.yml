@@ -40,3 +40,4 @@ jobs:
             AWS_POSTGRES_PASSWORD=${{ secrets.AWS_POSTGRES_PASSWORD }}
             GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
             USE_AWS=${{ secrets.USE_AWS }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
