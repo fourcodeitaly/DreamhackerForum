@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { Pool } from "pg";
 import OpenAI from "openai";
+import { config } from "@/lib/config";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: config.openaiApiKey,
 });
 
 const pool = new Pool({
