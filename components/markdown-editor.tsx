@@ -6,9 +6,20 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "@/hooks/use-translation";
-import { Bold, Italic, Link, Code, List } from "lucide-react";
+import {
+  Bold,
+  Italic,
+  Link,
+  Code,
+  List,
+  Loader2,
+  Languages,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Markdown } from "@/components/markdown";
+import { openAIGenerateMarkdown } from "@/utils/markdown-generator";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
 
 interface MarkdownEditorProps {
   value: string;
@@ -27,7 +38,9 @@ export function MarkdownEditor({
   const [selectionStart, setSelectionStart] = useState(0);
   const [selectionEnd, setSelectionEnd] = useState(0);
   const [activeTab, setActiveTab] = useState<string>("write");
-
+  const [isMakingMarkdown, setIsMakingMarkdown] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [addEmoji, setAddEmoji] = useState(false);
   const handleTextareaSelect = (
     e: React.SyntheticEvent<HTMLTextAreaElement>
   ) => {
@@ -60,19 +73,35 @@ export function MarkdownEditor({
   const handleCode = () => insertMarkdown("`", "`");
   const handleList = () => insertMarkdown("\n- ");
 
+  const handleToMarkdown = async () => {
+    setIsMakingMarkdown(true);
+    try {
+      const markdown = await openAIGenerateMarkdown({
+        content: value,
+        addEmoji,
+      });
+      onChange(markdown);
+      setError(null);
+    } catch (error) {
+      setError(t("errorGeneratingMarkdown"));
+    } finally {
+      setIsMakingMarkdown(false);
+    }
+  };
+
   return (
     <div className="space-y-2">
       {/* Mobile view with tabs */}
       <div className="lg:hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mb-2 flex-wrap ">
             <TabsList className="grid w-[200px] grid-cols-2">
               <TabsTrigger value="write">{t("write")}</TabsTrigger>
               <TabsTrigger value="preview" disabled={!value.trim()}>
                 {t("preview")}
               </TabsTrigger>
             </TabsList>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex gap-1">
               <Button
                 type="button"
                 variant="ghost"
@@ -245,6 +274,43 @@ export function MarkdownEditor({
             )}
           </div>
         </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleToMarkdown}
+            disabled={isMakingMarkdown || value.length < 100}
+          >
+            {isMakingMarkdown ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span className="text-primary">{t("toMarkdown")}</span>
+              </>
+            ) : (
+              <>
+                <Languages className="mr-2 h-4 w-4" />
+                <span className="text-primary">{t("toMarkdown")}</span>
+              </>
+            )}
+          </Button>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="add-emoji"
+              checked={addEmoji}
+              onCheckedChange={(checked) => setAddEmoji(checked as boolean)}
+            />
+            <Label htmlFor="add-emoji" className="text-sm">
+              {t("addEmoji")}
+            </Label>
+          </div>
+        </div>
+        {error && <p className="text-xs text-red-500">{error}</p>}
+        <p className="text-xs text-muted-foreground">
+          {t("toMarkdownDescription")}
+        </p>
       </div>
     </div>
   );

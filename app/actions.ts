@@ -74,6 +74,12 @@ export async function updatePostAction(
   }
 ) {
   try {
+    const user = await getServerSession(authOptions);
+
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
     // Update post in the database
     const post = await updatePost(postId, {
       title: formData.title,

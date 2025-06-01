@@ -57,6 +57,8 @@ export const translations = {
     errorCreatingAccount: "Error creating account",
     username: "Username",
     likesReceived: "Likes received",
+    unauthorized: "Unauthorized",
+    unauthorizedDescription: "You are not authorized to access this page",
 
     // Add these new translation keys to the English section
     emailNotConfirmed: "Email not confirmed",
@@ -132,6 +134,10 @@ export const translations = {
     noContent: "No content",
     dragAndDropImages: "Drag and drop images, or click to select",
     selectImages: "Select Images",
+    toMarkdown: "To Markdown",
+    toMarkdownDescription:
+      "Convert to Markdown format. Add emoji 🤗 before converting to make the content more engaging.",
+    addEmoji: "emoji 🤗",
 
     // Categories
     nations: "Nations",
@@ -323,6 +329,7 @@ export const translations = {
     view: "View",
     relatedPosts: "Related Posts",
     noRelatedPosts: "No related posts found",
+    authOnlyAccess: "This page is only accessible to authenticated users. ",
 
     // Footer
     footerTagline:
@@ -615,6 +622,8 @@ export const translations = {
     errorCreatingAccount: "Lỗi khi tạo tài khoản",
     username: "Tên người dùng",
     likesReceived: "Lượt thích nhận được",
+    unauthorized: "Không có quyền truy cập",
+    unauthorizedDescription: "Bạn không có quyền truy cập trang này",
 
     // Auth status
     passwordOrEmailIncorrect: "Mật khẩu hoặc email không chính xác",
@@ -680,6 +689,10 @@ export const translations = {
     noContent: "Không có nội dung",
     dragAndDropImages: "Kéo và thả hình ảnh, hoặc nhấp để chọn",
     selectImages: "Chọn hình ảnh",
+    toMarkdown: "Chuyển sang markdown",
+    toMarkdownDescription:
+      "Chuyển sang định dạng markdown với AI, làm cho nội dung chuyên nghiệp hơn. Nhấn thêm emoji 🤗 trước khi chuyển đổi, làm nội dung sinh động hơn.",
+    addEmoji: "emoji 🤗",
 
     // Categories
     nations: "Quốc gia",
@@ -861,6 +874,8 @@ export const translations = {
     view: "Xem",
     relatedPosts: "Bài viết liên quan",
     noRelatedPosts: "Không tìm thấy bài viết liên quan",
+    authOnlyAccess:
+      "Trang này chỉ có thể truy cập bởi người dùng đã đăng nhập.",
 
     // Footer
     footerTagline:

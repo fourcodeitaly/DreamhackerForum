@@ -107,8 +107,6 @@ export default async function Posts({
   const initialPosts = result?.posts ?? [];
   const totalPosts = result?.total ?? 0;
 
-  const isAdmin = user?.role === "admin";
-
   return (
     <div className="container mx-auto p-4">
       {/* Upcoming Events Section */}
@@ -124,18 +122,17 @@ export default async function Posts({
         {/* Left Sidebar - Sticky */}
         <div className="lg:w-1/5">
           <div className="sticky top-20">
-            {isAdmin && (
-              <Button
-                asChild
-                variant="default"
-                className="w-full justify-start mb-6"
-              >
-                <a href="/posts/create">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Create Post
-                </a>
-              </Button>
-            )}
+            <Button
+              asChild
+              variant="default"
+              className="w-full justify-start mb-6"
+            >
+              <a href="/posts/create">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                {t("createPost")}
+              </a>
+            </Button>
+
             <PostsSidebar />
           </div>
         </div>

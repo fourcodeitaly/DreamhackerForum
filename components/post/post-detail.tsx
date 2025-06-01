@@ -59,6 +59,8 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const isAuthor = post.user_id === user?.id;
+
   useEffect(() => {
     if (rawPost) {
       const normalizedPost = normalizePostData(rawPost);
@@ -282,7 +284,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
                 {t("save")}
               </span>
             </Button>
-            {isAdmin && (
+            {(isAuthor || isAdmin) && (
               <Link href={`/posts/${post.id}/edit`}>
                 <Button variant="outline" size="sm" className="ml-2">
                   <Edit className="h-4 w-4 mr-2" />

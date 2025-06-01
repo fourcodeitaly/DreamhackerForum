@@ -61,9 +61,7 @@ export function MultilingualPostForm({
   >(initialData?.images || []);
   const [eventId, setEventId] = useState<string>(initialData?.event?.id || "");
   const [isLoading, setIsLoading] = useState(false);
-  const [activeLanguage, setActiveLanguage] = useState<"en" | "zh" | "vi">(
-    "vi"
-  );
+  const [activeLanguage, setActiveLanguage] = useState<"en" | "vi">("vi");
   const [isTranslatingTitle, setIsTranslatingTitle] = useState(false);
   const [isTranslatingContent, setIsTranslatingContent] = useState(false);
   const [tagsList, setTagsList] = useState<{ name: string; id: string }[]>([]);
@@ -139,17 +137,17 @@ export function MultilingualPostForm({
     setTags(tags.filter((tag) => tag.id !== tagToRemove.id));
   };
 
-  const handleTitleChange = (lang: "en" | "zh" | "vi", value: string) => {
+  const handleTitleChange = (lang: "en" | "vi", value: string) => {
     setTitle({ ...title, [lang]: value });
   };
 
-  const handleContentChange = (lang: "en" | "zh" | "vi", value: string) => {
+  const handleContentChange = (lang: "en" | "vi", value: string) => {
     setContent({ ...content, [lang]: value });
   };
 
   const handleTranslateTitle = async (
-    sourceLang: "en" | "zh" | "vi",
-    targetLang: "en" | "zh" | "vi"
+    sourceLang: "en" | "vi",
+    targetLang: "en" | "vi"
   ) => {
     if (!title[sourceLang]) {
       toast({
@@ -199,8 +197,8 @@ export function MultilingualPostForm({
   };
 
   const handleTranslateContent = async (
-    sourceLang: "en" | "zh" | "vi",
-    targetLang: "en" | "zh" | "vi"
+    sourceLang: "en" | "vi",
+    targetLang: "en" | "vi"
   ) => {
     if (!content[sourceLang]) {
       toast({
@@ -280,9 +278,6 @@ export function MultilingualPostForm({
       // Generate excerpt from content (strip markdown formatting)
       const excerpt = {
         en: content.en.substring(0, 150).replace(/[#*_~`[\]()]/g, ""),
-        zh: content.zh
-          ? content.zh.substring(0, 150).replace(/[#*_~`[\]()]/g, "")
-          : undefined,
         vi: content.vi
           ? content.vi.substring(0, 150).replace(/[#*_~`[\]()]/g, "")
           : undefined,
@@ -475,123 +470,38 @@ export function MultilingualPostForm({
     <Card>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* <div className="space-y-2">
-            <Label htmlFor="category">{t("category")}</Label>
-            <Select value={category} onValueChange={setCategory} required>
-              <SelectTrigger>
-                <SelectValue placeholder={t("selectCategory")} />
-              </SelectTrigger>
-              <SelectContent>
-                {categoryGroups.map((group) => (
-                  <SelectGroup key={group.name}>
-                    <SelectLabel>{group.name}</SelectLabel>
-                    {group.options.map((option) => (
-                      <SelectItem key={option.id} value={option.id}>
-                        {option.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                ))}
-              </SelectContent>
-            </Select>
-          </div> */}
-
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="title">{t("title")}</Label>
+              <Label
+                htmlFor="title"
+                className="text-primary border-2 p-2 rounded-full"
+              >
+                {t("title")}
+              </Label>
               <div className="text-sm text-muted-foreground">
-                {activeLanguage === "en"
-                  ? "English"
-                  : activeLanguage === "zh"
-                  ? "中文"
-                  : "Tiếng Việt"}
+                {activeLanguage === "en" ? "English" : "Tiếng Việt"}
               </div>
             </div>
 
             <Tabs
               value={activeLanguage}
-              onValueChange={(value) =>
-                setActiveLanguage(value as "en" | "zh" | "vi")
-              }
+              onValueChange={(value) => setActiveLanguage(value as "en" | "vi")}
             >
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
                 <TabsTrigger value="en">English</TabsTrigger>
-                <TabsTrigger value="zh">中文</TabsTrigger>
               </TabsList>
 
-              <div className="mt-2 flex justify-end space-x-2">
-                {activeLanguage !== "en" && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleTranslateTitle("en", activeLanguage)}
-                    disabled={isTranslatingTitle}
-                  >
-                    {isTranslatingTitle ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("translating")}
-                      </>
-                    ) : (
-                      <>
-                        <Languages className="mr-2 h-4 w-4" />
-                        {t("translateTitleFromEnglish")}
-                      </>
-                    )}
-                  </Button>
-                )}
-                {activeLanguage !== "zh" && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleTranslateTitle("zh", activeLanguage)}
-                    disabled={isTranslatingTitle}
-                  >
-                    {isTranslatingTitle ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("translating")}
-                      </>
-                    ) : (
-                      <>
-                        <Languages className="mr-2 h-4 w-4" />
-                        {t("translateTitleFromChinese")}
-                      </>
-                    )}
-                  </Button>
-                )}
-                {activeLanguage !== "vi" && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleTranslateTitle("vi", activeLanguage)}
-                    disabled={isTranslatingTitle}
-                  >
-                    {isTranslatingTitle ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("translating")}
-                      </>
-                    ) : (
-                      <>
-                        <Languages className="mr-2 h-4 w-4" />
-                        {t("translateTitleFromVietnamese")}
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
               <TabsContent value="vi" className="mt-2">
-                <Input
-                  id="title-vi"
-                  value={title.vi}
-                  onChange={(e) => handleTitleChange("vi", e.target.value)}
-                  placeholder={t("postTitlePlaceholderVi")}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  <Input
+                    id="title-vi"
+                    value={title.vi}
+                    onChange={(e) => handleTitleChange("vi", e.target.value)}
+                    placeholder={t("postTitlePlaceholderVi")}
+                    className="focus-visible:ring-1 focus-visible:ring-offset-0 col-span-1"
+                  />
+                </div>
               </TabsContent>
               <TabsContent value="en" className="mt-2">
                 <Input
@@ -602,20 +512,14 @@ export function MultilingualPostForm({
                   placeholder={t("postTitlePlaceholderEn")}
                 />
               </TabsContent>
-              <TabsContent value="zh" className="mt-2">
-                <Input
-                  id="title-zh"
-                  value={title.zh}
-                  onChange={(e) => handleTitleChange("zh", e.target.value)}
-                  placeholder={t("postTitlePlaceholderZh")}
-                />
-              </TabsContent>
             </Tabs>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 w-full">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="category">{t("category")}</Label>
+              <Label htmlFor="category" className="text-primary">
+                {t("category")}
+              </Label>
               <PresetSelector
                 onSelect={(preset) => {
                   setCategory(preset.id);
@@ -641,7 +545,9 @@ export function MultilingualPostForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tags">{t("tags").split(")")[1]}</Label>
+              <Label htmlFor="tags" className="text-primary ">
+                {t("tags").split(")")[1]}
+              </Label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {tags.map((tag) => (
                   <div
@@ -673,22 +579,6 @@ export function MultilingualPostForm({
                 }))}
               />
             </div>
-
-            {/* <Select value={currentTag} onValueChange={handleAddTag}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("addTagsPlaceholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{t("tags").split(")")[1]}</SelectLabel>
-                  {tagsList.map((tag) => (
-                    <SelectItem key={tag.id} value={tag.id}>
-                      {tag.name.split(")")[1]}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select> */}
           </div>
 
           {/* Original Link Field */}
@@ -711,93 +601,23 @@ export function MultilingualPostForm({
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="content">{t("content")}</Label>
+              <Label htmlFor="content" className="text-primary">
+                {t("content")}
+              </Label>
               <div className="text-sm text-muted-foreground">
-                {activeLanguage === "en"
-                  ? "English"
-                  : activeLanguage === "zh"
-                  ? "中文"
-                  : "Tiếng Việt"}
+                {activeLanguage === "en" ? "English" : "Tiếng Việt"}
               </div>
             </div>
 
             <Tabs
               value={activeLanguage}
-              onValueChange={(value) =>
-                setActiveLanguage(value as "en" | "zh" | "vi")
-              }
+              onValueChange={(value) => setActiveLanguage(value as "en" | "vi")}
             >
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
                 <TabsTrigger value="en">English</TabsTrigger>
-                <TabsTrigger value="zh">中文</TabsTrigger>
               </TabsList>
 
-              <div className="mt-2 flex justify-end space-x-2">
-                {activeLanguage !== "en" && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleTranslateContent("en", activeLanguage)}
-                    disabled={isTranslatingContent}
-                  >
-                    {isTranslatingContent ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("translating")}
-                      </>
-                    ) : (
-                      <>
-                        <Languages className="mr-2 h-4 w-4" />
-                        {t("translateContentFromEnglish")}
-                      </>
-                    )}
-                  </Button>
-                )}
-                {activeLanguage !== "zh" && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleTranslateContent("zh", activeLanguage)}
-                    disabled={isTranslatingContent}
-                  >
-                    {isTranslatingContent ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("translating")}
-                      </>
-                    ) : (
-                      <>
-                        <Languages className="mr-2 h-4 w-4" />
-                        {t("translateContentFromChinese")}
-                      </>
-                    )}
-                  </Button>
-                )}
-                {activeLanguage !== "vi" && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleTranslateContent("vi", activeLanguage)}
-                    disabled={isTranslatingContent}
-                  >
-                    {isTranslatingContent ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {t("translating")}
-                      </>
-                    ) : (
-                      <>
-                        <Languages className="mr-2 h-4 w-4" />
-                        {t("translateContentFromVietnamese")}
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
               <TabsContent value="vi" className="mt-2">
                 <MarkdownEditor
                   value={content.vi}
@@ -810,13 +630,6 @@ export function MultilingualPostForm({
                   value={content.en}
                   onChange={(value) => handleContentChange("en", value)}
                   placeholder={t("postContentPlaceholderEn")}
-                />
-              </TabsContent>
-              <TabsContent value="zh" className="mt-2">
-                <MarkdownEditor
-                  value={content.zh}
-                  onChange={(value) => handleContentChange("zh", value)}
-                  placeholder={t("postContentPlaceholderZh")}
                 />
               </TabsContent>
             </Tabs>

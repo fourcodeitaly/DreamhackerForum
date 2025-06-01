@@ -73,57 +73,55 @@ export default function PostEditor({ post }: { post: Post | null }) {
   };
 
   return (
-    <AdminCheck>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">{t("editPost")}</h1>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              {isDeleting ? (
-                <Button variant="destructive" size="sm" disabled>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {t("deleting")}
-                </Button>
-              ) : (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={isDeleting}
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  {t("delete")}
-                </Button>
-              )}
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t("deletePost")}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t("deletePostConfirmation")}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDelete}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      {t("deleting")}
-                    </>
-                  ) : (
-                    t("delete")
-                  )}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-        <MultilingualPostForm initialData={post} isEditing={true} />
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">{t("editPost")}</h1>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            {isDeleting ? (
+              <Button variant="destructive" size="sm" disabled>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t("deleting")}
+              </Button>
+            ) : (
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={isDeleting}
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                {t("delete")}
+              </Button>
+            )}
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("deletePost")}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("deletePostConfirmation")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {t("deleting")}
+                  </>
+                ) : (
+                  t("delete")
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-    </AdminCheck>
+      <MultilingualPostForm initialData={post} isEditing={true} />
+    </div>
   );
 }
