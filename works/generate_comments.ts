@@ -4,18 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Pool } from "pg";
 import OpenAI from "openai";
 import { config } from "@/lib/config";
-
-const openai = new OpenAI({
-  apiKey: config.openaiApiKey,
-});
-
-const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  user: "postgres",
-  password: "thuan286",
-  database: "postgres",
-});
+import { query, queryOne } from "@/lib/db/postgres";
 
 // Interface for input JSON (as provided)
 interface Comment {
@@ -44,6 +33,10 @@ async function openAiGenerateComments(
   postTitle: string,
   postContent: string
 ): Promise<{ commentsJson: Comment[] }> {
+  const openai = new OpenAI({
+    apiKey: config.openaiApiKey,
+  });
+
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -74,6 +67,7 @@ async function openAiGenerateComments(
         Comment should maintaining a natural, serious, and supportive tone, and related to the context of the post.
         Name should be popular Vietnamese real names.
         Nickname should be alphabet characters only.
+        Reply comment should contain more information about things that mentioned in the post.
         `,
       },
     ],
@@ -94,12 +88,11 @@ function generateUserDetails(name: string, nickname: string): User {
 // Function to check if user exists (mock implementation)
 // In a real application, query the database to check if username or email exists
 async function getUser(email: string): Promise<User | null> {
-  const client = await pool.connect();
-  const res = await client.query(
+  const res = await queryOne<User | null>(
     `SELECT * FROM public.users WHERE email = '${email}'`
   );
-  client.release();
-  return res.rows[0] as User | null;
+
+  return res;
 }
 
 // Function to create a new user and return SQL INSERT statement
@@ -129,12 +122,10 @@ function createCommentSQL(
 }
 
 const getRank = async () => {
-  const client = await pool.connect();
-  const res = await client.query(
+  const res = await queryOne<{ id: string } | null>(
     `SELECT id FROM user_ranks WHERE name = 'Recruit'`
   );
-  client.release();
-  return res.rows[0] as { id: string };
+  return res;
 };
 
 // Function to process comments and generate SQL
@@ -146,6 +137,10 @@ async function generateCommentInserts(input: Comments): Promise<string[]> {
 
   if (!admin) {
     throw new Error("Admin user not found");
+  }
+
+  if (!rank) {
+    throw new Error("Rank not found");
   }
 
   // Process each comment and its replies
@@ -182,22 +177,27 @@ async function generateCommentInserts(input: Comments): Promise<string[]> {
   return sqlStatements;
 }
 
-async function getPost(postId: string) {
-  const client = await pool.connect();
-  const res = await client.query(
-    `SELECT id, title, content FROM public.posts WHERE id = '${postId}'`
-  );
-  client.release();
-  return res.rows[0] as {
+async function getPost(postId: string): Promise<{
+  id: string;
+  title: { vi: string; en: string };
+  content: { vi: string; en: string };
+} | null> {
+  const res = await queryOne<{
     id: string;
     title: { vi: string; en: string };
     content: { vi: string; en: string };
-  };
+  }>(`SELECT id, title, content FROM public.posts WHERE id = '${postId}'`);
+
+  return res;
 }
 
 // Example usage
 export async function generateComments(postId: string): Promise<boolean> {
   const post = await getPost(postId);
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
 
   const input = await openAiGenerateComments(
     postId,
@@ -211,15 +211,15 @@ export async function generateComments(postId: string): Promise<boolean> {
   });
 
   console.log("Generated SQL Statements:");
-  await pool.query("BEGIN");
+  await query("BEGIN");
   try {
     for (const sql of sqlStatements) {
-      await pool.query(sql);
+      await query(sql);
     }
-    await pool.query("COMMIT");
+    await query("COMMIT");
   } catch (error) {
     console.error("Error executing SQL statements:", error);
-    await pool.query("ROLLBACK");
+    await query("ROLLBACK");
     throw error;
   }
   return true;
