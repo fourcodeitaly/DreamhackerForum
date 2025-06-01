@@ -15,7 +15,7 @@ export default function LoginPage() {
         <p className="mt-4 text-center">
           {t("dontHaveAccount")}{" "}
           <Link
-            href="/register"
+            href="/auth/register"
             className="text-blue-600 hover:underline dark:text-blue-400"
           >
             {t("register")}

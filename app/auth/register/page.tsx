@@ -15,7 +15,7 @@ export default function RegisterPage() {
         <p className="mt-4 text-center">
           {t("alreadyHaveAccount")}{" "}
           <Link
-            href="/login"
+            href="/auth/signin"
             className="text-blue-600 hover:underline dark:text-blue-400"
           >
             {t("login")}

@@ -187,7 +187,7 @@ export function CommentSection({
             </div>
 
             <Button asChild className="mt-4">
-              <Link href="/login">{t("login")}</Link>
+              <Link href="/auth/signin">{t("login")}</Link>
             </Button>
           </div>
         </div>

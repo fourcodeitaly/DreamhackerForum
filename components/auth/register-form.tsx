@@ -138,14 +138,14 @@ export function RegisterForm() {
             <Label htmlFor="terms" className="text-sm font-normal">
               {t("agreeToTerms")}{" "}
               <Link
-                href="/terms"
+                href="/auth/register"
                 className="text-blue-600 hover:underline dark:text-blue-400"
               >
                 {t("termsOfService")}
               </Link>{" "}
               {t("and")}{" "}
               <Link
-                href="/privacy"
+                href="/auth/register"
                 className="text-blue-600 hover:underline dark:text-blue-400"
               >
                 {t("privacyPolicy")}
