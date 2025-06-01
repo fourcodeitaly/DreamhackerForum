@@ -15,7 +15,7 @@ export function OwnerCheck({
   children: React.ReactNode;
   userId: string;
 }) {
-  const { isLoading, user, isAuthenticated } = useAuth();
+  const { isLoading, user } = useAuth();
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -26,20 +26,7 @@ export function OwnerCheck({
     );
   }
 
-  if (!isLoading && user?.id !== userId && user?.role !== "admin") {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto text-red-500">
-          <CardHeader>
-            <CardTitle>{t("unauthorized")}</CardTitle>
-            <CardDescription>{t("unauthorizedDescription")}</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!isLoading && !isAuthenticated) {
+  if ((user?.id !== userId && user?.role !== "admin") || !user) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-md mx-auto text-red-500">

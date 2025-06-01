@@ -11,9 +11,11 @@ import { AlertCircle } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 
 export function AuthCheck({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
+
+  console.log(isLoading, user);
 
   if (isLoading) {
     return (
@@ -24,7 +26,7 @@ export function AuthCheck({ children }: { children: React.ReactNode }) {
   }
 
   // If not admin, show access denied
-  if (!isLoading && !isAuthenticated) {
+  if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Alert variant="destructive" className="mb-6">
