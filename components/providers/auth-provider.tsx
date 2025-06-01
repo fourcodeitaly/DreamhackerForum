@@ -45,8 +45,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(true);
 
         if (session?.user) {
-          const user = await getUserById(session.user.id);
-          setUser(user);
+          // Only fetch user data if the session user ID has changed
+          if (!user || user.id !== session.user.id) {
+            const user = await getUserById(session.user.id);
+            setUser(user);
+          }
         } else {
           setUser(null);
         }
@@ -60,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     initAuth();
-  }, [session]);
+  }, [session?.user?.id]); // Only depend on the user ID from session
 
   const login = async (credentials: { email: string; password: string }) => {
     const result = await signIn("credentials", {
