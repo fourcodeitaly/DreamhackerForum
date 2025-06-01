@@ -247,7 +247,7 @@ export function CommentItem({
         </div>
       </CardHeader>
 
-      <CardContent className="pb-0 pt-1">
+      <CardContent className="pb-0 pt-1 pl-[68px] mb-2">
         {isEditing ? (
           <CommentEditor
             comment={comment}
@@ -262,7 +262,7 @@ export function CommentItem({
               </p>
             ) : (
               <div className="prose prose-sm dark:prose-invert max-w-none">
-                <Markdown content={comment.content} />
+                <Markdown content={comment.content} className="text-sm" />
               </div>
             )}
           </>

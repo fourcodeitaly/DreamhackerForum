@@ -7,9 +7,10 @@ import { CommentForm } from "./comment-form";
 import { CommentList } from "./comment-list";
 import { CommentSorter } from "./comment-sorter";
 import { Button } from "@/components/ui/button";
-import { Loader2, MessageSquare, AlertCircle } from "lucide-react";
+import { Loader2, MessageSquare, AlertCircle, Bot } from "lucide-react";
 import Link from "next/link";
 import type { Comment, CommentSortType } from "@/lib/types/comment";
+import { useRouter } from "next/navigation";
 
 interface CommentSectionProps {
   postId: string;
@@ -23,7 +24,7 @@ export function CommentSection({
   commentsCount = 0,
 }: CommentSectionProps) {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [isLoading, setIsLoading] = useState(initialComments.length === 0);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +32,18 @@ export function CommentSection({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const router = useRouter();
+
+  const handleGenerateComments = async () => {
+    setIsGenerating(true);
+    const response = await fetch(`/api/comments/generate?postId=${postId}`);
+    if (!response.ok) {
+      throw new Error("Failed to generate comments");
+    }
+    router.refresh();
+    setIsGenerating(false);
+  };
 
   // Fetch top-level comments
   const fetchComments = async (
@@ -131,6 +144,26 @@ export function CommentSection({
           <span className="ml-2 rounded-full bg-secondary px-2.5 py-0.5 text-sm font-medium">
             {commentsCount}
           </span>
+          {isAuthenticated && isAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleGenerateComments}
+              disabled={isGenerating}
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("generatingComments")}
+                </>
+              ) : (
+                <>
+                  <Bot className="h-4 w-4" />
+                  {t("generateComments")}
+                </>
+              )}
+            </Button>
+          )}
         </div>
 
         <CommentSorter value={sortType} onChange={handleSortChange} />

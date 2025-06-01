@@ -95,6 +95,7 @@ export function Markdown({
         "prose-img:rounded-lg prose-img:shadow-md",
         "prose-blockquote:border-l-4 prose-blockquote:border-primary/50",
         "prose-ul:list-disc prose-ol:list-decimal",
+        "prose-p:m-0",
         className
       )}
     >

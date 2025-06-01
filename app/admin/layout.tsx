@@ -24,8 +24,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
+    <div className="flex min-h-screen container mx-auto px-4 py-12">
+      <div className="sticky top-20 h-screen">
+        <AdminSidebar />
+      </div>
       <div className="flex-1 p-8">{children}</div>
     </div>
   );

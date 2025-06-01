@@ -277,6 +277,8 @@ export const translations = {
     joinTheConversation: "Join the conversation",
     writeReply: "Write a reply...",
     markdownSupported: "Markdown supported",
+    generateComments: "Generate Comments",
+    generatingComments: "Generating comments...",
 
     // Profile
     editProfile: "Edit Profile",
@@ -813,6 +815,8 @@ export const translations = {
     joinTheConversation: "Tham gia cuộc trò chuyện",
     writeReply: "Viết phản hồi...",
     markdownSupported: "Hỗ trợ markdown",
+    generateComments: "Tạo bình luận",
+    generatingComments: "Đang tạo bình luận...",
 
     // Profile
     editProfile: "Chỉnh sửa",

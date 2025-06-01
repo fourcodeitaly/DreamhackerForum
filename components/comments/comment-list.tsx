@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CommentItem } from "./comment-item";
 import type { Comment } from "@/lib/types/comment";
 
@@ -61,6 +61,19 @@ export function CommentList({
       setLoadingReplies((prev) => ({ ...prev, [commentId]: false }));
     }
   };
+
+  // Load replies for comments that have replies
+  useEffect(() => {
+    comments.forEach((comment) => {
+      if (
+        comment.reply_count &&
+        comment.reply_count > 0 &&
+        !commentReplies[comment.id]
+      ) {
+        loadReplies(comment.id);
+      }
+    });
+  }, [comments]);
 
   // Toggle replies visibility
   const toggleReplies = (commentId: string) => {
