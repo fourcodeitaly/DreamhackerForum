@@ -23,6 +23,20 @@ export interface Rank {
   frame_color: string;
 }
 
+export type Education = {
+  id: string;
+  user_id: string;
+  school_name: string;
+  school_id?: string;
+  degree?: string;
+  field_of_study?: string;
+  start_date?: string;
+  end_date?: string;
+  is_current: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type User = {
   id: string;
   username: string;
@@ -42,6 +56,7 @@ export type User = {
   likesReceived: number;
   total_points: number;
   rank?: Rank;
+  educations?: Education[];
 };
 
 interface UserStats {
@@ -53,14 +68,8 @@ interface UserStats {
 export async function getUserByUsername(
   username: string
 ): Promise<User | null> {
-  // If local auth is enabled, use it
-  // if (localAuth.isEnabled()) {
-  //   const users = localAuth.getAllUsers();
-  //   return users.find((u) => u.username === username) || null;
-  // }
-
   try {
-    return await queryOne<User>("SELECT * FROM users WHERE username = $1", [
+    return await queryOne<User>(`SELECT * FROM users WHERE username = $1`, [
       username,
     ]);
   } catch (error) {
@@ -341,4 +350,11 @@ export async function getUserStats(userId: string): Promise<UserStats> {
       likesReceived: 0,
     };
   }
+}
+
+export async function getUserEducation(userId: string): Promise<Education[]> {
+  return query<Education>(
+    `SELECT * FROM user_education WHERE user_id = $1 ORDER BY start_date DESC`,
+    [userId]
+  );
 }

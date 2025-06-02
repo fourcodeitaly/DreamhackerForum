@@ -41,36 +41,38 @@ export function PostCard({ post }: PostCardProps) {
             </h2>
           </Link>
           <div className="flex gap-2 items-center">
-            {hasInternshipTag && (
-              <Link href={`/internships`}>
-                <Badge
-                  variant="default"
-                  className="bg-green-700 hover:bg-green-800 text-nowrap"
-                >
-                  {t("internship").split(")")[1]}
-                </Badge>
-              </Link>
-            )}
-            {hasScholarshipTag && (
-              <Link href={`/scholarships`}>
-                <Badge
-                  variant="default"
-                  className="bg-yellow-500 hover:bg-yellow-600 text-nowrap animate-pulse"
-                >
-                  {t("scholarship").split(")")[1]}
-                </Badge>
-              </Link>
-            )}
-            {post.event && (
-              <Link href={`/events/${post.event.id}`}>
-                <Badge
-                  variant="default"
-                  className="bg-red-500 hover:bg-red-600 text-nowrap"
-                >
-                  {t("eventsTag").split(")")[1]}
-                </Badge>
-              </Link>
-            )}
+            <div className="flex flex-col gap-2 items-end">
+              {hasInternshipTag && (
+                <Link href={`/internships`}>
+                  <Badge
+                    variant="default"
+                    className="bg-green-700 hover:bg-green-800 text-nowrap"
+                  >
+                    {t("internship").split(")")[1]}
+                  </Badge>
+                </Link>
+              )}
+              {hasScholarshipTag && (
+                <Link href={`/scholarships`}>
+                  <Badge
+                    variant="default"
+                    className="bg-yellow-500 hover:bg-yellow-600 text-nowrap animate-pulse"
+                  >
+                    {t("scholarship").split(")")[1]}
+                  </Badge>
+                </Link>
+              )}
+              {post.event && (
+                <Link href={`/events/${post.event.id}`}>
+                  <Badge
+                    variant="default"
+                    className="bg-red-500 hover:bg-red-600 text-nowrap"
+                  >
+                    {t("eventsTag").split(")")[1]}
+                  </Badge>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex flex-col md:flex-row gap-4 text-xs text-muted-foreground justify-between">

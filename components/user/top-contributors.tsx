@@ -81,11 +81,11 @@ export async function TopContributors({
                         {user.rank.name}
                       </Badge>
                     )}
-                    <div className="flex items-center text-xs">
+                    <div className="xl:flex hidden items-center text-xs">
                       <MessageSquare className="mr-1 h-3 w-3" />
                       {user.post_count}
                     </div>
-                    <div className="flex items-center text-xs">
+                    <div className="xl:flex hidden items-center text-xs">
                       <ThumbsUp className="mr-1 h-3 w-3" />
                       {user.total_likes}
                     </div>

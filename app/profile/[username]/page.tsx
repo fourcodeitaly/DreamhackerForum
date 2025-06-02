@@ -5,7 +5,11 @@ import { UserActivity } from "@/components/user/user-activity";
 import { FollowList } from "@/components/user/follow-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notFound } from "next/navigation";
-import { getUserByUsername, getUserStats } from "@/lib/db/users/users-get";
+import {
+  getUserByUsername,
+  getUserEducation,
+  getUserStats,
+} from "@/lib/db/users/users-get";
 import { getSavedPosts, getUserPosts } from "@/lib/db/posts/post-get";
 import {
   getUserFollowers,
@@ -32,13 +36,15 @@ export default async function ProfilePage({
   }
 
   // Get user stats, badges, and follow data in parallel
-  const [stats, savedPosts, followers, following, posts] = await Promise.all([
-    getUserStats(user.id),
-    getSavedPosts(user.id),
-    getUserFollowers(user.id),
-    getUserFollowing(user.id),
-    getUserPosts(user.id, 1, 5),
-  ]);
+  const [stats, savedPosts, followers, following, posts, educations] =
+    await Promise.all([
+      getUserStats(user.id),
+      getSavedPosts(user.id),
+      getUserFollowers(user.id),
+      getUserFollowing(user.id),
+      getUserPosts(user.id, 1, 5),
+      getUserEducation(user.id),
+    ]);
 
   // Check if current user follows this user
   const isFollowed = currentUser
@@ -54,6 +60,7 @@ export default async function ProfilePage({
     followers_count: followers.length,
     following_count: following.length,
     isFollowed,
+    educations,
   };
 
   return (

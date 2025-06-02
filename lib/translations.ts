@@ -570,6 +570,18 @@ export const translations = {
     programs: "Programs",
     courses: "Courses",
     institution: "Institution",
+
+    // Education
+    education: "Education",
+    addEducation: "Add Education",
+    educationEntry: "Education #{number}",
+    schoolName: "School Name",
+    degree: "Degree",
+    fieldOfStudy: "Field of Study",
+    startDate: "Start Date",
+    endDate: "End Date",
+    currentlyStudying: "Currently Studying Here",
+    present: "Present",
   },
 
   // Vietnamese translations
@@ -1124,5 +1136,17 @@ export const translations = {
     programs: "Chương trình",
     courses: "Khóa học",
     institution: "Trường",
+
+    // Education
+    education: "Học vấn",
+    addEducation: "Thêm học vấn",
+    educationEntry: "Học vấn #{number}",
+    schoolName: "Tên trường",
+    degree: "Bằng cấp",
+    fieldOfStudy: "Chuyên ngành",
+    startDate: "Ngày bắt đầu",
+    endDate: "Ngày kết thúc",
+    currentlyStudying: "Đang học tại đây",
+    present: "Hiện tại",
   },
 };

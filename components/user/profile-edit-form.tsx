@@ -31,6 +31,7 @@ import { updateProfile } from "@/lib/db/users/users-update";
 import Image from "next/image";
 import { User } from "@/lib/db/users/users-get";
 import { useTranslation } from "@/hooks/use-translation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
@@ -43,6 +44,18 @@ const profileFormSchema = z.object({
     message: "Location must not be longer than 30 characters.",
   }),
   image: z.instanceof(File).optional(),
+  educations: z
+    .array(
+      z.object({
+        school_name: z.string().min(1, "School name is required"),
+        degree: z.string().optional(),
+        field_of_study: z.string().optional(),
+        start_date: z.string().optional(),
+        end_date: z.string().optional(),
+        is_current: z.boolean().optional(),
+      })
+    )
+    .optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -68,6 +81,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
       name: user.name || "",
       bio: user.bio || "",
       location: user.location || "",
+      educations: user.educations || [],
     },
   });
 
@@ -88,16 +102,13 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
   async function onSubmit(data: ProfileFormValues) {
     setSubmitStatus("submitting");
     try {
-      const result = await updateProfile(user.id, {
+      await updateProfile(user.id, {
         name: data.name,
-        // bio: data.bio,
-        // location: data.location,
+        bio: data.bio,
+        location: data.location,
         image: data.image,
+        educations: data.educations,
       });
-
-      if (!result.success) {
-        throw new Error(result.error);
-      }
 
       toast({
         title: "Profile updated",
@@ -106,6 +117,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
 
       router.refresh();
       setSubmitStatus("success");
+      setOpen(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
@@ -128,7 +140,7 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
           {t("editProfile")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("editProfile")}</DialogTitle>
           <DialogDescription>{t("editProfileDescription")}</DialogDescription>
@@ -188,18 +200,14 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                 </FormItem>
               )}
             />
-            {/* <FormField
+            <FormField
               control={form.control}
               name="bio"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("bio")}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder={t("bioPlaceholder")}
-                      className="resize-none"
-                      {...field}
-                    />
+                    <Input placeholder={t("bioPlaceholder")} {...field} />
                   </FormControl>
                   <FormDescription>{t("bioDescription")}</FormDescription>
                   <FormMessage />
@@ -219,30 +227,168 @@ export function ProfileEditForm({ user }: ProfileEditFormProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
+            />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">{t("education")}</h3>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentEducations =
+                      form.getValues("educations") || [];
+                    form.setValue("educations", [
+                      ...currentEducations,
+                      {
+                        school_name: "",
+                        degree: "",
+                        field_of_study: "",
+                        start_date: "",
+                        end_date: "",
+                        is_current: false,
+                      },
+                    ]);
+                  }}
+                >
+                  {t("addEducation")}
+                </Button>
+              </div>
+
+              {form.watch("educations")?.map((_, index) => (
+                <div key={index} className="space-y-4 p-4 border rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">
+                      {t("educationEntry", { number: index + 1 })}
+                    </h4>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const currentEducations =
+                          form.getValues("educations") || [];
+                        form.setValue(
+                          "educations",
+                          currentEducations.filter((_, i) => i !== index)
+                        );
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name={`educations.${index}.school_name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("schoolName")}</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`educations.${index}.degree`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("degree")}</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`educations.${index}.field_of_study`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("fieldOfStudy")}</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`educations.${index}.start_date`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("startDate")}</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`educations.${index}.end_date`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("endDate")}</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              disabled={form.watch(
+                                `educations.${index}.is_current`
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name={`educations.${index}.is_current`}
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="!mt-0">
+                          {t("currentlyStudying")}
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
             <DialogFooter>
-              <Button
-                type="submit"
-                disabled={submitStatus === "submitting"}
-                className={`${
-                  submitStatus === "success"
-                    ? "bg-green-700"
-                    : submitStatus === "error"
-                    ? "bg-red-700"
-                    : ""
-                }`}
-              >
+              <Button type="submit" disabled={submitStatus === "submitting"}>
                 {submitStatus === "submitting" ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                ) : submitStatus === "success" ? (
                   <>
-                    <Check className="w-4 h-4 mr-2" />
-                    {t("saved")}
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("submitting")}
                   </>
                 ) : (
                   <>
-                    <Save className="w-4 h-4 mr-2" />
-                    {t("saveChanges")}
+                    <Save className="mr-2 h-4 w-4" />
+                    {t("save")}
                   </>
                 )}
               </Button>

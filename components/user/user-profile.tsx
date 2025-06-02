@@ -6,8 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
-import { Calendar, MapPin, Settings, Star } from "lucide-react";
-import Link from "next/link";
+import { Calendar, MapPin, Settings, Star, GraduationCap } from "lucide-react";
 import { ProfileEditForm } from "@/components/user/profile-edit-form";
 import { FollowButton } from "@/components/ui/follow-button";
 import { User } from "@/lib/db/users/users-get";
@@ -101,14 +100,52 @@ export function UserProfile({ user }: UserProfileProps) {
                   </div>
                 )}
 
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4" />
                   {t("joinedOn", {
                     date: new Date(user.joined_at).toLocaleDateString(),
                   })}
-                </div>
+                </div> */}
               </div>
             </div>
+
+            {/* Education Section */}
+            {user.educations && user.educations.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                  <GraduationCap className="mr-2 h-5 w-5" />
+                  {t("education")}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {user.educations.map((education, index) => (
+                    <div
+                      key={education.id}
+                      className="p-4 rounded-lg border bg-card"
+                    >
+                      <div className="font-medium">{education.school_name}</div>
+                      {(education.degree || education.field_of_study) && (
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {education.degree}
+                          {education.degree &&
+                            education.field_of_study &&
+                            " in "}
+                          {education.field_of_study}
+                        </div>
+                      )}
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {education.start_date &&
+                          new Date(education.start_date).getFullYear()}
+                        {education.start_date && education.end_date && " - "}
+                        {education.is_current
+                          ? t("present")
+                          : education.end_date &&
+                            new Date(education.end_date).getFullYear()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-6 flex flex-wrap gap-6 justify-center md:justify-start">
               <div>
