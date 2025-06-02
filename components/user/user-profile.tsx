@@ -112,10 +112,10 @@ export function UserProfile({ user }: UserProfileProps) {
             {/* Education Section */}
             {user.educations && user.educations.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
+                {/* <h3 className="text-lg font-semibold mb-4 flex items-center">
                   <GraduationCap className="mr-2 h-5 w-5" />
                   {t("education")}
-                </h3>
+                </h3> */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {user.educations.map((education, index) => (
                     <div
