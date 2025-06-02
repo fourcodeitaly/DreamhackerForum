@@ -1,7 +1,6 @@
 import { UserProfile } from "@/components/user/user-profile";
 import { UserPosts } from "@/components/post/user-posts";
 import { UserSavedPosts } from "@/components/user/user-saved-posts";
-import { UserActivity } from "@/components/user/user-activity";
 import { FollowList } from "@/components/user/follow-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { notFound } from "next/navigation";

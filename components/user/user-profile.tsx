@@ -1,12 +1,11 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
-import { Calendar, MapPin, Settings, Star, GraduationCap } from "lucide-react";
+import { MapPin, Star } from "lucide-react";
 import { ProfileEditForm } from "@/components/user/profile-edit-form";
 import { FollowButton } from "@/components/ui/follow-button";
 import { User } from "@/lib/db/users/users-get";
@@ -20,6 +19,7 @@ export function UserProfile({ user }: UserProfileProps) {
   const { user: currentUser } = useAuth();
 
   const isCurrentUser = currentUser?.id === user.id;
+  console.log(user.image_url);
 
   return (
     <Card>

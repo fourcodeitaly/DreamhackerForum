@@ -6,7 +6,7 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string; image: string } }
 ) {
-  return requestErrorHandler(async () => {
+  try {
     const { id, image } = await params;
 
     const path = join("images", id, image);
@@ -31,5 +31,7 @@ export async function GET(
         "Cache-Control": "public, max-age=31536000",
       },
     });
-  });
+  } catch (error) {
+    return new Response("File not found", { status: 404 });
+  }
 }
