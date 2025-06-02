@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { getFile } from "@/lib/db/upload/upload";
 import { extname, join } from "path";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { getFile } from "@/lib/db/upload/upload";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string; image: string } }
 ) {
-  try {
+  return requestErrorHandler(async () => {
     const { id, image } = await params;
 
     const path = join("images", id, image);
@@ -31,7 +31,5 @@ export async function GET(
         "Cache-Control": "public, max-age=31536000",
       },
     });
-  } catch (error) {
-    return NextResponse.json({ error: "Error serving image" }, { status: 500 });
-  }
+  });
 }

@@ -1,18 +1,14 @@
-import { NextResponse } from "next/server";
-import {
-  getNotifications,
-  createNotification,
-  type Notification,
-} from "@/lib/db/notification";
+import { getNotifications, createNotification } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { BadRequestError, UnauthorizedError } from "@/handler/error";
 
-// GET /api/notifications - Get use3r's notifications
 export async function GET(request: Request) {
-  try {
+  return requestErrorHandler(async () => {
     const user = await getServerSession(authOptions);
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const { searchParams } = new URL(request.url);
@@ -28,32 +24,22 @@ export async function GET(request: Request) {
       isRead: isRead === "true",
     });
 
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    return { result };
+  });
 }
 
-// POST /api/notifications - Create a new notification
 export async function POST(request: Request) {
-  try {
+  return requestErrorHandler(async () => {
     const user = await getServerSession(authOptions);
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const body = await request.json();
     const { user_id, type, content, link, sender_id } = body;
 
     if (!user_id || !type || !content) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      throw new BadRequestError();
     }
 
     const notification = await createNotification({
@@ -64,12 +50,6 @@ export async function POST(request: Request) {
       sender_id,
     });
 
-    return NextResponse.json(notification);
-  } catch (error) {
-    console.error("Error creating notification:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    return { notification };
+  });
 }

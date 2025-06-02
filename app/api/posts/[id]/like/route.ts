@@ -1,39 +1,29 @@
-import { NextResponse } from "next/server";
 import { handlePostLike } from "@/lib/db/posts/post-likes";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { UnauthorizedError } from "@/handler/error";
+import { InternalServerError } from "@/handler/error";
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
+  return requestErrorHandler(async () => {
     const { id } = await params;
     const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
+      throw new UnauthorizedError();
     }
 
     const result = await handlePostLike(id, user.id);
 
     if (!result) {
-      return NextResponse.json(
-        { error: "Failed to update like status" },
-        { status: 500 }
-      );
+      throw new InternalServerError();
     }
 
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error("Error handling post like:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    return { result };
+  });
 }

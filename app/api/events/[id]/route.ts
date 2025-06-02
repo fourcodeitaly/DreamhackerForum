@@ -1,14 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getEventById } from "@/lib/db/events/event-get";
 import { updateEvent, deleteEvent } from "@/lib/db/events/event-modify";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { ForbiddenError, UnauthorizedError } from "@/handler/error";
+import { InternalServerError, NotFoundError } from "@/handler/error";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
+  return requestErrorHandler(async () => {
     const { id } = await params;
 
     const event = await getEventById(id);
@@ -17,34 +20,28 @@ export async function GET(
       const session = await getServerSession(authOptions);
       const user = session?.user;
       if (!user || user.role !== "admin" || user.id !== event.created_user_id) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        throw new UnauthorizedError();
       }
     }
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      throw new NotFoundError();
     }
-    return NextResponse.json(event);
-  } catch (error) {
-    console.error("Error fetching event:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch event" },
-      { status: 500 }
-    );
-  }
+    return { event };
+  });
 }
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
+  return requestErrorHandler(async () => {
     const { id } = await params;
     const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     // Get the event to check ownership
@@ -54,84 +51,60 @@ export async function PATCH(
       event?.is_published &&
       (user.role !== "admin" || user.id !== event.created_user_id)
     ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      throw new NotFoundError();
     }
 
     // Check if user owns the event or is admin
     if (event.created_user_id !== user.id && user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Not authorized to edit this event" },
-        { status: 403 }
-      );
+      throw new ForbiddenError();
     }
 
     const data = await request.json();
     const updatedEvent = await updateEvent(id, data);
 
     if (!updatedEvent) {
-      return NextResponse.json(
-        { error: "Failed to update event" },
-        { status: 500 }
-      );
+      throw new InternalServerError();
     }
 
-    return NextResponse.json(updatedEvent);
-  } catch (error) {
-    console.error("Error updating event:", error);
-    return NextResponse.json(
-      { error: "Failed to update event" },
-      { status: 500 }
-    );
-  }
+    return { event: updatedEvent };
+  });
 }
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
+  return requestErrorHandler(async () => {
     const { id } = await params;
     const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     // Get the event to check ownership
     const event = await getEventById(id);
 
     if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+      throw new NotFoundError();
     }
 
     // Check if user owns the event or is admin
     if (event.created_user_id !== user.id && user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Not authorized to delete this event" },
-        { status: 403 }
-      );
+      throw new ForbiddenError();
     }
 
     const success = await deleteEvent(id);
 
     if (!success) {
-      return NextResponse.json(
-        { error: "Failed to delete event" },
-        { status: 500 }
-      );
+      throw new InternalServerError();
     }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting event:", error);
-    return NextResponse.json(
-      { error: "Failed to delete event" },
-      { status: 500 }
-    );
-  }
+    return { success: true };
+  });
 }

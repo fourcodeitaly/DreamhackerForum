@@ -1,52 +1,50 @@
-import { NextResponse } from "next/server";
 import { getPostById } from "@/lib/db/posts/post-get";
 import {
   addSavedPost,
   deletePost,
   removeSavedPost,
 } from "@/lib/db/posts/posts-modify";
-import { queryOne } from "@/lib/db/postgres";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { requestErrorHandler } from "@/handler/error-handler";
+import {
+  BadRequestError,
+  ForbiddenError,
+  InternalServerError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/handler/error";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
-  try {
+  return requestErrorHandler(async () => {
+    const { id } = await params;
+
     const post = await getPostById(id);
 
     if (!post) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+      throw new NotFoundError();
     }
 
-    return NextResponse.json(post);
-  } catch (error) {
-    console.error("Error fetching post:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    return { post };
+  });
 }
 
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  try {
+  return requestErrorHandler(async () => {
     const { userId, action } = await request.json();
 
     if (!userId || !action) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      throw new BadRequestError();
     }
 
     if (action !== "save" && action !== "unsave") {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+      throw new BadRequestError();
     }
 
     const success =
@@ -55,71 +53,41 @@ export async function POST(
         : await removeSavedPost(userId, params.id);
 
     if (!success) {
-      return NextResponse.json(
-        { error: "Failed to update saved post" },
-        { status: 500 }
-      );
+      throw new InternalServerError();
     }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error updating saved post:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    return { success: true };
+  });
 }
 
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
-  try {
+  return requestErrorHandler(async () => {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     const user = session?.user;
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
+      throw new UnauthorizedError();
     }
 
-    // Get post to check ownership
-    const post = await queryOne<{ user_id: string }>(
-      "SELECT user_id FROM posts WHERE id = $1",
-      [id]
-    );
-
+    const post = await getPostById(id);
     if (!post) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+      throw new NotFoundError();
     }
 
-    // Check if user is admin or post owner
     if (user.role !== "admin" && post.user_id !== user.id) {
-      return NextResponse.json(
-        { error: "Not authorized to delete this post" },
-        { status: 403 }
-      );
+      throw new ForbiddenError();
     }
 
     const success = await deletePost(id);
 
     if (!success) {
-      return NextResponse.json(
-        { error: "Failed to delete post" },
-        { status: 500 }
-      );
+      throw new InternalServerError();
     }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    return NextResponse.json(
-      { error: "An error occurred while deleting the post" },
-      { status: 500 }
-    );
-  }
+    return { success: true };
+  });
 }

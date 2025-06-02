@@ -1,28 +1,22 @@
-import { NextResponse } from "next/server";
 import { markAllNotificationsAsRead } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { UnauthorizedError } from "@/handler/error";
 
-// POST /api/notifications/read-all - Mark all notifications as read
 export async function POST(request: Request) {
-  try {
+  return requestErrorHandler(async () => {
     const session = await getServerSession(authOptions);
     const user = session?.user;
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const count = await markAllNotificationsAsRead(user.id);
 
-    return NextResponse.json({
+    return {
       success: true,
       count,
-    });
-  } catch (error) {
-    console.error("Error marking all notifications as read:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    };
+  });
 }

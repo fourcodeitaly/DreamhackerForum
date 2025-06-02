@@ -4,7 +4,6 @@ import { createPost, updatePost } from "@/lib/db/posts/posts-modify";
 import type { MultilingualContent, Post } from "@/lib/db/posts/posts-modify";
 import { revalidatePath } from "next/cache";
 import { query, queryOne } from "@/lib/db/postgres";
-import { localAuth } from "@/lib/auth/local-auth";
 import { notifyFollowersNewPost } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
@@ -109,12 +108,6 @@ export async function updatePostAction(
 }
 
 export async function likePostAction(postId: string, userId: string) {
-  // Check if local auth is enabled
-  if (localAuth.isEnabled()) {
-    // For local development, simulate like functionality
-    return { success: true, liked: true };
-  }
-
   try {
     // Check if already liked
     const existingLike = await queryOne(
@@ -148,12 +141,6 @@ export async function likePostAction(postId: string, userId: string) {
 }
 
 export async function savePostAction(postId: string, userId: string) {
-  // Check if local auth is enabled
-  if (localAuth.isEnabled()) {
-    // For local development, simulate save functionality
-    return { success: true, saved: true };
-  }
-
   try {
     // Check if already saved
     const existingSave = await queryOne(

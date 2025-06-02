@@ -1,20 +1,22 @@
-import { NextResponse } from "next/server";
 import { commentReport } from "@/lib/db/comments/comments";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { UnauthorizedError } from "@/handler/error";
+import { InternalServerError } from "@/handler/error";
 
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const { id } = params;
+  return requestErrorHandler(async () => {
+    const { id } = await params;
     const commentId = id;
 
     const session = await getServerSession(authOptions);
     const user = session?.user;
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const { reason } = await request.json();
@@ -22,18 +24,9 @@ export async function POST(
     const report = await commentReport(commentId, user.id, reason);
 
     if (!report) {
-      return NextResponse.json(
-        { error: "Failed to report comment" },
-        { status: 500 }
-      );
+      throw new InternalServerError();
     }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error reporting comment:", error);
-    return NextResponse.json(
-      { error: "Failed to report comment" },
-      { status: 500 }
-    );
-  }
+    return { success: true };
+  });
 }

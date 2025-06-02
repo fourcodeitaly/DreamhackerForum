@@ -1,71 +1,54 @@
-import { NextResponse } from "next/server";
 import {
   markNotificationAsRead,
   deleteNotification,
 } from "@/lib/db/notification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { UnauthorizedError } from "@/handler/error";
+import { NotFoundError } from "@/handler/error";
+import { InternalServerError } from "@/handler/error";
 
-// PATCH /api/notifications/[id] - Mark notification as read
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
-  try {
+  return requestErrorHandler(async () => {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     const user = session?.user;
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const notification = await markNotificationAsRead(id, user.id);
 
     if (!notification) {
-      return NextResponse.json(
-        { error: "Notification not found" },
-        { status: 404 }
-      );
+      throw new NotFoundError();
     }
 
-    return NextResponse.json(notification);
-  } catch (error) {
-    console.error("Error marking notification as read:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    return { notification };
+  });
 }
 
-// DELETE /api/notifications/[id] - Delete a notification
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
-  try {
+  return requestErrorHandler(async () => {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     const user = session?.user;
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new UnauthorizedError();
     }
 
     const success = await deleteNotification(id, user.id);
 
     if (!success) {
-      return NextResponse.json(
-        { error: "Notification not found" },
-        { status: 404 }
-      );
+      throw new NotFoundError();
     }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting notification:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+    return { success: true };
+  });
 }

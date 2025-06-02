@@ -1,44 +1,25 @@
 import { NextResponse } from "next/server";
-import { query } from "@/lib/db/postgres";
-import { unlink } from "fs/promises";
-import { join } from "path";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { deleteEventImage } from "@/lib/images/image-crud";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { UnauthorizedError } from "@/handler/error";
 
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string; imageId: string } }
 ) {
-  try {
+  return requestErrorHandler(async () => {
     const { id, imageId } = await params;
 
-    // Get the image URL from the database
-    const imageSql = `
-      SELECT image_url 
-      FROM event_images 
-      WHERE id = $1 AND event_id = $2
-    `;
-    const image = await query(imageSql, [imageId, id]);
-
-    if (!image || image.length === 0) {
-      return NextResponse.json({ error: "Image not found" }, { status: 404 });
+    const session = await getServerSession(authOptions);
+    const user = session?.user;
+    if (!user) {
+      throw new UnauthorizedError();
     }
 
-    // Delete the image file from the filesystem
-    const imagePath = join(process.cwd(), image[0].image_url.split("/api/")[1]);
-    await unlink(imagePath);
+    await deleteEventImage(imageId, id);
 
-    // Delete the image record from the database
-    const deleteSql = `
-      DELETE FROM event_images 
-      WHERE id = $1 AND event_id = $2
-    `;
-    await query(deleteSql, [imageId, id]);
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting image:", error);
-    return NextResponse.json(
-      { error: "Error deleting image" },
-      { status: 500 }
-    );
-  }
+    return { success: true };
+  });
 }

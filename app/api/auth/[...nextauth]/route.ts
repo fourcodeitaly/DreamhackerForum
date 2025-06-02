@@ -2,6 +2,8 @@ import NextAuth, { DefaultSession, NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { queryOne } from "@/lib/db/postgres";
+import { getUserByEmail, getUserById } from "@/lib/db/users/users-get";
+import { authenticateUser } from "@/lib/auth/auth";
 
 // Extend the built-in session types
 declare module "next-auth" {
@@ -22,7 +24,6 @@ interface User {
   username: string;
   role: string;
   image_url: string;
-  password_hash: string;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -39,31 +40,29 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Get user from database
-        const user = await queryOne<User>(
-          "SELECT * FROM users WHERE email = $1",
-          [credentials.email]
+        const user = await authenticateUser(
+          credentials.email,
+          credentials.password
         );
 
         if (!user) {
           throw new Error("Invalid credentials");
         }
 
-        // Verify password
-        const isValid = await compare(credentials.password, user.password_hash);
+        const userData = await getUserById(user.id);
 
-        if (!isValid) {
-          throw new Error("Invalid credentials");
+        if (!userData) {
+          throw new Error("User not found");
         }
 
         // Return user object if credentials are valid
         return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          username: user.username,
-          role: user.role,
-          image_url: user.image_url,
-          password_hash: user.password_hash,
+          id: userData.id,
+          email: userData.email,
+          name: userData.name,
+          username: userData.username,
+          role: userData.role,
+          image_url: userData.image_url,
         };
       },
     }),

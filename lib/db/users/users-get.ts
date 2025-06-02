@@ -1,5 +1,6 @@
 "use server";
 
+import { filterObject } from "@/utils/object_filter";
 import { query, queryOne } from "../postgres";
 
 export interface Contributor {
@@ -42,10 +43,10 @@ export type User = {
   username: string;
   email: string;
   name: string;
-  image_url?: string;
+  image_url: string;
   bio?: string;
   location?: string;
-  role?: UserRole;
+  role: UserRole;
   joined_at: string;
   updated_at: string;
   followers_count: number;
@@ -289,10 +290,12 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 export async function getUsers(page: number, limit: number): Promise<User[]> {
-  return query<User>(
+  const users = await query<User>(
     `SELECT * FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
     [limit, (page - 1) * limit]
   );
+
+  return users.map((user) => filterObject(user, ["password_hash"]));
 }
 
 export async function getUsersByRole(role: string): Promise<User[]> {
@@ -356,5 +359,14 @@ export async function getUserEducation(userId: string): Promise<Education[]> {
   return query<Education>(
     `SELECT * FROM user_education WHERE user_id = $1 ORDER BY start_date DESC`,
     [userId]
+  );
+}
+
+export async function getUserByEmailWithPassword(
+  email: string
+): Promise<{ id: string; email: string; password_hash: string } | null> {
+  return queryOne<{ id: string; email: string; password_hash: string }>(
+    `SELECT id, email, password_hash FROM users WHERE email = $1`,
+    [email]
   );
 }
