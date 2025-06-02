@@ -30,6 +30,7 @@ export async function GET(request: Request) {
     // Get current user for like status
     const session = await getServerSession(authOptions);
     const user = session?.user;
+
     // Get comments using the new PostgreSQL function
     const comments = await getCommentsByPostId(postId, user?.id);
 

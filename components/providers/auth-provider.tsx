@@ -60,6 +60,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           const user = (await response.json()) as User;
           setAuthState({ user, isLoading: false });
+        } else {
+          setAuthState((prev) => ({ ...prev, isLoading: false }));
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
