@@ -32,36 +32,18 @@ export default function Header() {
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex items-center justify-between pt-4">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
               <span className="text-xl font-bold">Dreamhacker</span>
             </Link>
-            <nav className="ml-8 hidden md:flex space-x-6">
-              {/* {navLinks.map((link) => {
-                if (!isAdmin && link.href === "/posts?page=1&nullPosts=true") {
-                  return null;
-                }
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
-                      pathname === link.href
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-300"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })} */}
+            <nav className="ml-8 hidden lg:flex space-x-6">
               <CategoryNavigation />
             </nav>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-4">
             <SearchBar />
             <LanguageToggle />
             <ModeToggle />
@@ -69,7 +51,7 @@ export default function Header() {
             <AuthStatus />
           </div>
 
-          <div className="flex md:hidden">
+          <div className="flex lg:hidden">
             <NotificationButton />
             <Button
               variant="ghost"
@@ -85,28 +67,9 @@ export default function Header() {
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t dark:border-gray-800">
+        <div className="lg:hidden border-t dark:border-gray-800">
           <div className="container mx-auto px-4 py-4 space-y-4">
-            <nav className="flex-col space-y-4 flex-wrap hidden md:flex">
-              {/* {navLinks.map((link) => {
-                if (!isAdmin && link.href === "/posts?page=1&nullPosts=true") {
-                  return null;
-                }
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400 ${
-                      pathname === link.href
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-300"
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })} */}
+            <nav className="flex-col space-y-4 flex-wrap hidden lg:flex">
               <CategoryNavigation />
             </nav>
             <div className="flex items-center justify-between pt-4 border-t dark:border-gray-800">

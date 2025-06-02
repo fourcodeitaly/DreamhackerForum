@@ -19,7 +19,7 @@ export async function PostsSidebar() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <CategoryNavigation className="flex-wrap" />
       </div>
       {/* Scholarships */}

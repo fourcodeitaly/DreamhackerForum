@@ -15,8 +15,6 @@ export function AuthCheck({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { t } = useTranslation();
 
-  console.log(isLoading, user);
-
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">

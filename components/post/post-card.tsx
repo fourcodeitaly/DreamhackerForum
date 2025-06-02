@@ -41,7 +41,7 @@ export function PostCard({ post }: PostCardProps) {
             </h2>
           </Link>
           <div className="flex gap-2 items-center">
-            <div className="flex flex-col gap-2 items-end">
+            <div className="flex flex-col md:flex-row gap-2 items-end">
               {hasInternshipTag && (
                 <Link href={`/internships`}>
                   <Badge

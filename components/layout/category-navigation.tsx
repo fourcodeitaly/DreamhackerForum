@@ -158,80 +158,82 @@ export function CategoryNavigation({ className }: { className?: string }) {
     <Suspense>
       <NavigationMenu>
         <NavigationMenuList className={cn(className)}>
-          {categoryGroups.map((group) => {
-            // If there's only one category, render a button instead
-            if (group.categories.length === 1) {
-              const category = group.categories[0];
-              let href;
-              if (group.id === "tags") {
-                href = `/posts?tag=${category.id}`;
-              } else if (category.id.includes("resources")) {
-                href = `/resources?category=${category.id}`;
-              } else if (group.id === "scholarship") {
-                href = `/posts?tag=${category.id}`;
-              } else if (group.id === "schools") {
-                href = `/schools?location=${category.id}`;
-              } else if (group.id === "events") {
-                href = `/events`;
-              } else {
-                href = `/posts?category=${category.id}`;
+          <div className="flex gap-2 flex-wrap">
+            {categoryGroups.map((group) => {
+              // If there's only one category, render a button instead
+              if (group.categories.length === 1) {
+                const category = group.categories[0];
+                let href;
+                if (group.id === "tags") {
+                  href = `/posts?tag=${category.id}`;
+                } else if (category.id.includes("resources")) {
+                  href = `/resources?category=${category.id}`;
+                } else if (group.id === "scholarship") {
+                  href = `/posts?tag=${category.id}`;
+                } else if (group.id === "schools") {
+                  href = `/schools?location=${category.id}`;
+                } else if (group.id === "events") {
+                  href = `/events`;
+                } else {
+                  href = `/posts?category=${category.id}`;
+                }
+
+                return (
+                  <li key={group.id}>
+                    <Button variant="ghost" className="h-10 px-4 py-2" asChild>
+                      <Link href={href}>{group.name.split(")")[1]}</Link>
+                    </Button>
+                  </li>
+                );
               }
 
+              // Otherwise render the navigation menu item
               return (
-                <li key={group.id}>
-                  <Button variant="ghost" className="h-10 px-4 py-2" asChild>
-                    <Link href={href}>{group.name.split(")")[1]}</Link>
-                  </Button>
-                </li>
+                <NavigationMenuItem key={group.id}>
+                  <NavigationMenuTrigger className="bg-transparent">
+                    {group.name.split(")")[1]}
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-full gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      {group.categories.map((category) => {
+                        let href;
+                        if (group.id === "tags") {
+                          href = `/posts?tag=${category.id}`;
+                        } else if (category.id.includes("resources")) {
+                          href = `/resources?category=${category.id}`;
+                        } else if (group.id === "scholarship") {
+                          href = `/posts?tag=${category.id}`;
+                        } else if (group.id === "schools") {
+                          href = `/schools?location=${category.id}`;
+                        } else if (group.id === "events") {
+                          href = `/events`;
+                        } else {
+                          href = `/posts?category=${category.id}`;
+                        }
+
+                        return (
+                          <li key={category.id}>
+                            <NavigationMenuLink asChild>
+                              <Link
+                                href={href}
+                                className={cn(
+                                  "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                )}
+                              >
+                                <div className="text-sm font-medium leading-none">
+                                  {category.name.split(")")[1]}
+                                </div>
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
               );
-            }
-
-            // Otherwise render the navigation menu item
-            return (
-              <NavigationMenuItem key={group.id}>
-                <NavigationMenuTrigger className="bg-transparent">
-                  {group.name.split(")")[1]}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-full gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {group.categories.map((category) => {
-                      let href;
-                      if (group.id === "tags") {
-                        href = `/posts?tag=${category.id}`;
-                      } else if (category.id.includes("resources")) {
-                        href = `/resources?category=${category.id}`;
-                      } else if (group.id === "scholarship") {
-                        href = `/posts?tag=${category.id}`;
-                      } else if (group.id === "schools") {
-                        href = `/schools?location=${category.id}`;
-                      } else if (group.id === "events") {
-                        href = `/events`;
-                      } else {
-                        href = `/posts?category=${category.id}`;
-                      }
-
-                      return (
-                        <li key={category.id}>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href={href}
-                              className={cn(
-                                "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                              )}
-                            >
-                              <div className="text-sm font-medium leading-none">
-                                {category.name.split(")")[1]}
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            );
-          })}
+            })}
+          </div>
         </NavigationMenuList>
       </NavigationMenu>
     </Suspense>

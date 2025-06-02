@@ -210,7 +210,6 @@ export async function generateComments(postId: string): Promise<boolean> {
     commentsJson: input.commentsJson,
   });
 
-  console.log("Generated SQL Statements:");
   await query("BEGIN");
   try {
     for (const sql of sqlStatements) {

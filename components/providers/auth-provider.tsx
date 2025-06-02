@@ -56,7 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setAuthState({ user, isLoading: false });
         }
       } catch (error) {
-        console.log("error");
         console.error("Error initializing auth:", error);
         setAuthState({ user: null, isLoading: false });
       }
