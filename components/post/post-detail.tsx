@@ -240,13 +240,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage
-                src={
-                  author.image_url ||
-                  "/placeholder.svg?height=40&width=40&query=user"
-                }
-                alt={author.name}
-              />
+              <AvatarImage src={author.image_url || ""} alt={author.name} />
               <AvatarFallback>
                 {author.name ? author.name[0] : "U"}
               </AvatarFallback>

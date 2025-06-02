@@ -40,10 +40,7 @@ export async function TopContributors({
                     }`}
                   >
                     <AvatarImage
-                      src={
-                        user.image_url ||
-                        "/placeholder.svg?height=40&width=40&query=user"
-                      }
+                      src={user.image_url || ""}
                       alt={user.name || user.username}
                     />
                     <AvatarFallback>

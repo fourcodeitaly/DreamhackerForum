@@ -177,10 +177,7 @@ export function CommentItem({
           <div className="flex items-center space-x-3">
             <Avatar className="size-8 border border-primary/10">
               <AvatarImage
-                src={
-                  comment.author?.image_url ||
-                  "/placeholder.svg?height=32&width=32&query=user"
-                }
+                src={comment.author?.image_url}
                 alt={comment.author?.name || ""}
               />
               <AvatarFallback>
