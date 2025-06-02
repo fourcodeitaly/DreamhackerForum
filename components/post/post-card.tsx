@@ -113,7 +113,7 @@ export function PostCard({ post }: PostCardProps) {
             ) : (
               post.tags?.map((tag) => (
                 <Badge
-                  key={tag.id}
+                  key={tag.id + post.id}
                   variant="outline"
                   className="hover:bg-accent text-muted-foreground text-xs cursor-pointer"
                 >
