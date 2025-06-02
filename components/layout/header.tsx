@@ -32,7 +32,7 @@ export default function Header() {
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between pt-4">
+        <div className="flex items-center justify-between py-4 lg:py-2">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
@@ -67,19 +67,14 @@ export default function Header() {
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t dark:border-gray-800">
-          <div className="container mx-auto px-4 py-4 space-y-4">
-            <nav className="flex-col space-y-4 flex-wrap hidden lg:flex">
-              <CategoryNavigation />
-            </nav>
-            <div className="flex items-center justify-between pt-4 border-t dark:border-gray-800">
-              <div className="flex space-x-2">
-                <LanguageToggle />
-                <ModeToggle />
-                <SearchBar />
-              </div>
-              <AuthStatus />
+        <div className="container mx-auto px-4 py-4 space-y-4">
+          <div className="flex items-center justify-between pt-4 border-t dark:border-gray-800">
+            <div className="flex space-x-2">
+              <LanguageToggle />
+              <ModeToggle />
+              <SearchBar />
             </div>
+            <AuthStatus />
           </div>
         </div>
       )}
