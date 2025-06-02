@@ -13,7 +13,7 @@ import {
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
-import { Notification } from "@/lib/db/notification";
+import { Notification, PaginatedNotifications } from "@/lib/db/notification";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/utils/utils";
 
@@ -31,11 +31,10 @@ export function NotificationButton() {
       try {
         const response = await fetch("/api/notifications?limit=5");
 
-        const data = await response.json();
+        const data = (await response.json()) as PaginatedNotifications;
+
         setNotifications(data.notifications);
-        setUnreadCount(
-          data.notifications.filter((n: Notification) => !n.is_read).length
-        );
+        setUnreadCount(data.notifications.filter((n) => !n.is_read).length);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       } finally {
@@ -44,9 +43,6 @@ export function NotificationButton() {
     };
 
     fetchNotifications();
-    // Set up polling for new notifications
-    // const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
-    // return () => clearInterval(interval);
   }, [user]);
 
   const handleNotificationClick = async (notification: Notification) => {

@@ -2,6 +2,7 @@
 
 import { filterObject } from "@/utils/object_filter";
 import { query, queryOne } from "../postgres";
+import { InternalServerError } from "@/handler/error";
 
 export interface Contributor {
   id: string;
@@ -290,12 +291,16 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 export async function getUsers(page: number, limit: number): Promise<User[]> {
-  const users = await query<User>(
-    `SELECT * FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
-    [limit, (page - 1) * limit]
-  );
+  try {
+    const users = await query<User>(
+      `SELECT * FROM users ORDER BY joined_at DESC LIMIT $1 OFFSET $2`,
+      [limit, (page - 1) * limit]
+    );
 
-  return users.map((user) => filterObject(user, ["password_hash"]));
+    return users.map((user) => filterObject(user, ["password_hash"]));
+  } catch (error) {
+    throw new InternalServerError("Error fetching users");
+  }
 }
 
 export async function getUsersByRole(role: string): Promise<User[]> {

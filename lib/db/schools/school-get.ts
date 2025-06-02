@@ -1,5 +1,6 @@
 "use server";
 
+import { InternalServerError } from "@/handler/error";
 import { SchoolDepartment } from "../departments/department-get";
 import { query } from "../postgres";
 
@@ -54,38 +55,25 @@ export const getSchoolsIdAndName = async (): Promise<
     );
     return schools;
   } catch (error) {
-    console.error("Error fetching schools:", error);
-    return [];
+    throw new InternalServerError("Error fetching schools");
   }
 };
 
-export const getAllSchools = async () => {
-  try {
-    const schools = await query<School>("SELECT * FROM schools");
-    return schools;
-  } catch (error) {
-    console.error("Error fetching schools:", error);
-    return [];
-  }
-};
-
-export const getSchoolByNationOrderByRank = async ({
+export const getSchools = async ({
+  limit,
+  offset,
   nationCode,
-  limit = 10,
-  offset = 0,
+  orderBy,
 }: {
-  nationCode?: string;
-  limit?: number;
-  offset?: number;
+  limit?: number | null;
+  offset?: number | null;
+  nationCode?: string | null;
+  orderBy?: string | null;
 }): Promise<School[]> => {
   try {
-    const params =
-      nationCode !== "all" ? [limit, offset, nationCode] : [limit, offset];
+    const params: (string | number)[] = [];
 
-    const whereClause = nationCode !== "all" ? "WHERE s.nationcode = $3" : "";
-
-    const schools = await query<School>(
-      `SELECT s.*, 
+    let sqlQuery = `SELECT s.*, 
         cl.student_clubs, cl.sports_teams,
         json_build_object(
             'student_clubs', cl.student_clubs,
@@ -99,19 +87,41 @@ export const getSchoolByNationOrderByRank = async ({
         ) as tuition
       FROM schools s
       LEFT JOIN campus_life cl ON s.id = cl.school_id
-      ${whereClause}
-      GROUP BY s.id, cl.student_clubs, cl.sports_teams
+      `;
+
+    if (nationCode && nationCode !== "all") {
+      params.push(nationCode);
+      sqlQuery += `WHERE s.nationcode = $${params.length} `;
+    }
+
+    sqlQuery += `GROUP BY s.id, cl.student_clubs, cl.sports_teams`;
+
+    if (orderBy === "qs_world_rank") {
+      sqlQuery += `
       ORDER BY 
-  CAST(
-    CASE 
-      WHEN s.qs_world_rank ~ '-' THEN SPLIT_PART(s.qs_world_rank, '-', 1)::integer
-      WHEN s.qs_world_rank ~ '\\+$' THEN REPLACE(s.qs_world_rank, '+', '')::integer
-      ELSE s.qs_world_rank::integer
-    END AS INTEGER
-  ) ASC
-      LIMIT $1 OFFSET $2`,
-      params
-    );
+      CAST(
+        CASE 
+          WHEN s.qs_world_rank ~ '-' THEN SPLIT_PART(s.qs_world_rank, '-', 1)::integer
+          WHEN s.qs_world_rank ~ '\\+$' THEN REPLACE(s.qs_world_rank, '+', '')::integer
+          ELSE s.qs_world_rank::integer
+        END AS INTEGER
+      ) ASC
+       `;
+    } else if (orderBy) {
+      sqlQuery += `ORDER BY s.${orderBy} ASC`;
+    }
+
+    if (limit) {
+      params.push(limit);
+      sqlQuery += `LIMIT $${params.length} `;
+    }
+
+    if (offset) {
+      params.push(offset);
+      sqlQuery += `OFFSET $${params.length} `;
+    }
+
+    const schools = await query<School>(sqlQuery, params);
 
     return schools;
   } catch (error) {

@@ -17,7 +17,7 @@ import { FeaturedPosts } from "@/components/post/featured-posts";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { QuickSchoolsView } from "@/components/school/quick-schools-view";
-import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
+import { getSchools } from "@/lib/db/schools/school-get";
 
 interface PostPageProps {
   params: {
@@ -37,10 +37,10 @@ export default async function PostPage({ params }: PostPageProps) {
         getRelatedPosts(id),
         getTopContributors(),
         getPinnedPosts(),
-        getSchoolByNationOrderByRank({
-          nationCode: "all",
+        getSchools({
           limit: 5,
           offset: 0,
+          orderBy: "qs_world_rank",
         }),
       ]);
 

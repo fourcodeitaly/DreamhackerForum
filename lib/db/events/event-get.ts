@@ -2,6 +2,7 @@
 
 import { query, queryOne } from "../postgres";
 import { Event } from "./event-modify";
+import { InternalServerError } from "@/handler/error";
 
 export interface PaginatedEvents {
   events: Event[];
@@ -14,7 +15,8 @@ export interface PaginatedEvents {
 }
 
 export async function getEventById(id: string): Promise<Event | null> {
-  const sql = `
+  try {
+    const sql = `
     SELECT 
       e.*,
       (
@@ -31,8 +33,11 @@ export async function getEventById(id: string): Promise<Event | null> {
     FROM events e
     LEFT JOIN users u ON e.created_user_id = u.id
     WHERE e.id = $1
-  `;
-  return await queryOne<Event>(sql, [id]);
+    `;
+    return await queryOne<Event>(sql, [id]);
+  } catch {
+    throw new InternalServerError("Error getting event by id");
+  }
 }
 
 export async function getEvents(

@@ -1,4 +1,4 @@
-import { getSchoolByNationOrderByRank } from "@/lib/db/schools/school-get";
+import { getSchools } from "@/lib/db/schools/school-get";
 import SchoolsList from "@/components/schools/school-list";
 import { SchoolNationFilter } from "@/components/schools/school-nation-filter";
 
@@ -9,10 +9,11 @@ interface SchoolsPageProps {
 export default async function SchoolsPage({ searchParams }: SchoolsPageProps) {
   const { location } = await searchParams;
 
-  const schools = await getSchoolByNationOrderByRank({
-    nationCode: location?.toString(),
+  const schools = await getSchools({
     limit: 10,
     offset: 0,
+    orderBy: "qs_world_rank",
+    nationCode: location?.toString(),
   });
 
   return (

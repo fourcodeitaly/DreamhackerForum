@@ -25,7 +25,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Search, Shield, ShieldOff } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { getUsers } from "@/lib/db/users/users-get";
+import { getUsers, User } from "@/lib/db/users/users-get";
 
 export function AdminUsersList() {
   const [users, setUsers] = useState<any[]>([]);
@@ -64,7 +64,13 @@ export function AdminUsersList() {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const data = await getUsers(1, 100);
+      const response = await fetch("/api/users");
+      const data = (await response.json()) as User[];
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
       setUsers(data || []);
       setFilteredUsers(data || []);
     } catch (error) {

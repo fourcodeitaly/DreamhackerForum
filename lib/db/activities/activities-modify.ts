@@ -1,6 +1,7 @@
 "use server";
 
 import { query } from "../postgres";
+import { InternalServerError } from "@/handler/error";
 
 export type ActivityType =
   | "post_created"
@@ -60,10 +61,11 @@ export async function createActivity(
 }
 
 export async function getRecentActivities(
-  limit: number = 10,
+  limit: number = 5,
   offset: number = 0
 ): Promise<Activity[]> {
-  const sql = `
+  try {
+    const sql = `
     SELECT 
       a.*,
       json_build_object(
@@ -97,7 +99,11 @@ export async function getRecentActivities(
     LIMIT $1 OFFSET $2
   `;
 
-  return await query<Activity>(sql, [limit, offset]);
+    return await query<Activity>(sql, [limit, offset]);
+  } catch (error) {
+    console.error("Error fetching recent activities:", error);
+    throw new InternalServerError("Error fetching recent activities");
+  }
 }
 
 export async function getActivitiesByUser(

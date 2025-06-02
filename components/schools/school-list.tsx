@@ -18,10 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  getSchoolByNationOrderByRank,
-  School,
-} from "@/lib/db/schools/school-get";
+import { School } from "@/lib/db/schools/school-get";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useTranslation } from "@/hooks/use-translation";
@@ -47,12 +44,13 @@ export default function SchoolsList({
 
   const loadMore = async () => {
     setIsLoadingMore(true);
+    const orderBy = "qs_world_rank";
     const newOffset = offset + 10;
-    const moreSchools = await getSchoolByNationOrderByRank({
-      nationCode: location?.toString() || "us",
-      limit: 10,
-      offset: newOffset,
-    });
+    const response = await fetch(
+      `/api/schools?limit=10&offset=${newOffset}&orderBy=${orderBy}&nationCode=${location}`
+    );
+
+    const moreSchools = (await response.json()) as School[];
 
     setSchools([
       ...schools,

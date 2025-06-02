@@ -19,6 +19,7 @@ export async function GET(
     if (event?.is_published) {
       const session = await getServerSession(authOptions);
       const user = session?.user;
+
       if (!user || user.role !== "admin" || user.id !== event.created_user_id) {
         throw new UnauthorizedError();
       }

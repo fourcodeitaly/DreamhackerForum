@@ -62,13 +62,17 @@ export function MultilingualPostForm({
   const [eventId, setEventId] = useState<string>(initialData?.event?.id || "");
   const [isLoading, setIsLoading] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<"en" | "vi">("vi");
-  const [isTranslatingTitle, setIsTranslatingTitle] = useState(false);
-  const [isTranslatingContent, setIsTranslatingContent] = useState(false);
   const [tagsList, setTagsList] = useState<{ name: string; id: string }[]>([]);
 
   useEffect(() => {
     const fetchTags = async () => {
-      const tags = await getTags();
+      const response = await fetch("/api/tags");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch tags");
+      }
+
+      const tags = (await response.json()) as { name: string; id: string }[];
       setTagsList(tags);
     };
     fetchTags();
@@ -143,108 +147,6 @@ export function MultilingualPostForm({
 
   const handleContentChange = (lang: "en" | "vi", value: string) => {
     setContent({ ...content, [lang]: value });
-  };
-
-  const handleTranslateTitle = async (
-    sourceLang: "en" | "vi",
-    targetLang: "en" | "vi"
-  ) => {
-    if (!title[sourceLang]) {
-      toast({
-        title: t("translationError"),
-        description: t("noTitleToTranslate"),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsTranslatingTitle(true);
-    try {
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: title[sourceLang],
-          targetLanguage: targetLang,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Translation failed");
-      }
-
-      const { translatedText } = await response.json();
-      setTitle((prev) => ({
-        ...prev,
-        [targetLang]: translatedText.replace(/^"|"$/g, ""),
-      }));
-
-      toast({
-        title: t("translationComplete"),
-        description: t("titleTranslated"),
-      });
-    } catch (error) {
-      toast({
-        title: t("translationError"),
-        description: t("errorTranslatingTitle"),
-        variant: "destructive",
-      });
-    } finally {
-      setIsTranslatingTitle(false);
-    }
-  };
-
-  const handleTranslateContent = async (
-    sourceLang: "en" | "vi",
-    targetLang: "en" | "vi"
-  ) => {
-    if (!content[sourceLang]) {
-      toast({
-        title: t("translationError"),
-        description: t("noContentToTranslate"),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsTranslatingContent(true);
-    try {
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: content[sourceLang],
-          targetLanguage: targetLang,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Translation failed");
-      }
-
-      const { translatedText } = await response.json();
-      setContent((prev) => ({
-        ...prev,
-        [targetLang]: translatedText.replace(/^"|"$/g, ""),
-      }));
-
-      toast({
-        title: t("translationComplete"),
-        description: t("contentTranslated"),
-      });
-    } catch (error) {
-      toast({
-        title: t("translationError"),
-        description: t("errorTranslatingContent"),
-        variant: "destructive",
-      });
-    } finally {
-      setIsTranslatingContent(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -1,15 +1,22 @@
-// import { getSchoolsGroupByNationCode } from "@/lib/db/tags/tags-get";
-// import { NextResponse } from "next/server";
+import { requestErrorHandler } from "@/handler/error-handler";
+import { getSchools, getSchoolsIdAndName } from "@/lib/db/schools/school-get";
+import { NextRequest } from "next/server";
 
-// export async function GET() {
-//   try {
-//     const schoolsGroupByNationCode = await getSchoolsGroupByNationCode();
-//     return NextResponse.json(schoolsGroupByNationCode);
-//   } catch (error) {
-//     console.error("Error fetching schools group by nation code:", error);
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 }
-//     );
-//   }
-// }
+export async function GET(request: NextRequest) {
+  return requestErrorHandler(async () => {
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get("limit");
+    const offset = searchParams.get("offset");
+    const orderBy = searchParams.get("orderBy");
+    const nationCode = searchParams.get("nationCode");
+
+    const schools = await getSchools({
+      limit: limit ? parseInt(limit) : null,
+      offset: offset ? parseInt(offset) : null,
+      orderBy,
+      nationCode,
+    });
+
+    return schools;
+  });
+}

@@ -52,7 +52,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           session?.user &&
           (!authState.user || authState.user.id !== session.user.id)
         ) {
-          const user = await getUserById(session.user.id);
+          const response = await fetch(`/api/auth/users`);
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch user");
+          }
+
+          const user = (await response.json()) as User;
           setAuthState({ user, isLoading: false });
         }
       } catch (error) {

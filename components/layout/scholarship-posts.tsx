@@ -1,37 +1,19 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Award } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { getServerLanguage, getServerTranslation } from "@/lib/get-translation";
 import { getPostsByTags } from "@/lib/db/posts/post-get";
-import { useTranslation } from "@/hooks/use-translation";
-import { useLanguage } from "@/hooks/use-language";
-import { useEffect, useState } from "react";
-import { Post } from "@/lib/db/posts/posts-modify";
-import { Skeleton } from "../ui/skeleton";
 
-export function ScholarshipPosts() {
-  const { t } = useTranslation();
-  const { language } = useLanguage();
-  const [isLoading, setIsLoading] = useState(true);
-  const [posts, setPosts] = useState<{ posts: Post[]; total: number }>({
-    posts: [],
-    total: 0,
-  });
+export async function ScholarshipPosts() {
+  const { t } = await getServerTranslation();
+  const language = await getServerLanguage();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const posts = await getPostsByTags(
-        ["c34d416e-1bed-4474-a020-e83032e2b15d"],
-        1,
-        5
-      );
-      setPosts({ posts: posts.posts, total: posts.total });
-      setIsLoading(false);
-    };
-    fetchPosts();
-  }, []);
+  const posts = await getPostsByTags(
+    ["c34d416e-1bed-4474-a020-e83032e2b15d"],
+    1,
+    5
+  );
 
   return (
     <Card>
@@ -45,9 +27,7 @@ export function ScholarshipPosts() {
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div className="space-y-4">
-          {isLoading ? (
-            <Skeleton className="h-20 w-full" />
-          ) : posts.posts.length > 0 ? (
+          {posts.posts.length > 0 ? (
             posts.posts.map((post) => (
               <div key={post.id} className="space-y-1">
                 <div className="flex items-center space-x-2">

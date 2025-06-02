@@ -21,10 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useState, useEffect, use } from "react";
-import { Event, updateEvent, deleteEvent } from "@/lib/db/events/event-modify";
-import { getEventById } from "@/lib/db/events/event-get";
+import { Event, deleteEvent } from "@/lib/db/events/event-modify";
 import { useRouter } from "next/navigation";
 import { X, Upload, Trash2 } from "lucide-react";
 import {
@@ -110,7 +108,14 @@ export default function EditEventPage({
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const eventData = await getEventById(id);
+        const response = await fetch(`/api/events/${id}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch event");
+        }
+
+        const eventData = (await response.json()) as Event;
+
         if (eventData) {
           setEvent(eventData);
           setEventImagePreview(

@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
-import { getMockNotifications } from "@/mocks/mock-data";
-import { useTranslation } from "@/hooks/use-translation";
+import { createContext, useContext, useState, type ReactNode } from "react";
 interface NotificationContextType {
   notifications: any[];
   markAsRead: (id: string) => void;
@@ -23,24 +13,6 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<any[]>([]);
-  // useEffect(() => {
-  //   if (user) {
-  //     // Simulate fetching notifications
-  //     const mockNotifications = getMockNotifications();
-  //     setNotifications(mockNotifications);
-
-  //     // Show toast for unread notifications
-  //     const unreadCount = mockNotifications.filter((n) => !n.read).length;
-  //     if (unreadCount > 0) {
-  //       toast({
-  //         title: t("loginSuccess"),
-  //         description: t("welcomeBack"),
-  //       });
-  //     }
-  //   } else {
-  //     setNotifications([]);
-  //   }
-  // }, [user, toast]);
 
   const markAsRead = (id: string) => {
     setNotifications((prev) =>

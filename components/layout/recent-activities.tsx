@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Star } from "lucide-react";
-import { getRecentActivities } from "@/lib/db/activities/activities-modify";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { toCamelCase } from "@/utils/snake-case";
@@ -18,7 +17,14 @@ export function RecentActivities() {
 
   useEffect(() => {
     const fetchActivities = async () => {
-      const activities = await getRecentActivities(5);
+      const response = await fetch("/api/activities");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch activities");
+      }
+
+      const activities = (await response.json()) as Activity[];
+
       setActivities(activities);
       setIsLoading(false);
     };

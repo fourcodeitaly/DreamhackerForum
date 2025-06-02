@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PostCard } from "@/components/post/post-card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/use-translation";

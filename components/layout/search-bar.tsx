@@ -1,12 +1,9 @@
 "use client";
 
 import type React from "react";
-
 import { useEffect, useState } from "react";
-
 import { useRouter } from "next/navigation";
 import { SearchBox } from "../ui/search-box";
-import { getSchoolsIdAndName } from "@/lib/db/schools/school-get";
 
 export function SearchBar() {
   const router = useRouter();
@@ -15,7 +12,12 @@ export function SearchBar() {
   useEffect(() => {
     const fetchItems = async () => {
       let fetchedItems: { name: string; id: string }[] = [];
-      fetchedItems = await getSchoolsIdAndName();
+      const response = await fetch("/api/schools/search");
+      if (!response.ok) {
+        throw new Error("Failed to fetch schools");
+      }
+      fetchedItems = (await response.json()) as { name: string; id: string }[];
+
       setItems(fetchedItems);
     };
 

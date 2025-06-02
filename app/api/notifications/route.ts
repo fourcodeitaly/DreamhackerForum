@@ -24,7 +24,7 @@ export async function GET(request: Request) {
       isRead: isRead === "true",
     });
 
-    return { result };
+    return result;
   });
 }
 
