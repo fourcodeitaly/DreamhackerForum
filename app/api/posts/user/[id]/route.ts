@@ -12,8 +12,8 @@ export async function GET(
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "5");
 
-    const posts = await getUserPosts(id, page, limit);
+    const { posts, total } = await getUserPosts(id, page, limit);
 
-    return { posts: posts.posts };
+    return posts;
   });
 }
