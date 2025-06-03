@@ -57,9 +57,11 @@ export function EventSlideshow({ events }: EventSlideshowProps) {
                   <div className="absolute inset-0">
                     <img
                       src={
-                        event.images.find((image) =>
-                          image.image_url.includes("event-image")
-                        )?.image_url
+                        event.images && event.images.length > 0
+                          ? event.images.find((image) =>
+                              image.image_url.includes("event-image")
+                            )?.image_url
+                          : "/images/event-image.jpg"
                       }
                       onError={(e) => {
                         e.currentTarget.src =
