@@ -41,9 +41,11 @@ export default async function EventsPage() {
                   <div className="relative aspect-[16/9] rounded-lg overflow-hidden group">
                     <img
                       src={
-                        event.images.find((image) =>
-                          image.image_url.includes("event-image")
-                        )?.image_url
+                        event.images && event.images.length > 0
+                          ? event.images.find((image) =>
+                              image.image_url.includes("event-image")
+                            )?.image_url
+                          : "/images/event-image.jpg"
                       }
                       alt={event.title}
                       className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
