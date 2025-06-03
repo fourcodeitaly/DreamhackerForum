@@ -28,7 +28,7 @@ export async function GET(
     if (!event) {
       throw new NotFoundError();
     }
-    return { event };
+    return event;
   });
 }
 
@@ -71,7 +71,7 @@ export async function PATCH(
       throw new InternalServerError();
     }
 
-    return { event: updatedEvent };
+    return updatedEvent;
   });
 }
 

@@ -35,7 +35,7 @@ export async function getEventById(id: string): Promise<Event | null> {
     WHERE e.id = $1
     `;
     return await queryOne<Event>(sql, [id]);
-  } catch {
+  } catch (error) {
     throw new InternalServerError("Error getting event by id");
   }
 }

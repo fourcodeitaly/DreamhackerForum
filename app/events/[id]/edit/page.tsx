@@ -158,7 +158,7 @@ export default function EditEventPage({
         }
       } catch (error) {
         console.error("Error fetching event:", error);
-        router.push("/events");
+        // router.push("/events");
       } finally {
         setIsLoading(false);
       }

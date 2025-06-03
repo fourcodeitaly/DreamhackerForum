@@ -1,7 +1,5 @@
-import { NextResponse } from "next/server";
 import { uploadImages } from "@/lib/db/upload/upload";
 import { requestErrorHandler } from "@/handler/error-handler";
-import { InternalServerError } from "@/handler/error";
 import { BadRequestError } from "@/handler/error";
 
 export async function POST(request: Request) {

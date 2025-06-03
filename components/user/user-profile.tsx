@@ -19,7 +19,6 @@ export function UserProfile({ user }: UserProfileProps) {
   const { user: currentUser } = useAuth();
 
   const isCurrentUser = currentUser?.id === user.id;
-  console.log(user.image_url);
 
   return (
     <Card>

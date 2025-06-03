@@ -57,6 +57,6 @@ export async function POST(request: NextRequest) {
       throw new InternalServerError();
     }
 
-    return { event };
+    return event;
   });
 }
