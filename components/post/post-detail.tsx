@@ -171,9 +171,7 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         throw new Error("Failed to update like status");
       }
 
-      const data = await response.json();
       // Update with actual server data
-      setLiked(data.liked);
     } catch (error) {
       console.error("Error liking post:", error);
       toast({
