@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         ? new Date(searchParams.get("endDate")!)
         : undefined,
       search: searchParams.get("search") || undefined,
-      schoolcode: searchParams.get("schoolcode") || undefined,
+      schoolId: searchParams.get("schoolId") || undefined,
     };
 
     const events = await getEvents(options);

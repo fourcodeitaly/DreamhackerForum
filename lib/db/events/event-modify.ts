@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 
 export interface Event {
   id: string;
-  schoolcode?: string;
+  school_id?: string;
   title: string;
   description: string;
   start_date: Date;
@@ -55,7 +55,7 @@ export async function createEvent(
 
       const sql = `
         INSERT INTO events (
-          schoolcode, title, description, start_date, end_date,
+          school_id, title, description, start_date, end_date,
           location, type, capacity, is_virtual, virtual_meeting_link,
           image_url, is_published, created_user_id, organizer_name,
           organizer_email, organizer_phone, organizer_website,
@@ -72,7 +72,7 @@ export async function createEvent(
       `;
 
       const values = [
-        eventData.schoolcode || null,
+        eventData.school_id || null,
         eventData.title,
         eventData.description,
         eventData.start_date,

@@ -51,7 +51,7 @@ export async function getEvents(
     startDate?: Date;
     endDate?: Date;
     search?: string;
-    schoolcode?: string;
+    schoolId?: string;
     isPinned?: boolean;
   } = {}
 ): Promise<PaginatedEvents> {
@@ -117,9 +117,9 @@ export async function getEvents(
     params.push(`%${options.search}%`);
   }
 
-  if (options.schoolcode) {
-    sql += ` AND e.schoolcode = $${params.length + 1}`;
-    params.push(options.schoolcode);
+  if (options.schoolId) {
+    sql += ` AND e.school_id = $${params.length + 1}`;
+    params.push(options.schoolId);
   }
 
   if (options.isPinned !== undefined) {
@@ -235,7 +235,7 @@ export async function getEventsByOrganizer(
 }
 
 export async function getEventsBySchool(
-  schoolcode: string,
+  schoolId: string,
   options: {
     page?: number;
     limit?: number;
@@ -257,9 +257,9 @@ export async function getEventsBySchool(
       ) as organizer
     FROM events e
     LEFT JOIN users u ON e.created_user_id = u.id
-    WHERE e.schoolcode = $1
+    WHERE e.school_id = $1
   `;
-  const params: any[] = [schoolcode];
+  const params: any[] = [schoolId];
 
   if (options.isPublished !== undefined) {
     sql += ` AND e.is_published = $${params.length + 1}`;
