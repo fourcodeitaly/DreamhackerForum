@@ -43,7 +43,7 @@ export function PostCard({ post }: PostCardProps) {
           <div className="flex gap-2 items-center">
             <div className="flex flex-col md:flex-row gap-2 items-end">
               {hasInternshipTag && (
-                <Link href={`/internships`}>
+                <Link href={`/posts?category=internship`}>
                   <Badge
                     variant="default"
                     className="bg-green-700 hover:bg-green-800 text-nowrap"
@@ -53,7 +53,7 @@ export function PostCard({ post }: PostCardProps) {
                 </Link>
               )}
               {hasScholarshipTag && (
-                <Link href={`/scholarships`}>
+                <Link href={`/posts?tag=c34d416e-1bed-4474-a020-e83032e2b15d`}>
                   <Badge
                     variant="default"
                     className="bg-yellow-500 hover:bg-yellow-600 text-nowrap animate-pulse"
