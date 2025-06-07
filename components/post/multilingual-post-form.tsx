@@ -36,13 +36,11 @@ export function MultilingualPostForm({
   // Initialize with empty content or existing content if editing
   const [title, setTitle] = useState({
     en: initialData?.title?.en || "",
-    zh: initialData?.title?.zh || "",
     vi: initialData?.title?.vi || "",
   });
 
   const [content, setContent] = useState({
     en: initialData?.content?.en || "",
-    zh: initialData?.content?.zh || "",
     vi: initialData?.content?.vi || "",
   });
 

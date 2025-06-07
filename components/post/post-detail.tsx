@@ -455,17 +455,22 @@ export function PostDetail({ post: rawPost }: PostDetailProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 group"
           onClick={handleLike}
         >
           <Heart
             className={cn(
-              "h-5 w-5",
-              liked ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              "h-5 w-5 transition-all duration-200 ease-in-out",
+              liked
+                ? "fill-red-500 text-red-500 scale-110"
+                : "text-muted-foreground group-hover:scale-125"
             )}
           />
           <span
-            className={cn(liked ? "text-red-500" : "text-muted-foreground")}
+            className={cn(
+              "transition-all duration-200 ease-in-out",
+              liked ? "text-red-500" : "text-muted-foreground"
+            )}
           >
             {likesCount} {t("likes")}
           </span>

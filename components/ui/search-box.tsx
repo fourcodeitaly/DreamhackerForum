@@ -40,8 +40,12 @@ export function SearchBox({
   return (
     <Popover open={open} onOpenChange={setOpen} {...props}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Search className="opacity-50" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-primary hover:bg-primary/90"
+        >
+          <Search className="text-white" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0 mt-4 z-50">
