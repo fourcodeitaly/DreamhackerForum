@@ -141,6 +141,7 @@ export const translations = {
 
     // Categories
     nations: "Nations",
+    nationsTag: "(Tag) Nations",
     categories: "Categories",
     allPosts: "All Posts",
     deletePost: "Delete Post",
@@ -713,6 +714,7 @@ export const translations = {
 
     // Categories
     nations: "Quốc gia",
+    nationsTag: "(Tag) Quốc gia",
     categories: "Danh mục",
     allPosts: "Tất cả bài viết",
     deletePost: "Xóa bài viết",

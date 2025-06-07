@@ -21,7 +21,7 @@ export function CategoryNavigation({ className }: { className?: string }) {
   const categoryGroups = [
     {
       id: "tags",
-      name: t("tags"),
+      name: t("nationsTag"),
       categories: [
         { id: "75d74626-55fe-47be-bc03-7e6531d19249", name: t("usTag") },
         { id: "e4e9fb41-5a05-470c-925b-f91b1a00d962", name: t("caTag") },
