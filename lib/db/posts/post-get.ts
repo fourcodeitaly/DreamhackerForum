@@ -111,25 +111,25 @@ export async function getPostById(
             FROM events e 
             WHERE p.event_id = e.id
           ) as event,
-        (
-            SELECT COUNT(*) 
-            FROM post_likes pl
-            WHERE pl.post_id = p.id
-        ) as likes_count,
-        (
+          (
             SELECT EXISTS (
-            SELECT 1 
-            FROM post_likes pl
-            WHERE pl.post_id = p.id AND pl.user_id = $2
-        )) as liked
-        FROM posts p
-        LEFT JOIN users u ON p.user_id = u.id
-        LEFT JOIN categories c ON p.category_id = c.id
-        LEFT JOIN events e ON p.event_id = e.id
-        LEFT JOIN post_likes pl ON p.id = pl.post_id AND pl.user_id = $2
-        WHERE p.id = $1
-      `;
+              SELECT 1 
+              FROM post_likes pl
+              WHERE pl.post_id = p.id AND pl.user_id = $2
+              )) as liked
+              FROM posts p
+              LEFT JOIN users u ON p.user_id = u.id
+              LEFT JOIN categories c ON p.category_id = c.id
+              LEFT JOIN events e ON p.event_id = e.id
+              LEFT JOIN post_likes pl ON p.id = pl.post_id AND pl.user_id = $2
+              WHERE p.id = $1
+              `;
 
+    // (
+    //     SELECT COUNT(*)
+    //     FROM post_likes pl
+    //     WHERE pl.post_id = p.id
+    // ) as likes_count,
     const post = await queryOne<Post>(sql, [postId, userId]);
 
     if (!post) return null;
@@ -302,17 +302,17 @@ export async function getPosts(
             )
             FROM events e
             WHERE p.event_id = e.id
-          ) as event,
-          (
-            SELECT COUNT(*) 
-            FROM post_likes pl
-            WHERE pl.post_id = p.id
-          ) as likes_count
-        FROM posts p
-        LEFT JOIN users u ON p.user_id = u.id
-        LEFT JOIN categories c ON p.category_id = c.id
-      `;
+          ) as event
+          FROM posts p
+          LEFT JOIN users u ON p.user_id = u.id
+          LEFT JOIN categories c ON p.category_id = c.id
+          `;
 
+    // (
+    //   SELECT COUNT(*)
+    //   FROM post_likes pl
+    //   WHERE pl.post_id = p.id
+    // ) as likes_count
     const params = [];
 
     // Add category filter if provided
@@ -886,6 +886,7 @@ export async function getPostsByTags(
           p.is_pinned,
           p.created_at,
           p.updated_at,
+          p.likes_count,
         json_build_object(
           'id', u.id,
           'name', u.name,

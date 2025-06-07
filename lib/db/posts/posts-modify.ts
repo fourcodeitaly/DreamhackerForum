@@ -34,7 +34,7 @@ export type Post = {
     id: string;
     name: MultilingualContent;
   };
-  likes_count?: number;
+  likes_count: number;
   comments_count?: number;
   liked?: boolean;
   saved?: boolean;

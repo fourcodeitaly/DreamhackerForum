@@ -37,7 +37,7 @@ export default async function Posts({
   const { page, nullPosts, category, tag } = await searchParams;
   const pageNumber = page ? Number.parseInt(page) : 1;
   const categoryId = category !== "undefined" ? category : undefined;
-  const postsPerPage = 10;
+  const postsPerPage = 20;
 
   // Fetch category if categoryId is provided
   const session = await getServerSession(authOptions);

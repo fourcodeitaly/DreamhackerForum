@@ -18,11 +18,21 @@ export async function handlePostLike(
           "DELETE FROM post_likes WHERE post_id = $1 AND user_id = $2",
           [postId, userId]
         );
+
+        await client.query(
+          "UPDATE posts SET likes_count = likes_count - 1 WHERE id = $1",
+          [postId]
+        );
       } else {
         // Like the post
         await client.query(
           "INSERT INTO post_likes (post_id, user_id) VALUES ($1, $2)",
           [postId, userId]
+        );
+
+        await client.query(
+          "UPDATE posts SET likes_count = likes_count + 1 WHERE id = $1",
+          [postId]
         );
       }
 
