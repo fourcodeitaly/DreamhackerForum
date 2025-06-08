@@ -396,7 +396,7 @@ export function PostCard({ post }: PostCardProps) {
                       className={cn(
                         "h-3 w-3 mr-1 transition-all duration-200 ease-in-out",
                         liked
-                          ? "fill-red-500 text-red-500 scale-110"
+                          ? "fill-red-500 text-red-500 scale-110 group-hover:scale-150"
                           : "text-muted-foreground group-hover:scale-150"
                       )}
                     />
