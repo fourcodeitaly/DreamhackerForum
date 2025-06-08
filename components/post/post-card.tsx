@@ -18,30 +18,34 @@ interface PostCardProps {
   post: Post;
 }
 
-export const postImages = [
+export const postMetas = [
   {
     tagName: "Vietnam",
     imageUrl:
       "https://mediaen.vietnamplus.vn/images/cc571c067c64d4f85fb35f04673bf296f4c4f5791ae8c9f28fdb97e2ff6667db4724049428606a33929faecb3948eedf/bachkhoa.jpg",
     flag: "🇻🇳",
+    id: "4e1e7c2a-5250-4758-b7db-58497c6a3081",
   },
   {
     tagName: "United States",
     imageUrl:
       "https://www.harvard.edu/wp-content/uploads/2023/11/110823_Features_KS_713-scaled.jpg",
     flag: "🇺🇸",
+    id: "75d74626-55fe-47be-bc03-7e6531d19249",
   },
   {
     tagName: "Canada",
     imageUrl:
       "https://images.theconversation.com/files/505191/original/file-20230118-12-zrgl8s.jpg?ixlib=rb-1.1.0&rect=11%2C39%2C3782%2C2485&q=45&auto=format&w=930&fit=clip",
     flag: "🇨🇦",
+    id: "e4e9fb41-5a05-470c-925b-f91b1a00d962",
   },
   {
     tagName: "Australia",
     imageUrl:
       "https://www.extravelmoney.com/blog/wp-content/uploads/2017/06/Best-Universities-In-Australia-For-MS-Monash-University.jpg",
     flag: "🇦🇺",
+    id: "40e5e7f7-fc8c-4e17-9297-02e4c04623f4",
   },
   {
     tagName: "New Zealand",
@@ -54,46 +58,54 @@ export const postImages = [
     imageUrl:
       "https://student-cms.prd.timeshighereducation.com/sites/default/files/styles/default/public/cbh_rhul_arch1_0026v1_1_0.jpg?itok=qOtCnkFQ",
     flag: "🇬🇧",
+    id: "65df2188-2c7a-43e0-affc-bf0d4ac924f5",
   },
   {
     tagName: "Germany",
     imageUrl: "https://www.avanse.com/blogs/images/11jan-blog-2024.jpg",
     flag: "🇩🇪",
+    id: "705da86e-4ea8-4d96-a33d-16b8d4d4bf8f",
   },
   {
     tagName: "France",
     imageUrl:
       "https://student-cms.prd.timeshighereducation.com/sites/default/files/styles/default/public/istock-532135289.jpg?itok=Tzwepdt5",
     flag: "🇫🇷",
+    id: "3a3b7c21-9f07-40bb-944b-b72fe89ef8c9",
   },
   {
     tagName: "Italy",
     imageUrl:
       "https://storage-prtl-co.imgix.net/endor/articles/1615/images/1523449083_shutterstock_363437531.jpg?max-w=660&max-h=532&fit=crop&q=40",
     flag: "🇮🇹",
+    id: "4edebb77-56a0-451e-92cb-5c3cda094349",
   },
   {
     tagName: "Spain",
     imageUrl:
       "https://storage-prtl-co.imgix.net/endor/articles/2988/images/1716457365_shutterstock_786312625.jpg?max-w=660&max-h=532&fit=crop&q=40",
     flag: "🇪🇸",
+    id: "4c9579a3-8ac8-43bb-8fbb-32280ba0bb91",
   },
   {
     tagName: "Netherlands",
     imageUrl: "https://www.avanse.com/blogs/images/Blog_28Aug-2023.jpg",
     flag: "🇳🇱",
+    id: "7b98881d-f4de-40f6-81e0-4ec9e7f4dff4",
   },
   {
     tagName: "China",
     imageUrl:
       "https://www.china-admissions.com/wp-content/uploads/2025/04/Introducing-Renmin-Business-School.jpg",
     flag: "🇨🇳",
+    id: "43428091-acb5-478d-b351-975725896454",
   },
   {
     tagName: "Japan",
     imageUrl:
       "https://static.wixstatic.com/media/bf7b7c_956dae8a32984b25b66a336044da33e2~mv2.jpg/v1/fill/w_568,h_344,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/bf7b7c_956dae8a32984b25b66a336044da33e2~mv2.jpg",
     flag: "🇯🇵",
+    id: "d87db404-09f1-4f92-ada4-16e8baa73856",
   },
   {
     tagName: "Korea",
@@ -112,6 +124,7 @@ export const postImages = [
     imageUrl:
       "https://cms.studyinsweden.se//app/uploads/2013/10/KTH-Borgg%C3%A5rden_Jann-Lipka-870x579-1.jpg",
     flag: "🇸🇪",
+    id: "8c589bbf-0cce-4d26-a28c-d17c8942155e",
   },
 ];
 
@@ -137,20 +150,24 @@ export function PostCard({ post }: PostCardProps) {
   // const postImage =
   //   "https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg";
 
-  const postImage =
-    postImages[
-      postImages.findIndex((image) =>
-        post.tags?.some((tag) => tag.name === image.tagName)
-      )
-    ]?.imageUrl ||
-    "https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg";
+  const postMeta = postMetas.filter((meta) =>
+    post.tags?.some((tag) => tag.name === meta.tagName)
+  );
 
-  const postFlag =
-    postImages[
-      postImages.findIndex((image) =>
-        post.tags?.some((tag) => tag.name === image.tagName)
-      )
-    ]?.flag || "🌍";
+  // const postImage =
+  //   postMetas[
+  //     postMetas.findIndex((meta) =>
+  //       post.tags?.some((tag) => tag.name === meta.tagName)
+  //     )
+  //   ]?.imageUrl ||
+  //   "https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg";
+
+  // const postFlag =
+  //   postMetas[
+  //     postMetas.findIndex((meta) =>
+  //       post.tags?.some((tag) => tag.name === meta.tagName)
+  //     )
+  //   ]?.flag || "🌍";
 
   const handleLike = async () => {
     if (!user) return;
@@ -224,22 +241,23 @@ export function PostCard({ post }: PostCardProps) {
     <Card className="w-full shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="p-4">
         <div className="flex gap-6">
-          {postImage && (
-            <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 hidden md:block">
-              <img
-                src={postImage}
-                alt={postTitle}
-                className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-200"
-              />
-            </div>
-          )}
+          <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 hidden md:block">
+            <img
+              src={
+                postMeta?.[0]?.imageUrl ||
+                "https://upload.wikimedia.org/wikipedia/commons/c/cd/University-of-Alabama-EngineeringResearchCenter-01.jpg"
+              }
+              alt={postTitle}
+              className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-200"
+            />
+          </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <Link href={`/profile/${post.user?.username || "unknown"}`}>
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src={post.user?.image_url || ""}
-                    alt={post.user?.name || ""}
+                    src={post.user?.image_url}
+                    alt={post.user?.name}
                   />
                   <AvatarFallback>{post.user?.name?.[0] || "U"}</AvatarFallback>
                 </Avatar>
@@ -253,7 +271,19 @@ export function PostCard({ post }: PostCardProps) {
               <span className="text-xs text-muted-foreground">
                 {formatRelativeTime(post.created_at || "")}
               </span>
-              <span className="text-lg text-muted-foreground">{postFlag}</span>
+              {postMeta.length > 0 ? (
+                postMeta?.map((meta) => (
+                  <Link
+                    key={meta.id}
+                    href={`${meta.id ? `/posts?tag=${meta.id}` : ""}`}
+                    className="text-xl text-muted-foreground hover:scale-125 hover:animate-none transition-all duration-200 ease-in-out cursor-pointer"
+                  >
+                    {meta.flag || "🌍"}
+                  </Link>
+                ))
+              ) : (
+                <span className="text-xl text-muted-foreground">🌍</span>
+              )}
             </div>
             <div className="flex place-items-start gap-2 justify-between">
               <div className="flex-1">
